@@ -1,4 +1,4 @@
-# Alexio Engine
+# Alexio Engine  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/AlexandarSherbula/Alexio-Engine/blob/main/LICENSE.txt)
 
 Alexio Engine is a work in progress lightweight 2D Game Engine for experimentation, and small‑scale projects.
 
