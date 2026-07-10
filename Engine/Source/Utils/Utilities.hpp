@@ -16,13 +16,13 @@
     #define AIO_DEBUG_BREAK()
 #endif
 
-inline std::wstring StringToWide(const std::string& str)
+inline std::wstring StringToWide(std::string_view str)
 {
 	std::wstring wide_string(str.begin(), str.end());
 	return wide_string;
 }
 
-inline std::string WideToString(const std::wstring& wstr)
+inline std::string WideToString(std::wstring_view wstr)
 {
 	std::string str(wstr.begin(), wstr.end());
 	return str;
