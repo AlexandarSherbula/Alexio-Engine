@@ -27,7 +27,7 @@ Use `git submodule update --init` if submodules were not clone in repository.
 
 Within the repository there is a `cmake_build.bat` file. It runs the command `cmake -S . -B build ` on your command prompt.
 
-Within the repository, the 'build' folder was generated and inside you will find the build files (In case of Visual Studio, the .sln file along with .vcxproj for each module Engine has)
+After the command is run, the `build` folder will be generated, and inside it you will find the build files. In the case of Visual Studio, this includes the `.sln` file along with the `.vcxproj` files for each module the engine has.
 
 # Features
 At the moment, the Engine is a bare minumum C++ framework for developing games or any other interactive applications. The current features include:
