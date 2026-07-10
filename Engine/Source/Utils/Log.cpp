@@ -8,7 +8,7 @@ namespace aio
 	void Log::Init()
 	{
 		spdlog::set_pattern("%^[%T] %l: %v%$");
-		sLogger = spdlog::stdout_color_mt("NightLake");
+		sLogger = spdlog::stdout_color_mt("Alexio");
 		sLogger->set_level(spdlog::level::trace);
 	}
 	

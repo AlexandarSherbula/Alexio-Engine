@@ -27,4 +27,5 @@ public:
 	aio::Ref<aio::VertexInput> vi;
 	aio::Ref<aio::Shader> shader;
 	aio::Ref<aio::Texture> texture;
+	aio::Ref<aio::Audio> audio;
 };

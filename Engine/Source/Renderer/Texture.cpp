@@ -45,10 +45,13 @@ namespace aio
 
 		if (imageFile != "")
 		{
-			if (name == "")
-				name = GetFileName(imageFile);
-
 			textureFilePath = ASSETS_DIRECTORY / "images" / imageFile;
+
+			AIO_ASSERT(std::filesystem::exists(textureFilePath), "File or filepath '" + textureFilePath.string() + "' not found");
+
+			if (name == "")
+				name = GetFileName(textureFilePath);
+
 		}
 		
 		auto texture = Texture::Create(specification, textureFilePath, name);

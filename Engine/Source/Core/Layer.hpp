@@ -17,8 +17,6 @@ namespace aio {
 		virtual void OnImGuiRender() {}
 		virtual void OnEvent(Event& event) {}
 
-		void EndAndClear();
-
 		inline const std::string& GetName() const { return mDebugName; }
 	protected:
 		std::string mDebugName;
@@ -35,8 +33,6 @@ namespace aio {
 		void PushOverlay(Layer* overlay);
 		void PopLayer(Layer* layer);
 		void PopOverlay(Layer* overlay);
-
-		void EndAndClear();
 
 		inline std::vector<Layer*>::iterator begin() { return mLayers.begin(); }
 		inline std::vector<Layer*>::iterator end() { return mLayers.end(); }

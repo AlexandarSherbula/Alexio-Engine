@@ -37,11 +37,18 @@ void MainLayer::OnAttach()
 	TextureSpecification texSpec;
 	Assets::Create<Texture>(texSpec, "awesomeface.png");
 	Assets::Create<Texture>(texSpec, "AlexioLogo.png");
+
+	//Assets::Create<Audio>("GreenHill1.ogg");
+	//Assets::Get<Audio>("GreenHill1")->LoopInMiliseconds(17600.0f);
+	//Assets::Get<Audio>("GreenHill1")->Play();
 }
 
 void MainLayer::OnUpdate()
 {
 	AIO_PROFILE_FUNCTION();
+
+	if (Input::GetKeyboard()->IsPressed(F4))
+		Application::Get().GetAppWindow()->SetFullScreen();
 
 	Renderer::ClearColor(Vector4(0.1f, 0.1f, 0.1f, 1.0f));
 

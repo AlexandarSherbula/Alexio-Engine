@@ -33,13 +33,9 @@ namespace aio
 
 	std::string GetFileName(const std::filesystem::path& filepath)
 	{
-		//AIO_ASSERT(std::filesystem::exists(filepath), "Cannot get name from non-existing filepath.");
-		auto lastSlash = filepath.string().find_last_of("/\\");
-		lastSlash = lastSlash == std::string::npos ? 0 : lastSlash + 1;
-		auto lastDot = filepath.string().rfind('.');
-		auto count = lastDot == std::string::npos ? filepath.string().size() - lastSlash : lastDot - lastSlash;
+		AIO_ASSERT(std::filesystem::exists(filepath), "Cannot get name from filepath " + filepath.string());
 
-		return filepath.string().substr(lastSlash, count);
+		return filepath.stem().string();
 	}
 }
 

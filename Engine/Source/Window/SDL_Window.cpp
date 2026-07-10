@@ -30,17 +30,7 @@ namespace aio
 			SDL_GetWindowPosition(mHandle, &mPosition.x, &mPosition.y);
 			SDL_GetWindowSize(mHandle, &mSpecs.width, &mSpecs.height);
 
-			// Get display mode (resolution, refresh rate, etc.)
-			SDL_DisplayID displayId = SDL_GetDisplayForWindow(mHandle);
-			SDL_DisplayMode mode;
-			if (SDL_GetCurrentDisplayMode(displayId) == 0)
-			{
-				// Set fullscreen mode to match display
-				if (SDL_SetWindowFullscreenMode(mHandle, &mode) != 0)
-					AIO_LOG_ERROR("Failed to set fullscreen mode: {0}", SDL_GetError());
-			}
-
-			if (SDL_SetWindowFullscreen(mHandle, true) != 0)
+			if (!SDL_SetWindowFullscreen(mHandle, true))
 				AIO_LOG_ERROR("Failed to enable fullscreen: {0}", SDL_GetError());
 		}
 
@@ -87,24 +77,14 @@ namespace aio
 			SDL_GetWindowPosition(mHandle, &mPosition.x, &mPosition.y);
 			SDL_GetWindowSize(mHandle, &mSpecs.width, &mSpecs.height);
 
-			// Get display mode (resolution, refresh rate, etc.)
-			SDL_DisplayID displayId = SDL_GetDisplayForWindow(mHandle);
-			SDL_DisplayMode mode;
-			if (SDL_GetCurrentDisplayMode(displayId) == 0)
-			{
-				// Set fullscreen mode to match display
-				if (SDL_SetWindowFullscreenMode(mHandle, &mode) != 0)
-					AIO_LOG_ERROR("Failed to set fullscreen mode: {0}", SDL_GetError());
-			}
-
-			if (SDL_SetWindowFullscreen(mHandle, true) != 0)
+			if (!SDL_SetWindowFullscreen(mHandle, true))
 				AIO_LOG_ERROR("Failed to enable fullscreen: {0}", SDL_GetError());
 		}
 		else
 		{
 			// Exit fullscreen
-			if (SDL_SetWindowFullscreen(mHandle, false) != 0)
-				SDL_Log("Failed to disable fullscreen: %s", SDL_GetError());
+			if (!SDL_SetWindowFullscreen(mHandle, false))
+				AIO_LOG_ERROR("Failed to disable fullscreen: {0}", SDL_GetError());
 
 			// Restore previous position and size
 			SDL_SetWindowPosition(mHandle, mPosition.x, mPosition.y);

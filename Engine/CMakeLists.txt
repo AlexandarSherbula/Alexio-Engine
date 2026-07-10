@@ -41,6 +41,7 @@ target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/vendor/spdlo
 target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/vendor/SDL/include)
 target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/vendor/stb/include)
 target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/vendor/glm)
+target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/vendor/miniaudio)
 
 target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/vendor/slang/include)
 
@@ -77,6 +78,19 @@ target_link_libraries(Engine PRIVATE glad)
 if (WIN32)
     target_link_libraries(Engine PRIVATE DXGI D3D11)
 	target_link_libraries(Engine PRIVATE dwmapi)
+endif()
+
+# For MiniAudio
+if (UNIX)
+	target_link_libraries(Engine PUBLIC dl)
+	target_link_libraries(Engine PUBLIC pthread)
+	target_link_libraries(Engine PUBLIC m)
+	
+	# For 32-bit ARM builds:
+	if(CMAKE_SYSTEM_PROCESSOR MATCHES "arm")
+		target_link_libraries(Engine PUBLIC atomic)
+	endif()
+	
 endif()
 
 # ImGui Setup

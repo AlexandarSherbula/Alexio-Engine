@@ -143,7 +143,7 @@ namespace aio
 #endif
 
 #ifdef AIO_DEBUG
-#define PROFILING 0
+#define PROFILING 1
 #endif 
 
 #if PROFILING == 1

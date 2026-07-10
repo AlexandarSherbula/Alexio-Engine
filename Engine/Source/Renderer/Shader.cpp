@@ -312,7 +312,7 @@ namespace aio
 		if (name == "")
 			name = GetFileName(shaderFile);
 
-		std::filesystem::path shaderFilePath = ASSETS_DIRECTORY / "shaders" / std::filesystem::path(shaderFile);
+		std::filesystem::path shaderFilePath = ASSETS_DIRECTORY / "shaders" / shaderFile;
 
 		auto shader = Create(shaderFilePath, vertexInput, name);
 		Shader::Add(shader, name);
@@ -335,7 +335,6 @@ namespace aio
 	{
 		return sShaders.find(name) != sShaders.end();
 	}
-
 
 	std::string GetSampledTexture()
 	{

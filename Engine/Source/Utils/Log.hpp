@@ -14,7 +14,7 @@ namespace aio
     };
 }
 
-#if !defined (AIO_DIST)
+#if defined (AIO_DEBUG)
 
 #define AIO_LOG_TRACE(...)       aio::Log::sLogger->trace(__VA_ARGS__)
 #define AIO_LOG_INFO(...)        aio::Log::sLogger->info(__VA_ARGS__)

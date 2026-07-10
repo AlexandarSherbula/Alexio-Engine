@@ -9,6 +9,8 @@
 #include "Window/Window.hpp"
 #include "Renderer/Renderer.hpp"
 
+#include "Audio/Audio.hpp"
+
 #include "Utils/Log.hpp"
 #include "Utils/Utilities.hpp"
 #include "Utils/Math.hpp"
