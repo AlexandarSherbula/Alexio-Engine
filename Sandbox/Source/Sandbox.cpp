@@ -67,6 +67,7 @@ void MainLayer::OnUpdate()
 
 void MainLayer::OnImGuiRender()
 {
+
 }
 
 void MainLayer::OnEvent(aio::Event& event)

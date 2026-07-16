@@ -3,6 +3,8 @@
 #include "Core/Layer.hpp"
 #include "Renderer/GraphicsContext.hpp"
 
+#include <imgui.h>
+
 namespace aio
 {
 	class ImGuiLayer : public Layer

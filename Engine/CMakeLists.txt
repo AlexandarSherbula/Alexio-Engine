@@ -95,7 +95,7 @@ endif()
 
 # ImGui Setup
 add_subdirectory(vendor/imgui EXCLUDE_FROM_ALL)
-target_link_libraries(Engine PRIVATE imgui)
+target_link_libraries(Engine PUBLIC imgui)
 
 # Put SDL submodules under Dependencies folder
 foreach(t SDL3-static SDL3_test SDL3_Headers SDL_uclibc)

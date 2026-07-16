@@ -59,7 +59,7 @@ namespace aio
 			mAppWindow->PollEvents();
 			Input::Scan();
 
-			//imguiLayer->Begin();
+			imguiLayer->Begin();
 
 			sMainCamera->OnUpdate(AppTimer::DeltaTime());
 
@@ -68,8 +68,8 @@ namespace aio
 
 			Renderer::Flush();
 
-			//for (Layer* layer : mLayerStack)
-			//	layer->OnImGuiRender();
+			for (Layer* layer : mLayerStack)
+				layer->OnImGuiRender();
 
 			mAppWindow->SwapBuffers();
 		}

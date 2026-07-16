@@ -28,7 +28,6 @@ namespace aio
 
 		void ResizeBuffer(const Vector2& size);
 
-		// Getters
 		inline Microsoft::WRL::ComPtr<ID3D11Device> GetDevice() const { return mDevice.Get(); }
 		inline Microsoft::WRL::ComPtr<ID3D11DeviceContext> GetDeviceContext() const { return mDeviceContext.Get(); }
 

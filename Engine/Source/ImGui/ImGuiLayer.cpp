@@ -7,7 +7,6 @@
 
 #include <imgui.h>
 
-
 namespace aio
 {
 	
@@ -36,8 +35,6 @@ namespace aio
 
 		SetDarkThemeColors();
 
-		GraphicsContext* context;
-
 		Application& app = Application::Get();
 		Window* window = app.GetAppWindow().get();
 
@@ -59,9 +56,6 @@ namespace aio
 
 	void ImGuiLayer::OnImGuiRender()
 	{
-		static bool show = true;
-		ImGui::ShowDemoWindow(&show);
-
 		mGraphicsContext->ImGuiBackendUpdate();
 	}
 
