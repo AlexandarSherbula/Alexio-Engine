@@ -42,7 +42,7 @@ namespace aio
 	{
 	public:
 		static void Init();
-		static void ClearColor(const Vector4& color);
+		static void ClearColor(const Vector4& color = Vector4(0.0f, 0.0f, 0.0f, 1.0f));
 
 		static void OnWindowResize(WindowResizeEvent& e);
 

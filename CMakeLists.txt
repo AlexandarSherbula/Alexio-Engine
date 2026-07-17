@@ -17,7 +17,7 @@ endif()
 set(CMAKE_C_FLAGS_DIST       "${CMAKE_C_FLAGS_RELEASE} -DNDEBUG" CACHE STRING "" FORCE)
 set(CMAKE_CXX_FLAGS_DIST     "${CMAKE_CXX_FLAGS_RELEASE} -DNDEBUG" CACHE STRING "" FORCE)
 
-set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Sandbox)
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT Editor)
 
 # Compiler/runtime settings
 if(MSVC)
@@ -40,3 +40,4 @@ endif()
 # Add subprojects
 add_subdirectory(Engine)
 add_subdirectory(Sandbox)
+add_subdirectory(Editor)
