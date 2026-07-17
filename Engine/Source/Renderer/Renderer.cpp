@@ -290,7 +290,7 @@ namespace aio
 		}
 	}
 
-	void Renderer::DrawPartialSprite(const Ref<Texture>& texture, const Vector2& position, const Vector2& size, const Vector2& tileOffset, const Vector2& tileSize, const Vector4& colorTint)
+	void Renderer::DrawSubSprite(const Ref<Texture>& texture, const Vector2& position, const Vector2& size, const Vector2& tileOffset, const Vector2& tileSize, const Vector4& colorTint)
 	{
 		AIO_PROFILE_FUNCTION();
 
