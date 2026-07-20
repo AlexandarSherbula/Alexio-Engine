@@ -25,17 +25,6 @@ namespace aio
 
 	void Camera::OnUpdate(float dt)
 	{
-		float moveSpeed = mZoomLevel;
-
-		if (Input::GetKeyboard()->IsHeld(LEFT))
-			mPosition.x += moveSpeed * AppTimer::DeltaTime();
-		if (Input::GetKeyboard()->IsHeld(RIGHT))
-			mPosition.x -= moveSpeed * AppTimer::DeltaTime();
-		if (Input::GetKeyboard()->IsHeld(UP))
-			mPosition.y += moveSpeed * AppTimer::DeltaTime();
-		if (Input::GetKeyboard()->IsHeld(DOWN))
-			mPosition.y -= moveSpeed * AppTimer::DeltaTime();
-
 		mView = glm::translate(glm::mat4x4(1.0f), glm::vec3(mPosition, 0.0f)) *
 			glm::rotate(glm::mat4x4(1.0f), glm::radians(mRotation), glm::vec3(0, 0, 1));
 
@@ -45,9 +34,10 @@ namespace aio
 		sBuffer->Bind(0);
 	}
 
-	void Camera::UpdateProjection()
+	void Camera::UpdateProjection(float aspectRatio)
 	{
-		
+		mAspectRatio = aspectRatio;
+		mProjection = glm::ortho(-mAspectRatio * mZoomLevel, mAspectRatio * mZoomLevel, mZoomLevel, -mZoomLevel);
 	}
 
 	void Camera::OnEvent(Event& e)

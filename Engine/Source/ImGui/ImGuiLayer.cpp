@@ -9,8 +9,6 @@
 
 namespace aio
 {
-	
-
 	ImGuiLayer::ImGuiLayer()
 		: Layer("ImGui")
 	{

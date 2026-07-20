@@ -17,6 +17,7 @@ namespace aio
 		void OnEvent(Event& e) override;
 
 		void SetDarkThemeColors();
+		void BlockEvents(bool block) { mBlockEvents = block; }
 
 		void Begin();
 		void End();

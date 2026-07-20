@@ -11,11 +11,11 @@ int main()
 	appSpecs.graphicsAPI = GraphicsAPI::DX11;
 
 	AIO_BEGIN_SESSION("Start", "Start.json");
-	Editor Editor(appSpecs);
+	Editor editor(appSpecs);
 	AIO_END_SESSION();
 
 	AIO_BEGIN_SESSION("Runtime", "Runtime.json");
-	Editor.Run();
+	editor.Run();
 	AIO_END_SESSION();
 	return 0;
 }

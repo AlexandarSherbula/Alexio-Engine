@@ -9,6 +9,7 @@
 #include "Texture.hpp"
 #include "Camera.hpp"
 #include "RendererInput.hpp"
+#include "Framebuffer.hpp"
 
 #include "Events/WindowEvent.hpp"
 

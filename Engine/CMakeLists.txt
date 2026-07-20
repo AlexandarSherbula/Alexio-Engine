@@ -60,9 +60,6 @@ option(SDL_RENDER "Enable SDL render subsystem" OFF)
 option(SDL_TESTS "Enable SDL tests" OFF)
 
 add_subdirectory(vendor/SDL EXCLUDE_FROM_ALL)
-
-
-
 target_link_libraries(Engine PRIVATE SDL3::SDL3)
 
 # GLAD setup

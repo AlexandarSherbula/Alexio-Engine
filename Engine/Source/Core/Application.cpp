@@ -11,8 +11,6 @@ namespace aio
 {
 	static Application* sInstance = nullptr;
 
-	Ref<Camera> Application::sMainCamera = nullptr;
-
 	Application::Application()
 	{
 	}
@@ -37,10 +35,8 @@ namespace aio
 
 		Renderer::Init();
 
-		sMainCamera = CreateRef<Camera>(static_cast<float>(mAppSpecs.windowSpecs.width) / static_cast<float>(mAppSpecs.windowSpecs.height));
-
-		imguiLayer = new ImGuiLayer();
-		PushOverlay(imguiLayer);
+		mImGuiLayer = new ImGuiLayer();
+		PushOverlay(mImGuiLayer);
 	}
 
 	Application::~Application()
@@ -59,14 +55,10 @@ namespace aio
 			mAppWindow->PollEvents();
 			Input::Scan();
 
-			imguiLayer->Begin();
-
-			sMainCamera->OnUpdate(AppTimer::DeltaTime());
+			mImGuiLayer->Begin();
 
 			for (Layer* layer : mLayerStack)
 				layer->OnUpdate();
-
-			Renderer::Flush();
 
 			for (Layer* layer : mLayerStack)
 				layer->OnImGuiRender();
@@ -110,9 +102,6 @@ namespace aio
 		dispatcher.Dispatch<MouseMovedEvent>(AIO_BIND_EVENT_FN(Application::OnMouseMoved));
 		dispatcher.Dispatch<MouseScrolledEvent>(AIO_BIND_EVENT_FN(Application::OnMouseScrolled));
 
-		if (sMainCamera != nullptr)
-			sMainCamera->OnEvent(e);
-
 		for (auto it = mLayerStack.rbegin(); it != mLayerStack.rend(); ++it)
 		{
 			(*it)->OnEvent(e);
@@ -129,6 +118,7 @@ namespace aio
 
 	bool Application::OnWindowResize(WindowResizeEvent& e)
 	{
+		AIO_LOG_INFO("Resized");
 		Renderer::OnWindowResize(e);
 		return true;
 	}

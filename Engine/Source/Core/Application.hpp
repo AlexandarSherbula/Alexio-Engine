@@ -35,6 +35,7 @@ namespace aio
 		void PushOverlay(Layer* layer);
 
 		inline const Ref<Window>& GetAppWindow() const { return mAppWindow; }
+		inline ImGuiLayer* GetImGuiLayer() { return mImGuiLayer; }
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);
@@ -46,8 +47,7 @@ namespace aio
 
 		Ref<Window> mAppWindow;
 		LayerStack mLayerStack;
-		ImGuiLayer* imguiLayer;
+		ImGuiLayer* mImGuiLayer;
 	private:
-		static Ref<Camera> sMainCamera;
 	};
 }

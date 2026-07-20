@@ -24,7 +24,7 @@ namespace aio
 		bool OnMouseScroll(MouseScrolledEvent& e);
 
 		void OnUpdate(float dt);
-		void UpdateProjection();
+		void UpdateProjection(float aspectRatio);
 	private:
 		static Ref<ConstantBuffer> sBuffer;
 	private:
