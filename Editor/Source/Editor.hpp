@@ -29,5 +29,5 @@ private:
 	aio::Ref<aio::Framebuffer> framebuffer;
 	aio::FramebufferSpecification fbSpec;
 
-	aio::Ref<aio::Camera> sceneCamera;
+	aio::Ref<aio::Camera> camera;
 };

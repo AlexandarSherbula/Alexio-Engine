@@ -28,7 +28,7 @@ void Editor::Start()
 EditorLayer::EditorLayer()
 	: Layer("Editor")
 {
-    sceneCamera = CreateRef<Camera>(static_cast<float>(Application::Get().GetAppWindow()->GetSpecs().width) / static_cast<float>(Application::Get().GetAppWindow()->GetSpecs().height));
+    camera = CreateRef<Camera>(static_cast<float>(Application::Get().GetAppWindow()->GetSpecs().width) / static_cast<float>(Application::Get().GetAppWindow()->GetSpecs().height));
 }
 
 void EditorLayer::OnAttach()
@@ -53,14 +53,13 @@ void EditorLayer::OnUpdate()
         (fbSpec.width != mViewportSize.x || fbSpec.height != mViewportSize.y))
     {
         framebuffer->Resize((uint32_t)mViewportSize.x, (uint32_t)mViewportSize.y);
-        //sceneCamera->UpdateProjection(mViewportSize.x / mViewportSize.y);
     }
 
     framebuffer->Bind();
     framebuffer->ClearColor(Vector4(0.1f, 0.1f, 0.1f, 1.0f));
-    sceneCamera->OnUpdate(AppTimer::DeltaTime());
+    camera->OnUpdate(AppTimer::DeltaTime());
     
-    Renderer::DrawLinedQuad(Vector2(-0.3f, -0.9f), Vector2(0.4f, 0.4f), Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+    Renderer::DrawQuad(Vector2(-0.3f, -0.9f), Vector2(0.4f, 0.4f), Vector4(0.0f, 1.0f, 0.0f, 1.0f), false);
     Renderer::DrawQuad(Vector2(-1.0f, -0.7f), Vector2(0.5f, 0.5f), Vector4(0.0f, 0.0f, 1.0f, 1.0f));
     Renderer::DrawRotatedQuad(Vector2(1.0f, -0.8f), Vector2(0.5f, 0.5f), Vector4(1.0f, 0.0f, 0.0f, 1.0f), -3.0f * AppTimer::GetElapsedTime());
     
@@ -69,7 +68,7 @@ void EditorLayer::OnUpdate()
     
     Renderer::DrawCircle(Vector2(-1.3f, -0.5f), Vector4(1.0f, 0.5f, 0.0f, 1.0f), 0.25f);
     
-    Renderer::DrawLinedTriangle(Vector2(-1.5f, 0.9f), Vector2(-0.5f, 0.9f), Vector2(-1.0f, 0.0f), Vector4(1.0f, 1.0f, 0.0f, 1.0f));
+    Renderer::DrawTriangle(Vector2(-1.5f, 0.9f), Vector2(-0.5f, 0.9f), Vector2(-1.0f, 0.0f), Vector4(1.0f, 1.0f, 0.0f, 1.0f), false);
     Renderer::DrawTriangle(Vector2(1.5f, 0.9f), Vector2(0.5f, 0.9f), Vector2(1.0f, 0.0f), Vector4(1.0f, 1.0f, 0.0f, 1.0f));
     
     
@@ -160,12 +159,6 @@ void EditorLayer::OnImGuiRender()
     
         }
         ImGui::PopStyleVar();
-        ImGui::End();
-    
-        if (ImGui::Begin("Inspector"))
-        {
-
-        }
         ImGui::End();
     }
     ImGui::End();
