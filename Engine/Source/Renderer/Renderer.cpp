@@ -83,119 +83,86 @@ namespace aio
 		Stats.Lines++;
 	}
 
-	void Renderer::DrawTriangle(const Vector2& p1, const Vector2& p2, const Vector2& p3, const Vector4& color)
+	void Renderer::DrawTriangle(const Vector2& p1, const Vector2& p2, const Vector2& p3, const Vector4& color, bool isFilled)
 	{
 		AIO_PROFILE_FUNCTION();
-		if (TriangleRenderer::TriangleCount >= TriangleRenderer::MaxTrisPerBatch)
-			TriangleRenderer::SubmitBatch();
+		if (isFilled)
+		{
+			if (TriangleRenderer::TriangleCount >= TriangleRenderer::MaxTrisPerBatch)
+				TriangleRenderer::SubmitBatch();
 
-		TriangleRenderer::CurrentVertexPtr->position = Vector3(p1, 0.0f);
-		TriangleRenderer::CurrentVertexPtr->color = color;
-		TriangleRenderer::CurrentVertexPtr++;
+			TriangleRenderer::CurrentVertexPtr->position = Vector3(p1, 0.0f);
+			TriangleRenderer::CurrentVertexPtr->color = color;
+			TriangleRenderer::CurrentVertexPtr++;
 
-		TriangleRenderer::CurrentVertexPtr->position = Vector3(p2, 0.0f);
-		TriangleRenderer::CurrentVertexPtr->color = color;
-		TriangleRenderer::CurrentVertexPtr++;
+			TriangleRenderer::CurrentVertexPtr->position = Vector3(p2, 0.0f);
+			TriangleRenderer::CurrentVertexPtr->color = color;
+			TriangleRenderer::CurrentVertexPtr++;
 
-		TriangleRenderer::CurrentVertexPtr->position = Vector3(p3, 0.0f);
-		TriangleRenderer::CurrentVertexPtr->color = color;
-		TriangleRenderer::CurrentVertexPtr++;
+			TriangleRenderer::CurrentVertexPtr->position = Vector3(p3, 0.0f);
+			TriangleRenderer::CurrentVertexPtr->color = color;
+			TriangleRenderer::CurrentVertexPtr++;
 
-		TriangleRenderer::TriangleCount++;
-		Stats.Triangles++;
+			TriangleRenderer::TriangleCount++;
+			Stats.Triangles++;
+		}
+		else
+		{
+			DrawLine(p1, p2, color);
+			DrawLine(p2, p3, color);
+			DrawLine(p3, p1, color);
+		}
+		
 	}
 
-	void Renderer::DrawLinedTriangle(const Vector2& p1, const Vector2& p2, const Vector2& p3, const Vector4& color)
-	{
-		DrawLine(p1, p2, color);
-		DrawLine(p2, p3, color);
-		DrawLine(p3, p1, color);
-	}
-
-	void Renderer::DrawLinedQuad(const Vector2& position, const Vector2& size, const Vector4& color)
-	{
-		AIO_PROFILE_FUNCTION();
-		Vector2 p0 = position;
-		Vector2 p1 = { position.x + size.x, position.y };
-		Vector2 p2 = { position.x + size.x, position.y + size.y };
-		Vector2 p3 = { position.x, position.y + size.y };
-
-		DrawLine(p0, p1, color);
-		DrawLine(p1, p2, color);
-		DrawLine(p2, p3, color);
-		DrawLine(p3, p0, color);
-	}
-
-
-	void Renderer::DrawQuad(const Vector2& position, const Vector2& size, const Vector4& color)
+	void Renderer::DrawQuad(const Vector2& position, const Vector2& size, const Vector4& color, bool isFilled)
 	{
 		AIO_PROFILE_FUNCTION();
-		if (QuadRenderer::QuadCount >= QuadRenderer::MaxQuadsPerBatch)
-			QuadRenderer::SubmitBatch();
+		if (isFilled)
+		{
+			if (QuadRenderer::QuadCount >= QuadRenderer::MaxQuadsPerBatch)
+				QuadRenderer::SubmitBatch();
 
-		QuadRenderer::CurrentVertexPtr->position = { position.x, position.y, 0.0f };
-		QuadRenderer::CurrentVertexPtr->color = color;
-		QuadRenderer::CurrentVertexPtr->texCoord = { 0.0f, 0.0f };
-		QuadRenderer::CurrentVertexPtr->textureIndex = 0;
-		QuadRenderer::CurrentVertexPtr++;
+			QuadRenderer::CurrentVertexPtr->position = { position.x, position.y, 0.0f };
+			QuadRenderer::CurrentVertexPtr->color = color;
+			QuadRenderer::CurrentVertexPtr->texCoord = { 0.0f, 0.0f };
+			QuadRenderer::CurrentVertexPtr->textureIndex = 0;
+			QuadRenderer::CurrentVertexPtr++;
 
-		QuadRenderer::CurrentVertexPtr->position = { position.x + size.x, position.y, 0.0f };
-		QuadRenderer::CurrentVertexPtr->color = color;
-		QuadRenderer::CurrentVertexPtr->texCoord = { 1.0f, 0.0f };
-		QuadRenderer::CurrentVertexPtr->textureIndex = 0;
-		QuadRenderer::CurrentVertexPtr++;
+			QuadRenderer::CurrentVertexPtr->position = { position.x + size.x, position.y, 0.0f };
+			QuadRenderer::CurrentVertexPtr->color = color;
+			QuadRenderer::CurrentVertexPtr->texCoord = { 1.0f, 0.0f };
+			QuadRenderer::CurrentVertexPtr->textureIndex = 0;
+			QuadRenderer::CurrentVertexPtr++;
 
-		QuadRenderer::CurrentVertexPtr->position = { position.x + size.x, position.y + size.y, 0.0f };
-		QuadRenderer::CurrentVertexPtr->color = color;
-		QuadRenderer::CurrentVertexPtr->texCoord = { 1.0f, 1.0f };
-		QuadRenderer::CurrentVertexPtr->textureIndex = 0;
-		QuadRenderer::CurrentVertexPtr++;
+			QuadRenderer::CurrentVertexPtr->position = { position.x + size.x, position.y + size.y, 0.0f };
+			QuadRenderer::CurrentVertexPtr->color = color;
+			QuadRenderer::CurrentVertexPtr->texCoord = { 1.0f, 1.0f };
+			QuadRenderer::CurrentVertexPtr->textureIndex = 0;
+			QuadRenderer::CurrentVertexPtr++;
 
-		QuadRenderer::CurrentVertexPtr->position = { position.x, position.y + size.y, 0.0f };
-		QuadRenderer::CurrentVertexPtr->color = color;
-		QuadRenderer::CurrentVertexPtr->texCoord = { 0.0f, 1.0f };
-		QuadRenderer::CurrentVertexPtr->textureIndex = 0;
-		QuadRenderer::CurrentVertexPtr++;
+			QuadRenderer::CurrentVertexPtr->position = { position.x, position.y + size.y, 0.0f };
+			QuadRenderer::CurrentVertexPtr->color = color;
+			QuadRenderer::CurrentVertexPtr->texCoord = { 0.0f, 1.0f };
+			QuadRenderer::CurrentVertexPtr->textureIndex = 0;
+			QuadRenderer::CurrentVertexPtr++;
 
-		QuadRenderer::IndexCount += 6;
-		QuadRenderer::QuadCount++;
-		Stats.Quads++;
-	}
+			QuadRenderer::IndexCount += 6;
+			QuadRenderer::QuadCount++;
+			Stats.Quads++;
+		}
+		else
+		{
+			Vector2 p0 = position;
+			Vector2 p1 = { position.x + size.x, position.y };
+			Vector2 p2 = { position.x + size.x, position.y + size.y };
+			Vector2 p3 = { position.x, position.y + size.y };
 
-
-	void Renderer::DrawQuad(const Mat4x4& transform, const Vector4& color)
-	{
-		AIO_PROFILE_FUNCTION();
-		if (QuadRenderer::QuadCount >= QuadRenderer::MaxQuadsPerBatch)
-			QuadRenderer::SubmitBatch();
-
-		QuadRenderer::CurrentVertexPtr->position = transform * Vector4(localPosition[0], 1.0f);
-		QuadRenderer::CurrentVertexPtr->color = color;
-		QuadRenderer::CurrentVertexPtr->texCoord = { 0.0f, 0.0f };
-		QuadRenderer::CurrentVertexPtr->textureIndex = 0;
-		QuadRenderer::CurrentVertexPtr++;
-
-		QuadRenderer::CurrentVertexPtr->position = transform * Vector4(localPosition[1], 1.0f);
-		QuadRenderer::CurrentVertexPtr->color = color;
-		QuadRenderer::CurrentVertexPtr->texCoord = { 1.0f, 0.0f };
-		QuadRenderer::CurrentVertexPtr->textureIndex = 0;
-		QuadRenderer::CurrentVertexPtr++;
-
-		QuadRenderer::CurrentVertexPtr->position = transform * Vector4(localPosition[2], 1.0f);
-		QuadRenderer::CurrentVertexPtr->color = color;
-		QuadRenderer::CurrentVertexPtr->texCoord = { 1.0f, 1.0f };
-		QuadRenderer::CurrentVertexPtr->textureIndex = 0;
-		QuadRenderer::CurrentVertexPtr++;
-
-		QuadRenderer::CurrentVertexPtr->position = transform * Vector4(localPosition[3], 1.0f);
-		QuadRenderer::CurrentVertexPtr->color = color;
-		QuadRenderer::CurrentVertexPtr->texCoord = { 0.0f, 1.0f };
-		QuadRenderer::CurrentVertexPtr->textureIndex = 0;
-		QuadRenderer::CurrentVertexPtr++;
-
-		QuadRenderer::IndexCount += 6;
-		QuadRenderer::QuadCount++;
-		Stats.Quads++;
+			DrawLine(p0, p1, color);
+			DrawLine(p1, p2, color);
+			DrawLine(p2, p3, color);
+			DrawLine(p3, p0, color);
+		}
 	}
 
 	void Renderer::DrawRotatedQuad(const Vector2& position, const Vector2& size, const Vector4& color, float angle)

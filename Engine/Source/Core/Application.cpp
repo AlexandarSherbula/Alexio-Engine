@@ -118,7 +118,6 @@ namespace aio
 
 	bool Application::OnWindowResize(WindowResizeEvent& e)
 	{
-		AIO_LOG_INFO("Resized");
 		Renderer::OnWindowResize(e);
 		return true;
 	}

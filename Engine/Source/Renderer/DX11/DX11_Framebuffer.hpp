@@ -47,6 +47,8 @@ namespace aio
         void Bind() override {}
         void Unbind() override {}
 
+        void ClearColor(const Vector4& color) override {}
+
         void Resize(uint32_t width, uint32_t height) override {}
 
         inline void* GetColorAttachmentID() const override { return nullptr; }
