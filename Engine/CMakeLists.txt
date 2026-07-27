@@ -43,6 +43,9 @@ target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/vendor/stb/i
 target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/vendor/glm)
 target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/vendor/miniaudio)
 
+add_subdirectory(vendor/entt EXCLUDE_FROM_ALL)
+target_link_libraries(Engine PUBLIC EnTT::EnTT)
+
 target_include_directories(Engine PUBLIC ${CMAKE_SOURCE_DIR}/Engine/vendor/slang/include)
 
 if(WIN32)
@@ -101,5 +104,6 @@ foreach(t SDL3-static SDL3_test SDL3_Headers SDL_uclibc)
     endif()
 endforeach()
 
-set_target_properties(glad PROPERTIES FOLDER "Dependencies")
+set_target_properties(glad  PROPERTIES FOLDER "Dependencies")
 set_target_properties(imgui PROPERTIES FOLDER "Dependencies")
+set_target_properties(EnTT  PROPERTIES FOLDER "Dependencies")

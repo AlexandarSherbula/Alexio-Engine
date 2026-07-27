@@ -10,7 +10,7 @@ namespace aio
 		static void Start();
 		static void Update();
 
-		static float GetElapsedTime() { return sAppTime; }
+		inline static float GetElapsedTime() { return sAppTime; }
 		inline static float DeltaTime() { return sDeltaTime.count(); }
 	private:
 		static float sAppTime;

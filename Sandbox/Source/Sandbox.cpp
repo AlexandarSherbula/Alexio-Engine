@@ -48,7 +48,7 @@ void MainLayer::OnUpdate()
 
 	Renderer::ClearColor(Vector4(0.1f, 0.1f, 0.1f, 1.0f));
 
-	Renderer::DrawLinedQuad(Vector2(-0.3f, -0.9f), Vector2( 0.4f, 0.4f), Vector4(0.0f, 1.0f, 0.0f, 1.0f));
+	Renderer::DrawQuad(Vector2(-0.3f, -0.9f), Vector2( 0.4f, 0.4f), Vector4(0.0f, 1.0f, 0.0f, 1.0f), false);
 	Renderer::DrawQuad(Vector2(-1.0f, -0.7f), Vector2(0.5f, 0.5f), Vector4(0.0f, 0.0f, 1.0f, 1.0f));
 	Renderer::DrawRotatedQuad(Vector2(1.0f, -0.8f), Vector2(0.5f, 0.5f), Vector4(1.0f, 0.0f, 0.0f, 1.0f), -3.0f * AppTimer::GetElapsedTime());
 	
@@ -57,7 +57,7 @@ void MainLayer::OnUpdate()
 	
 	Renderer::DrawCircle(Vector2(-1.3f, -0.5f), Vector4(1.0f, 0.5f, 0.0f, 1.0f), 0.25f);
 
-	Renderer::DrawLinedTriangle(Vector2(-1.5f, 0.9f), Vector2(-0.5f, 0.9f), Vector2(-1.0f,  0.0f), Vector4(1.0f, 1.0f, 0.0f, 1.0f));
+	Renderer::DrawTriangle(Vector2(-1.5f, 0.9f), Vector2(-0.5f, 0.9f), Vector2(-1.0f,  0.0f), Vector4(1.0f, 1.0f, 0.0f, 1.0f), false);
 	Renderer::DrawTriangle(Vector2( 1.5f, 0.9f), Vector2( 0.5f, 0.9f), Vector2( 1.0f,  0.0f), Vector4(1.0f, 1.0f, 0.0f, 1.0f));
 }
 

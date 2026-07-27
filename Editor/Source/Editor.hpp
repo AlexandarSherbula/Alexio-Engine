@@ -2,17 +2,19 @@
 
 #include "Alexio.hpp"
 
-class Editor : public aio::Application
+using namespace aio;
+
+class Editor : public Application
 {
 public:
 	Editor();
-	Editor(aio::AppSpecifications& appSpecs);
+	Editor(AppSpecifications& appSpecs);
 	~Editor();
 
 	void Start() override;
 };
 
-class EditorLayer : public aio::Layer
+class EditorLayer : public Layer
 {
 public:
 	EditorLayer();
@@ -20,14 +22,18 @@ public:
 	void OnAttach() override;
 	void OnUpdate() override;
 	void OnImGuiRender() override;
-	void OnEvent(aio::Event& event) override;
+	void OnEvent(Event& event) override;
 
-	aio::Vector2 mViewportSize = { 0.0f, 0.0f };
+	Vector2 mViewportSize = { 0.0f, 0.0f };
 
 	bool mViewportFocused = false, mViewportHovered = false;
 private:
-	aio::Ref<aio::Framebuffer> framebuffer;
-	aio::FramebufferSpecification fbSpec;
+	Ref<Framebuffer> framebuffer;
+	FramebufferSpecification fbSpec;
 
-	aio::Ref<aio::Camera> camera;
+	Ref<Camera> camera;
+
+	Ref<Scene> currentScene;
+	Entity ent_blueSquare;
+	Entity ent_redSquare;
 };

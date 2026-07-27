@@ -204,6 +204,40 @@ namespace aio
 		Stats.Quads++;
 	}
 
+	void Renderer::DrawQuad(const Mat4x4& transform, const Vector4& color)
+	{
+		if (QuadRenderer::QuadCount >= QuadRenderer::MaxQuadsPerBatch)
+			QuadRenderer::SubmitBatch();
+
+		QuadRenderer::CurrentVertexPtr->position = transform * Vector4(localPosition[0], 1.0f);
+		QuadRenderer::CurrentVertexPtr->color = color;
+		QuadRenderer::CurrentVertexPtr->texCoord = { 0.0f, 0.0f };
+		QuadRenderer::CurrentVertexPtr->textureIndex = 0;
+		QuadRenderer::CurrentVertexPtr++;
+
+		QuadRenderer::CurrentVertexPtr->position = transform * Vector4(localPosition[1], 1.0f);
+		QuadRenderer::CurrentVertexPtr->color = color;
+		QuadRenderer::CurrentVertexPtr->texCoord = { 1.0f, 0.0f };
+		QuadRenderer::CurrentVertexPtr->textureIndex = 0;
+		QuadRenderer::CurrentVertexPtr++;
+
+		QuadRenderer::CurrentVertexPtr->position = transform * Vector4(localPosition[2], 1.0f);
+		QuadRenderer::CurrentVertexPtr->color = color;
+		QuadRenderer::CurrentVertexPtr->texCoord = { 1.0f, 1.0f };
+		QuadRenderer::CurrentVertexPtr->textureIndex = 0;
+		QuadRenderer::CurrentVertexPtr++;
+
+		QuadRenderer::CurrentVertexPtr->position = transform * Vector4(localPosition[3], 1.0f);
+		QuadRenderer::CurrentVertexPtr->color = color;
+		QuadRenderer::CurrentVertexPtr->texCoord = { 0.0f, 1.0f };
+		QuadRenderer::CurrentVertexPtr->textureIndex = 0;
+		QuadRenderer::CurrentVertexPtr++;
+
+		QuadRenderer::IndexCount += 6;
+		QuadRenderer::QuadCount++;
+		Stats.Quads++;
+	}
+
 	void Renderer::DrawSprite(const Ref<Texture>& texture, const Vector2& position, const Vector2& size, const Vector4& color)
 	{
 		AIO_PROFILE_FUNCTION();

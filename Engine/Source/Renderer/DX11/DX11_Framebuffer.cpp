@@ -1,4 +1,6 @@
 #include "aio_pch.hpp"
+
+#if defined (AIO_WINDOWS)
 #include "DX11_Framebuffer.hpp"
 #include "Core/Application.hpp"
 
@@ -88,5 +90,4 @@ namespace aio
 		mContext->GetDeviceContext()->ClearRenderTargetView(mFrameBufferRTV.Get(), bgColor);
 	}
 }
-
-
+#endif // AIO_WINDOWS

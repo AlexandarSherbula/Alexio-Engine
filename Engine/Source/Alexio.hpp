@@ -8,6 +8,9 @@
 #include "Input/Input.hpp"
 #include "Window/Window.hpp"
 #include "Renderer/Renderer.hpp"
+#include "Scene/Scene.hpp"
+#include "Scene/Entity.hpp"
+#include "Scene/Components.hpp"
 
 #include "Audio/Audio.hpp"
 

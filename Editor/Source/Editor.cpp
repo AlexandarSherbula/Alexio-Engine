@@ -4,14 +4,12 @@
 #include <sstream>
 #include <fstream>
 
-using namespace aio;
-
 Editor::Editor()
 {
 	
 }
 
-Editor::Editor(aio::AppSpecifications& appSpecs)
+Editor::Editor(AppSpecifications& appSpecs)
 	: Application (appSpecs)
 {
 	PushLayer(new EditorLayer());
@@ -35,7 +33,17 @@ void EditorLayer::OnAttach()
 {
 	AIO_PROFILE_FUNCTION();
 
-	TextureSpecification texSpec;
+    currentScene = CreateRef<Scene>();
+
+    ent_blueSquare = currentScene->CreateEntity("Blue Square");
+    ent_blueSquare.AddComponent<SpriteComponent>(Vector4(0.0f, 0.0f, 1.0f, 1.0f));
+    ent_blueSquare.GetComponent<TransformComponent>().Position = { -0.8f, 0.0f, 0.0f };
+
+    ent_redSquare = currentScene->CreateEntity("Red Square");
+    ent_redSquare.AddComponent<SpriteComponent>(Vector4(1.0f, 0.0f, 0.0f, 1.0f));
+    ent_redSquare.GetComponent<TransformComponent>().Position = { 0.8f, 0.0f, 0.0f };
+
+    TextureSpecification texSpec;
 	Assets::Create<Texture>(texSpec, "awesomeface.png");
 	Assets::Create<Texture>(texSpec, "AlexioLogo.png");
 
@@ -53,25 +61,14 @@ void EditorLayer::OnUpdate()
         (fbSpec.width != mViewportSize.x || fbSpec.height != mViewportSize.y))
     {
         framebuffer->Resize((uint32_t)mViewportSize.x, (uint32_t)mViewportSize.y);
+        camera->OnUpdate(AppTimer::DeltaTime());
     }
 
     framebuffer->Bind();
     framebuffer->ClearColor(Vector4(0.1f, 0.1f, 0.1f, 1.0f));
-    camera->OnUpdate(AppTimer::DeltaTime());
     
-    Renderer::DrawQuad(Vector2(-0.3f, -0.9f), Vector2(0.4f, 0.4f), Vector4(0.0f, 1.0f, 0.0f, 1.0f), false);
-    Renderer::DrawQuad(Vector2(-1.0f, -0.7f), Vector2(0.5f, 0.5f), Vector4(0.0f, 0.0f, 1.0f, 1.0f));
-    Renderer::DrawRotatedQuad(Vector2(1.0f, -0.8f), Vector2(0.5f, 0.5f), Vector4(1.0f, 0.0f, 0.0f, 1.0f), -3.0f * AppTimer::GetElapsedTime());
-    
-    Renderer::DrawSprite(Assets::Get<Texture>("AlexioLogo"), Vector2(-0.5f, -0.5f), Vector2(1.0f, 1.0f));
-    Renderer::DrawRotatedSprite(Assets::Get<Texture>("awesomeface"), Vector2(0.3f, -0.8f), Vector2(0.5f, 0.5f), Vector4(1.0f), AppTimer::GetElapsedTime());
-    
-    Renderer::DrawCircle(Vector2(-1.3f, -0.5f), Vector4(1.0f, 0.5f, 0.0f, 1.0f), 0.25f);
-    
-    Renderer::DrawTriangle(Vector2(-1.5f, 0.9f), Vector2(-0.5f, 0.9f), Vector2(-1.0f, 0.0f), Vector4(1.0f, 1.0f, 0.0f, 1.0f), false);
-    Renderer::DrawTriangle(Vector2(1.5f, 0.9f), Vector2(0.5f, 0.9f), Vector2(1.0f, 0.0f), Vector4(1.0f, 1.0f, 0.0f, 1.0f));
-    
-    
+    currentScene->OnUpdate();
+
     // Developer Note
     // With Batch Rendering system, Renderer::Draw functions are just adding rendering input rather than making actual drawcall. 
     // As a result, Renderer::Flush, which does make drawcall has to be called before framebuffer is unbind
@@ -164,6 +161,6 @@ void EditorLayer::OnImGuiRender()
     ImGui::End();
 }
 
-void EditorLayer::OnEvent(aio::Event& event)
+void EditorLayer::OnEvent(Event& event)
 {
 }
