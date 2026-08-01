@@ -33,7 +33,8 @@ namespace aio
 			auto view = mRegistry.view<TransformComponent, CameraComponent>();
 			for (auto [entity, transform, camera] : view.each())
 			{
-				auto [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
+				transform = view.get<TransformComponent>(entity);
+				camera = view.get<CameraComponent>(entity);
 			
 				if (camera.Primary)
 				{

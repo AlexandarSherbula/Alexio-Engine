@@ -11,6 +11,9 @@ namespace aio
 	{
 	public:
 		Camera() = default;
+		Camera(const Mat4x4& proj)
+			: mProjection(proj) {
+		}
 	
 		void SetProjection(Mat4x4 projection) { mProjection = projection; }
 		Mat4x4& GetProjection()  { return mProjection; }

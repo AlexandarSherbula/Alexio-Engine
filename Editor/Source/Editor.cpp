@@ -158,6 +158,14 @@ void EditorLayer::OnImGuiRender()
     
         }
         ImGui::End();
+
+        if (ImGui::Begin("Hierarchy"))
+        {
+
+        }
+        ImGui::End();
+
+
     }
     ImGui::End();
 }
