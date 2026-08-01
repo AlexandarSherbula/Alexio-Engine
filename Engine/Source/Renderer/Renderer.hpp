@@ -11,6 +11,8 @@
 #include "RendererInput.hpp"
 #include "Framebuffer.hpp"
 
+#include "Scene/SceneCamera.hpp"
+
 #include "Events/WindowEvent.hpp"
 
 enum class GraphicsAPI
@@ -51,8 +53,12 @@ namespace aio
 		static void Flush();
 		static void End();
 
+		static void BeginScene(SceneCamera& camera);
+		static void EndScene();
+
 		inline static const Scope<RendererBackend>& Backend() { return sBackend; }
 		inline static const GraphicsAPI CheckAPI() { return sAPI; }
+		inline static const Ref<ConstantBuffer>& GetProjectionBuffer() { return sProjectionBuffer; }
 #if defined (AIO_WINDOWS)
 		inline static void SetAPI(GraphicsAPI api) { sAPI = api; }
 #endif
@@ -94,5 +100,6 @@ namespace aio
 	private:
 		static GraphicsAPI sAPI;
 		static Scope<RendererBackend> sBackend;
+		static Ref<ConstantBuffer> sProjectionBuffer;
 	};
 }

@@ -17,6 +17,7 @@
 #include <unordered_set>
 
 #include "Utils/Log.hpp"
+#include "Utils/Math.hpp"
 #include "Utils/Utilities.hpp"
 #include "Utils/Instrumentor.hpp"
 

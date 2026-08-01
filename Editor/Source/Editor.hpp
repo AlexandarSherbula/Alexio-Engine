@@ -31,9 +31,9 @@ private:
 	Ref<Framebuffer> framebuffer;
 	FramebufferSpecification fbSpec;
 
-	Ref<Camera> camera;
-
 	Ref<Scene> currentScene;
+	Entity ent_primaryCamera;
 	Entity ent_blueSquare;
 	Entity ent_redSquare;
+
 };

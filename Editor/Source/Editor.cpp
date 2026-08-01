@@ -26,7 +26,6 @@ void Editor::Start()
 EditorLayer::EditorLayer()
 	: Layer("Editor")
 {
-    camera = CreateRef<Camera>(static_cast<float>(Application::Get().GetAppWindow()->GetSpecs().width) / static_cast<float>(Application::Get().GetAppWindow()->GetSpecs().height));
 }
 
 void EditorLayer::OnAttach()
@@ -35,13 +34,19 @@ void EditorLayer::OnAttach()
 
     currentScene = CreateRef<Scene>();
 
+    ent_primaryCamera = currentScene->CreateEntity("Primary Camera");
+    CameraComponent& cam = ent_primaryCamera.AddComponent<CameraComponent>();
+    cam.Primary = true;
+
     ent_blueSquare = currentScene->CreateEntity("Blue Square");
     ent_blueSquare.AddComponent<SpriteComponent>(Vector4(0.0f, 0.0f, 1.0f, 1.0f));
-    ent_blueSquare.GetComponent<TransformComponent>().Position = { -0.8f, 0.0f, 0.0f };
+    ent_blueSquare.GetComponent<TransformComponent>().Position = { -5.0f, 0.0f, 0.0f };
+    ent_blueSquare.GetComponent<TransformComponent>().Scale = { 2.0f, 2.0f, 1.0f };
 
     ent_redSquare = currentScene->CreateEntity("Red Square");
     ent_redSquare.AddComponent<SpriteComponent>(Vector4(1.0f, 0.0f, 0.0f, 1.0f));
-    ent_redSquare.GetComponent<TransformComponent>().Position = { 0.8f, 0.0f, 0.0f };
+    ent_redSquare.GetComponent<TransformComponent>().Position = { 5.0f, 0.0f, 0.0f };
+    ent_redSquare.GetComponent<TransformComponent>().Scale = { 2.0f, 2.0f, 1.0f };
 
     TextureSpecification texSpec;
 	Assets::Create<Texture>(texSpec, "awesomeface.png");
@@ -61,19 +66,17 @@ void EditorLayer::OnUpdate()
         (fbSpec.width != mViewportSize.x || fbSpec.height != mViewportSize.y))
     {
         framebuffer->Resize((uint32_t)mViewportSize.x, (uint32_t)mViewportSize.y);
-        camera->OnUpdate(AppTimer::DeltaTime());
+        currentScene->OnViewportResize(mViewportSize.x, mViewportSize.y);
     }
 
     framebuffer->Bind();
     framebuffer->ClearColor(Vector4(0.1f, 0.1f, 0.1f, 1.0f));
+
+    Renderer::BeginScene(ent_primaryCamera.GetComponent<CameraComponent>().camera);
     
     currentScene->OnUpdate();
-
-    // Developer Note
-    // With Batch Rendering system, Renderer::Draw functions are just adding rendering input rather than making actual drawcall. 
-    // As a result, Renderer::Flush, which does make drawcall has to be called before framebuffer is unbind
-    Renderer::Flush();
     
+    Renderer::EndScene();
     framebuffer->Unbind();
 }
 
@@ -140,7 +143,6 @@ void EditorLayer::OnImGuiRender()
         }
         ImGui::EndMenuBar();
     
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
         if (ImGui::Begin("Viewport"))
         {
             mViewportFocused = ImGui::IsWindowFocused();
@@ -155,7 +157,6 @@ void EditorLayer::OnImGuiRender()
             ImGui::Image(framebuffer->GetColorAttachmentID(), ImVec2(mViewportSize.x, mViewportSize.y), uv0, uv1);
     
         }
-        ImGui::PopStyleVar();
         ImGui::End();
     }
     ImGui::End();

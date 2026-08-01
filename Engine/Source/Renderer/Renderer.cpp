@@ -6,6 +6,7 @@ namespace aio
 {
 	GraphicsAPI Renderer::sAPI = GraphicsAPI::OpenGL;
 	Scope<RendererBackend> Renderer::sBackend = nullptr;
+	Ref<ConstantBuffer> Renderer::sProjectionBuffer = nullptr;
 	Renderer::Statistics Renderer::Stats = { 0 };
 
 	static std::array<Vector3, 4> localPosition =
@@ -20,6 +21,8 @@ namespace aio
 	{
 		sBackend = RendererBackend::Create();
 		sBackend->Init();
+
+		sProjectionBuffer = ConstantBuffer::Create(sizeof(Mat4x4), 0);
 
 		LineRenderer::Init();
 		TriangleRenderer::Init();
@@ -62,6 +65,19 @@ namespace aio
 		TriangleRenderer::End();
 		QuadRenderer::End();
 		CircleRenderer::End();
+	}
+
+	void Renderer::BeginScene(SceneCamera& camera)
+	{
+		Mat4x4 sceneProjection = camera.GetProjection();
+	
+		sProjectionBuffer->SetData(&sceneProjection, sizeof(glm::mat4x4));
+		sProjectionBuffer->Bind(0);
+	}	
+
+	void Renderer::EndScene()
+	{
+		Flush();
 	}
 
 	void Renderer::DrawLine(const Vector2& p0, const Vector2& p1, const Vector4& color)

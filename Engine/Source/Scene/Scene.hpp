@@ -1,5 +1,6 @@
 #pragma once
 #include <entt/entt.hpp>
+#include "Utils/Math.hpp"
 
 namespace aio
 {
@@ -17,7 +18,10 @@ namespace aio
 		void OnDestroy();
 	
 		inline entt::registry& Reg() { return mRegistry; }
+
+		void OnViewportResize(float width, float height);
 	private:
 		entt::registry mRegistry;
+		Vector2 mViewportSize;
 	};
 }

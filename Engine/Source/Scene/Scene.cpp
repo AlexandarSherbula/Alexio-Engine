@@ -26,18 +26,52 @@ namespace aio
 	
 	void Scene::OnUpdate()
 	{
-		auto group = mRegistry.group<TransformComponent>(entt::get<SpriteComponent>);
-		for (auto entity : group)
+		Mat4x4* mainCameraProjection = nullptr;
+		Mat4x4* mainCameraTransform = nullptr;
+
 		{
-			auto& transform = group.get<TransformComponent>(entity);
-			auto& sprite = group.get<SpriteComponent>(entity);
-		
-			glm::mat4 matrix = transform.GetTransform();
-			Renderer::DrawQuad(matrix, sprite.Color);
+			auto view = mRegistry.view<TransformComponent, CameraComponent>();
+			for (auto [entity, transform, camera] : view.each())
+			{
+				auto [transform, camera] = view.get<TransformComponent, CameraComponent>(entity);
+			
+				if (camera.Primary)
+				{
+					mainCameraProjection = &camera.camera.GetProjection();
+					mainCameraTransform = &transform.GetTransform();
+					break;
+				}
+			}
+		}
+
+		if (mainCameraProjection)
+		{
+			auto group = mRegistry.group<TransformComponent>(entt::get<SpriteComponent>);
+			for (auto entity : group)
+			{
+				auto& transform = group.get<TransformComponent>(entity);
+				auto& sprite = group.get<SpriteComponent>(entity);
+
+				glm::mat4 matrix = transform.GetTransform();
+				Renderer::DrawQuad(matrix, sprite.Color);
+			}
 		}
 	}
 	
 	void Scene::OnDestroy()
 	{
+	}
+
+	void Scene::OnViewportResize(float width, float height)
+	{
+		mViewportSize.x = width;
+		mViewportSize.y = height;
+
+		auto view = mRegistry.view<CameraComponent>();
+		for (auto entity : view)
+		{
+			auto& cameraComponent = view.get<CameraComponent>(entity);
+			cameraComponent.camera.SetViewportSize(width, height);
+		}
 	}
 }

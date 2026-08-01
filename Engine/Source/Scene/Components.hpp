@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Utils/Math.hpp"
+#include "SceneCamera.hpp"
 
 namespace aio
 {
@@ -25,15 +26,17 @@ namespace aio
 			: Position(position) {
 		}
 
-		Mat4x4 GetTransform() const
+		Mat4x4& GetTransform()
 		{
-			glm::mat4x4 rotation = glm::rotate(glm::mat4x4(1.0f), Rotation.x, { 1.0f, 0.0f, 0.0f })
+			Mat4x4 rotation = glm::rotate(glm::mat4x4(1.0f), Rotation.x, { 1.0f, 0.0f, 0.0f })
 				* glm::rotate(glm::mat4x4(1.0f), Rotation.y, { 0.0f, 1.0f, 0.0f })
 				* glm::rotate(glm::mat4x4(1.0f), Rotation.z, { 0.0f, 0.0f, 1.0f });
 
-			return glm::translate(glm::mat4x4(1.0f), Position)
+			Mat4x4 translate = glm::translate(glm::mat4x4(1.0f), Position)
 				* rotation
 				* glm::scale(glm::mat4x4(1.0f), Scale);
+
+			return translate;
 		}
 	};
 
@@ -46,5 +49,16 @@ namespace aio
 		SpriteComponent(const Vector4& color)
 			: Color(color) {
 		}
+	};
+
+
+	struct CameraComponent
+	{
+		SceneCamera camera;
+		bool Primary = true;
+		float OrthographicSize = 10.0f;
+
+		CameraComponent() = default;
+		CameraComponent(const CameraComponent&) = default;
 	};
 }
