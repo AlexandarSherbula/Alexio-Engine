@@ -12,6 +12,7 @@ namespace aio
 	
 	Scene::~Scene()
 	{
+		OnDestroy();
 	}
 	
 	Entity Scene::CreateEntity(const std::string& name)
@@ -26,8 +27,25 @@ namespace aio
 	
 	void Scene::OnUpdate()
 	{
+		{
+			auto view = mRegistry.view<NativeScriptComponent>();
+			for (auto entity : view) 
+			{
+				auto& nsc = view.get<NativeScriptComponent>(entity);
+
+				if (!nsc.Instance) {
+					nsc.Instance = nsc.InstantiateScript();
+					nsc.Instance->mEntity = Entity{ entity, this };
+					nsc.Instance->OnCreate();
+				}
+
+				nsc.Instance->OnUpdate();
+			}
+		}
+
+
 		Mat4x4* mainCameraProjection = nullptr;
-		Mat4x4* mainCameraTransform = nullptr;
+		Mat4x4 mainCameraTransform;
 
 		{
 			auto view = mRegistry.view<TransformComponent, CameraComponent>();
@@ -39,7 +57,7 @@ namespace aio
 				if (camera.Primary)
 				{
 					mainCameraProjection = &camera.camera.GetProjection();
-					mainCameraTransform = &transform.GetTransform();
+					mainCameraTransform = transform.GetTransform();
 					break;
 				}
 			}
@@ -47,20 +65,35 @@ namespace aio
 
 		if (mainCameraProjection)
 		{
+			Mat4x4 viewProj = *mainCameraProjection * glm::inverse(mainCameraTransform);
+
+			Renderer::GetProjectionBuffer()->SetData(&viewProj, sizeof(Mat4x4));
+			Renderer::GetProjectionBuffer()->Bind(0);
+
 			auto group = mRegistry.group<TransformComponent>(entt::get<SpriteComponent>);
 			for (auto entity : group)
 			{
 				auto& transform = group.get<TransformComponent>(entity);
 				auto& sprite = group.get<SpriteComponent>(entity);
 
-				glm::mat4 matrix = transform.GetTransform();
+				const glm::mat4& matrix = transform.GetTransform();
 				Renderer::DrawQuad(matrix, sprite.Color);
 			}
+
+			Renderer::Flush();
 		}
 	}
 	
 	void Scene::OnDestroy()
 	{
+		auto view = mRegistry.view<NativeScriptComponent>();
+		for (auto entity : view) {
+			auto& nsc = view.get<NativeScriptComponent>(entity);
+			if (nsc.Instance) {
+				nsc.Instance->OnDestroy();
+				nsc.DestroyScript(&nsc);
+			}
+		}
 	}
 
 	void Scene::OnViewportResize(float width, float height)

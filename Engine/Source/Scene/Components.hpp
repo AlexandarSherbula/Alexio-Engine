@@ -19,24 +19,22 @@ namespace aio
 	{
 		Vector3 Position = { 0.0f, 0.0f, 0.0f };
 		Vector3 Rotation = { 0.0f, 0.0f, 0.0f };
-		Vector3 Scale = { 1.0f, 1.0f, 1.0f };
+		Vector3 Scale =    { 1.0f, 1.0f, 1.0f };
 
 		TransformComponent() = default;
 		TransformComponent(const Vector3& position)
 			: Position(position) {
 		}
 
-		Mat4x4& GetTransform()
+		Mat4x4 GetTransform()
 		{
 			Mat4x4 rotation = glm::rotate(glm::mat4x4(1.0f), Rotation.x, { 1.0f, 0.0f, 0.0f })
 				* glm::rotate(glm::mat4x4(1.0f), Rotation.y, { 0.0f, 1.0f, 0.0f })
 				* glm::rotate(glm::mat4x4(1.0f), Rotation.z, { 0.0f, 0.0f, 1.0f });
 
-			Mat4x4 translate = glm::translate(glm::mat4x4(1.0f), Position)
+			return glm::translate(glm::mat4x4(1.0f), Position)
 				* rotation
 				* glm::scale(glm::mat4x4(1.0f), Scale);
-
-			return translate;
 		}
 	};
 
@@ -60,5 +58,26 @@ namespace aio
 
 		CameraComponent() = default;
 		CameraComponent(const CameraComponent&) = default;
+		CameraComponent(const Mat4x4& projection)
+		{
+			camera.SetProjection(projection);
+		}
+	};
+
+	class EntityScript;
+
+	struct NativeScriptComponent
+	{
+		EntityScript* Instance = nullptr;
+
+		std::function<EntityScript* ()> InstantiateScript;
+		std::function<void(NativeScriptComponent*)> DestroyScript;
+
+		template<typename T>
+		void Bind()
+		{
+			InstantiateScript = []() { return static_cast<EntityScript*>(new T()); };
+			DestroyScript = [](NativeScriptComponent* nsc) { delete nsc->Instance; nsc->Instance = nullptr; };
+		}
 	};
 }

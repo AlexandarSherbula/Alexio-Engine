@@ -45,4 +45,43 @@ namespace aio
 		entt::entity mHandle;
 		Scene* mScene;
 	};
+
+	class EntityScript
+	{
+	public:
+		virtual ~EntityScript() {}
+
+		template<typename T, typename... Args>
+		T& AddComponent(Args&&... args)
+		{
+			return mEntity.AddComponent<T>(args);
+		}
+
+		template<typename T>
+		T& GetComponent()
+		{
+			return mEntity.GetComponent<T>();
+		}
+
+		template<typename T>
+		bool HasComponent()
+		{
+			return mEntity.HasComponent<T>();
+		}
+
+		template<typename T>
+		void RemoveComponent()
+		{
+			mEntity.RemoveComponent<T>();
+		}
+
+		virtual void OnCreate() {}
+		virtual void OnUpdate() {}
+		virtual void OnDestroy() {}
+	protected:
+		Entity mEntity;
+		friend class Scene;
+	};
+
+
 }

@@ -1,4 +1,5 @@
 #include "Editor.hpp"
+#include "Scripts/CameraController.hpp"
 
 #include <string>
 #include <sstream>
@@ -34,10 +35,6 @@ void EditorLayer::OnAttach()
 
     currentScene = CreateRef<Scene>();
 
-    ent_primaryCamera = currentScene->CreateEntity("Primary Camera");
-    CameraComponent& cam = ent_primaryCamera.AddComponent<CameraComponent>();
-    cam.Primary = true;
-
     ent_blueSquare = currentScene->CreateEntity("Blue Square");
     ent_blueSquare.AddComponent<SpriteComponent>(Vector4(0.0f, 0.0f, 1.0f, 1.0f));
     ent_blueSquare.GetComponent<TransformComponent>().Position = { -5.0f, 0.0f, 0.0f };
@@ -48,9 +45,11 @@ void EditorLayer::OnAttach()
     ent_redSquare.GetComponent<TransformComponent>().Position = { 5.0f, 0.0f, 0.0f };
     ent_redSquare.GetComponent<TransformComponent>().Scale = { 2.0f, 2.0f, 1.0f };
 
-    TextureSpecification texSpec;
-	Assets::Create<Texture>(texSpec, "awesomeface.png");
-	Assets::Create<Texture>(texSpec, "AlexioLogo.png");
+    ent_primaryCamera = currentScene->CreateEntity("Primary Camera");
+    CameraComponent& cam = ent_primaryCamera.AddComponent<CameraComponent>();
+    cam.Primary = true;
+
+    ent_primaryCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 
     fbSpec.width = Application::Get().GetAppWindow()->GetSpecs().width;
     fbSpec.height = Application::Get().GetAppWindow()->GetSpecs().height;
@@ -71,12 +70,12 @@ void EditorLayer::OnUpdate()
 
     framebuffer->Bind();
     framebuffer->ClearColor(Vector4(0.1f, 0.1f, 0.1f, 1.0f));
-
-    Renderer::BeginScene(ent_primaryCamera.GetComponent<CameraComponent>().camera);
     
     currentScene->OnUpdate();
+
+    std::cout << "pos: " << ent_primaryCamera.GetComponent<TransformComponent>().Position.x << ", " << ent_primaryCamera.GetComponent<TransformComponent>().Position.y << std::endl;
+    std::cout << "scale: " << ent_primaryCamera.GetComponent<TransformComponent>().Scale.x << ", " << ent_primaryCamera.GetComponent<TransformComponent>().Scale.y << std::endl;
     
-    Renderer::EndScene();
     framebuffer->Unbind();
 }
 

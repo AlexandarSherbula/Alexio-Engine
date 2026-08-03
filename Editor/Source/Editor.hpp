@@ -35,5 +35,4 @@ private:
 	Entity ent_primaryCamera;
 	Entity ent_blueSquare;
 	Entity ent_redSquare;
-
 };

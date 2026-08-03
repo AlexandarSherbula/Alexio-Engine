@@ -69,15 +69,11 @@ namespace aio
 
 	void Renderer::BeginScene(SceneCamera& camera)
 	{
-		Mat4x4 sceneProjection = camera.GetProjection();
-	
-		sProjectionBuffer->SetData(&sceneProjection, sizeof(glm::mat4x4));
-		sProjectionBuffer->Bind(0);
 	}	
 
 	void Renderer::EndScene()
 	{
-		Flush();
+		
 	}
 
 	void Renderer::DrawLine(const Vector2& p0, const Vector2& p1, const Vector4& color)
