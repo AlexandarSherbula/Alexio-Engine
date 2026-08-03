@@ -138,6 +138,37 @@ void EditorLayer::OnImGuiRender()
     
         }
         ImGui::EndMenuBar();
+
+        const char* apiName = "";
+        CHECK_API(apiName = "OpenGL 4.5", apiName = "DirectX 11");
+
+        if (ImGui::Begin("App Info"))
+        {
+            ImGui::Text("Graphics API: %s", apiName);
+            ImGui::Text("");
+            ImGui::Text("Application Time: %.2f", AppTimer::GetElapsedTime());
+            ImGui::Text("");
+            ImGui::Text("Application framerate:");
+            ImGui::Indent();
+            ImGui::Text("%.3f ms / frame", 1000.0f / ImGui::GetIO().Framerate);
+            ImGui::Text("%.1f FPS", ImGui::GetIO().Framerate);
+            ImGui::Unindent();
+            ImGui::Text("");
+            ImGui::Text("Rendering Stats:");
+            ImGui::Indent();
+            ImGui::Text("Lines: %d", Renderer::Stats.Lines);
+            ImGui::Text("DrawLine: %d", Renderer::Stats.DrawLine);
+            ImGui::Text("");
+            ImGui::Text("Quads: %d", Renderer::Stats.Quads);
+            ImGui::Text("DrawQuad: %d", Renderer::Stats.DrawQuad);
+            ImGui::Text("");
+            ImGui::Text("Circles: %d", Renderer::Stats.Circles);
+            ImGui::Text("DrawCircle: %d", Renderer::Stats.DrawCircle);
+            ImGui::Text("");
+            ImGui::Unindent();
+
+        }
+        ImGui::End();
     
         if (ImGui::Begin("Viewport"))
         {

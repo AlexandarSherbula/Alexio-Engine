@@ -55,6 +55,8 @@ namespace aio
 			mAppWindow->PollEvents();
 			Input::Scan();
 
+			Renderer::Stats = { 0 };
+
 			mImGuiLayer->Begin();
 
 			for (Layer* layer : mLayerStack)
