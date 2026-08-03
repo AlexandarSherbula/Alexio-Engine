@@ -54,7 +54,7 @@ namespace aio
 		template<typename T, typename... Args>
 		T& AddComponent(Args&&... args)
 		{
-			return mEntity.AddComponent<T>(args);
+			return mEntity.AddComponent<T>(std::forward<Args>(args)...);
 		}
 
 		template<typename T>

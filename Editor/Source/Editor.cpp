@@ -73,9 +73,6 @@ void EditorLayer::OnUpdate()
     
     currentScene->OnUpdate();
 
-    std::cout << "pos: " << ent_primaryCamera.GetComponent<TransformComponent>().Position.x << ", " << ent_primaryCamera.GetComponent<TransformComponent>().Position.y << std::endl;
-    std::cout << "scale: " << ent_primaryCamera.GetComponent<TransformComponent>().Scale.x << ", " << ent_primaryCamera.GetComponent<TransformComponent>().Scale.y << std::endl;
-    
     framebuffer->Unbind();
 }
 
