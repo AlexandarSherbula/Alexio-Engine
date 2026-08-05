@@ -64,19 +64,19 @@ namespace aio
 		}
 	};
 
-	class EntityScript;
+	class ScritpableEntity;
 
 	struct NativeScriptComponent
 	{
-		EntityScript* Instance = nullptr;
+		ScritpableEntity* Instance = nullptr;
 
-		std::function<EntityScript* ()> InstantiateScript;
+		std::function<ScritpableEntity* ()> InstantiateScript;
 		std::function<void(NativeScriptComponent*)> DestroyScript;
 
 		template<typename T>
 		void Bind()
 		{
-			InstantiateScript = []() { return static_cast<EntityScript*>(new T()); };
+			InstantiateScript = []() { return static_cast<ScritpableEntity*>(new T()); };
 			DestroyScript = [](NativeScriptComponent* nsc) { delete nsc->Instance; nsc->Instance = nullptr; };
 		}
 	};

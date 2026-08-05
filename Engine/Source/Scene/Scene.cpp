@@ -35,7 +35,8 @@ namespace aio
 
 				if (!nsc.Instance) {
 					nsc.Instance = nsc.InstantiateScript();
-					nsc.Instance->mEntity = Entity{ entity, this };
+					AIO_ASSERT(nsc.Instance, "Instantiate Script returned nullptr!"); // A safety net for if by any off chance nsc. Instance is still nullptr at this point
+					nsc.Instance->mEntity = { entity, this };
 					nsc.Instance->OnCreate();
 				}
 
@@ -89,7 +90,8 @@ namespace aio
 		auto view = mRegistry.view<NativeScriptComponent>();
 		for (auto entity : view) {
 			auto& nsc = view.get<NativeScriptComponent>(entity);
-			if (nsc.Instance) {
+			if (nsc.Instance) 
+			{
 				nsc.Instance->OnDestroy();
 				nsc.DestroyScript(&nsc);
 			}

@@ -23,5 +23,7 @@ namespace aio
 	private:
 		entt::registry mRegistry;
 		Vector2 mViewportSize;
+
+		friend class SceneHierarchyPanel;
 	};
 }

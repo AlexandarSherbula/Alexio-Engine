@@ -2,6 +2,8 @@
 
 #include "Alexio.hpp"
 
+#include "Panels/SceneHierarchyPanel.hpp"
+
 using namespace aio;
 
 class Editor : public Application
@@ -35,4 +37,8 @@ private:
 	Entity ent_primaryCamera;
 	Entity ent_blueSquare;
 	Entity ent_redSquare;
+
+	Entity mSelectedEntity;
+
+	SceneHierarchyPanel mSceneHierarchyPanel;
 };

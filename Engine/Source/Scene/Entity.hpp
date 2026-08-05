@@ -1,3 +1,4 @@
+#pragma once
 #include <entt/entt.hpp>
 #include "Components.hpp"
 #include "Scene.hpp"
@@ -40,16 +41,27 @@ namespace aio
 		operator bool() const { return mHandle != entt::null; }
 		operator entt::entity() const { return mHandle; }
 		operator uint32_t() const { return (uint32_t)mHandle; }
+
+		bool operator==(const Entity& other) const
+		{
+			return mHandle == other.mHandle && mScene == other.mScene;
+		}
+
+		bool operator!=(const Entity& other) const
+		{
+			return !(mHandle == other.mHandle && mScene == other.mScene);
+		}
+
 	
 	private:
 		entt::entity mHandle;
 		Scene* mScene;
 	};
 
-	class EntityScript
+	class ScritpableEntity
 	{
 	public:
-		virtual ~EntityScript() {}
+		virtual ~ScritpableEntity() {}
 
 		template<typename T, typename... Args>
 		T& AddComponent(Args&&... args)

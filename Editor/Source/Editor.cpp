@@ -55,6 +55,8 @@ void EditorLayer::OnAttach()
     fbSpec.height = Application::Get().GetAppWindow()->GetSpecs().height;
 
     framebuffer = Framebuffer::Create(fbSpec);
+
+    mSceneHierarchyPanel.SetContext(currentScene);
 }
 
 void EditorLayer::OnUpdate()
@@ -186,13 +188,7 @@ void EditorLayer::OnImGuiRender()
         }
         ImGui::End();
 
-        if (ImGui::Begin("Hierarchy"))
-        {
-
-        }
-        ImGui::End();
-
-
+        mSceneHierarchyPanel.OnImGuiRender();
     }
     ImGui::End();
 }

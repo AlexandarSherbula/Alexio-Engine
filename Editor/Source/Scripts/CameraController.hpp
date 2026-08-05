@@ -3,7 +3,7 @@
 
 namespace aio
 {
-	class CameraController : public EntityScript
+	class CameraController : public ScritpableEntity
 	{
 	public:
 		void OnCreate() override
