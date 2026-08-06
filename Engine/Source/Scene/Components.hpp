@@ -52,7 +52,7 @@ namespace aio
 
 	struct CameraComponent
 	{
-		SceneCamera camera;
+		SceneCamera Camera;
 		bool Primary = true;
 		float OrthographicSize = 10.0f;
 
@@ -60,7 +60,7 @@ namespace aio
 		CameraComponent(const CameraComponent&) = default;
 		CameraComponent(const Mat4x4& projection)
 		{
-			camera.SetProjection(projection);
+			Camera.SetProjection(projection);
 		}
 	};
 

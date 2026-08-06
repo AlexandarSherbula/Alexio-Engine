@@ -54,7 +54,7 @@ namespace aio
 
 	
 	private:
-		entt::entity mHandle;
+		entt::entity mHandle = entt::null;
 		Scene* mScene;
 	};
 

@@ -109,7 +109,7 @@ void EditorLayer::OnImGuiRender()
     if (!opt_padding)
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
     
-    if (ImGui::Begin("DockSpace", &dockspace_open, window_flags))
+    ImGui::Begin("DockSpace", &dockspace_open, window_flags);
     {
         if (!opt_padding)
             ImGui::PopStyleVar();
@@ -129,7 +129,7 @@ void EditorLayer::OnImGuiRender()
             AIO_LOG_ERROR("Docking isn't enabled");
         }
     
-        if (ImGui::BeginMenuBar())
+        ImGui::BeginMenuBar();
         {
             if (ImGui::BeginMenu("File"))
             {
@@ -144,7 +144,7 @@ void EditorLayer::OnImGuiRender()
         const char* apiName = "";
         CHECK_API(apiName = "OpenGL 4.5", apiName = "DirectX 11");
 
-        if (ImGui::Begin("App Info"))
+        ImGui::Begin("App Info");
         {
             ImGui::Text("Graphics API: %s", apiName);
             ImGui::Text("");
@@ -172,7 +172,7 @@ void EditorLayer::OnImGuiRender()
         }
         ImGui::End();
     
-        if (ImGui::Begin("Viewport"))
+        ImGui::Begin("Viewport");
         {
             mViewportFocused = ImGui::IsWindowFocused();
             mViewportHovered = ImGui::IsWindowHovered();

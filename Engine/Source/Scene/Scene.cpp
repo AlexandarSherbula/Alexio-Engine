@@ -57,7 +57,7 @@ namespace aio
 			
 				if (camera.Primary)
 				{
-					mainCameraProjection = &camera.camera.GetProjection();
+					mainCameraProjection = &camera.Camera.GetProjection();
 					mainCameraTransform = transform.GetTransform();
 					break;
 				}
@@ -107,7 +107,7 @@ namespace aio
 		for (auto entity : view)
 		{
 			auto& cameraComponent = view.get<CameraComponent>(entity);
-			cameraComponent.camera.SetViewportSize(width, height);
+			cameraComponent.Camera.SetViewportSize(width, height);
 		}
 	}
 }
