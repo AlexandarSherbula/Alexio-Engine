@@ -128,16 +128,16 @@ namespace aio
             mSelectionContext = entity;
 
         if (ImGui::BeginPopupContextItem())
-        {
-            if (ImGui::MenuItem("Delete"))
             {
-                mContext->DestroyEntity(entity);
-                if (mSelectionContext == entity)
-                    mSelectionContext = {}; // clear selection
-            }
+                if (ImGui::MenuItem("Delete"))
+                {
+                    mContext->DestroyEntity(entity);
+                    if (mSelectionContext == entity)
+                        mSelectionContext = {}; // clear selection
+                }
 
-            ImGui::EndPopup();
-        }
+                ImGui::EndPopup();
+            }
 
         if (opened)
         {
@@ -155,7 +155,7 @@ namespace aio
 
             char buffer[256];
             memset(buffer, 0, sizeof(buffer));
-            strcpy_s(buffer, sizeof(buffer), tagComponent.Tag.c_str());
+            strncpy(buffer, tagComponent.Tag.c_str(), sizeof(buffer));
             if (ImGui::InputText("Tag", buffer, sizeof(buffer)))
             {
                 tagComponent.Tag = std::string(buffer);
