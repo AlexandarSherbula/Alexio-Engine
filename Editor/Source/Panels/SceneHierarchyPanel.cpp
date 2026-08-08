@@ -5,6 +5,18 @@
 
 namespace aio
 {
+    template<typename T>
+    const char* ComponentName();
+
+    template<>
+    const char* ComponentName<SpriteComponent>() { return "Sprite Component"; }
+
+    template<>
+    const char* ComponentName<TransformComponent>() { return "Transform Component"; }
+
+    template<>
+    const char* ComponentName<TagComponent>() { return "Tag Component"; }
+
     static void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValues = 0.0f, float columnWidth = 100.0f);
 
 	SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& context)
