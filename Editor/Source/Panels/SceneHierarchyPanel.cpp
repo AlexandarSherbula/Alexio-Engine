@@ -21,6 +21,8 @@ namespace aio
 	{
         ImGui::Begin("Scene Hierarchy");
         {
+            bool itemHovered = false;
+
             auto& registry = mContext->Reg();
             auto view = registry.view<TagComponent>();
 
@@ -29,10 +31,32 @@ namespace aio
                 Entity entity{ entityHandle, mContext.get() };
                 
                 DrawEntityNode(entity);
+
+                if (ImGui::IsItemHovered())
+                    itemHovered = true;
             }
 
-            if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
+
+            if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered(ImGuiHoveredFlags_RootWindow) &&
+                !ImGui::IsAnyItemHovered())
                 mSelectionContext = {};
+
+
+            // Only open popup if right-click AND not over an item
+            if (ImGui::IsWindowHovered() &&
+                ImGui::IsMouseClicked(ImGuiMouseButton_Right) &&
+                !itemHovered)
+            {
+                ImGui::OpenPopup("CreateEmptyEntityPopup");
+            }
+
+            if (ImGui::BeginPopup("CreateEmptyEntityPopup"))
+            {
+                if (ImGui::MenuItem("Create Empty Entity"))
+                    mContext->CreateEntity("Empty");
+
+                ImGui::EndPopup();
+            }
         }
         ImGui::End();
 
@@ -41,6 +65,34 @@ namespace aio
             if (mSelectionContext)
             {
                 DrawComponents(mSelectionContext);
+
+                if (ImGui::Button("Add Component"))
+                    ImGui::OpenPopup("AddComponentPopup");
+
+                if (ImGui::BeginPopup("AddComponentPopup"))
+                {
+                    if (!mSelectionContext.HasComponent<SpriteComponent>())
+                    {
+                        if (ImGui::MenuItem(ComponentName<SpriteComponent>()))
+                            mSelectionContext.AddComponent<SpriteComponent>();
+                    }
+
+                    ImGui::EndPopup();
+                }
+
+                if (ImGui::Button("Remove Component"))
+                    ImGui::OpenPopup("RemoveComponentPopup");
+
+                if (ImGui::BeginPopup("RemoveComponentPopup"))
+                {
+                    if (mSelectionContext.HasComponent<SpriteComponent>())
+                    {
+                        if (ImGui::MenuItem(ComponentName<SpriteComponent>()))
+                            mSelectionContext.RemoveComponent<SpriteComponent>();
+                    }
+
+                    ImGui::EndPopup();
+                }
             }
         }
         ImGui::End();
@@ -63,10 +115,22 @@ namespace aio
         if (ImGui::IsItemClicked())
             mSelectionContext = entity;
 
+        if (ImGui::BeginPopupContextItem())
+        {
+            if (ImGui::MenuItem("Delete"))
+            {
+                mContext->DestroyEntity(entity);
+                if (mSelectionContext == entity)
+                    mSelectionContext = {}; // clear selection
+            }
+
+            ImGui::EndPopup();
+        }
+
         if (opened)
         {
             ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
-            bool isOpened = ImGui::TreeNodeEx((void*)9816582, flags, tagComponent.Tag.c_str());
+            ImGui::TreeNodeEx((void*)9816582, flags, tagComponent.Tag.c_str());
             ImGui::TreePop();
         }
 	}
@@ -92,11 +156,15 @@ namespace aio
             {
                 TransformComponent& transformComponent = entity.GetComponent<TransformComponent>();
 
+                ImGui::PushStyleColor(ImGuiCol_Button, { 0.3f, 0.3f, 0.3f, 1.0f });
+                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 0.5f, 0.5f, 0.5f, 1.0f });
+                ImGui::PushStyleColor(ImGuiCol_ButtonActive, { 0.2f, 0.2f, 0.2f, 1.0f });
                 DrawVec3Control("Position", transformComponent.Position);
                 Vector3 rotationInDegrees = glm::degrees(transformComponent.Rotation);
                 DrawVec3Control("Rotation", rotationInDegrees);
                 transformComponent.Rotation = glm::radians(rotationInDegrees);
                 DrawVec3Control("Scale", transformComponent.Scale, 1.0f);
+                ImGui::PopStyleColor(3);
 
                 ImGui::TreePop();
             }
@@ -156,7 +224,6 @@ namespace aio
         ImGui::PopItemWidth();
         ImGui::SameLine();
 
-
         if (ImGui::Button("Y", buttonSize))
             values.y = resetValues;
 
@@ -164,7 +231,6 @@ namespace aio
         ImGui::DragFloat("##Y", &values.y, 0.1f);
         ImGui::PopItemWidth();
         ImGui::SameLine();
-
 
         if (ImGui::Button("Z", buttonSize))
             values.z = resetValues;

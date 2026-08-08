@@ -24,6 +24,11 @@ namespace aio
 		
 		return entity;
 	}
+
+	void Scene::DestroyEntity(Entity entity)
+	{
+		mRegistry.destroy(entity);
+	}
 	
 	void Scene::OnUpdate()
 	{

@@ -72,7 +72,7 @@ void EditorLayer::OnUpdate()
 
     framebuffer->Bind();
     framebuffer->ClearColor(Vector4(0.1f, 0.1f, 0.1f, 1.0f));
-    
+
     currentScene->OnUpdate();
 
     framebuffer->Unbind();
@@ -168,15 +168,14 @@ void EditorLayer::OnImGuiRender()
             ImGui::Text("DrawCircle: %d", Renderer::Stats.DrawCircle);
             ImGui::Text("");
             ImGui::Unindent();
-
         }
         ImGui::End();
     
         ImGui::Begin("Viewport");
         {
-            mViewportFocused = ImGui::IsWindowFocused();
-            mViewportHovered = ImGui::IsWindowHovered();
-            Application::Get().GetImGuiLayer()->BlockEvents(!mViewportFocused);
+            ViewportFocused = ImGui::IsWindowFocused();
+            ViewportHovered = ImGui::IsWindowHovered();
+            Application::Get().GetImGuiLayer()->BlockEvents(!ViewportFocused);
     
             ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
             mViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
@@ -189,6 +188,7 @@ void EditorLayer::OnImGuiRender()
         ImGui::End();
 
         mSceneHierarchyPanel.OnImGuiRender();
+
     }
     ImGui::End();
 }

@@ -28,7 +28,7 @@ public:
 
 	Vector2 mViewportSize = { 0.0f, 0.0f };
 
-	bool mViewportFocused = false, mViewportHovered = false;
+	bool ViewportFocused = false, ViewportHovered = false;
 private:
 	Ref<Framebuffer> framebuffer;
 	FramebufferSpecification fbSpec;

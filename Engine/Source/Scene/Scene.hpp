@@ -13,6 +13,7 @@ namespace aio
 		~Scene();
 	
 		Entity CreateEntity(const std::string& name = std::string());
+		void DestroyEntity(Entity entity);
 	
 		void OnUpdate();
 		void OnDestroy();
