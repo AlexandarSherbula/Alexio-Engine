@@ -5,20 +5,6 @@
 
 namespace aio
 {
-    template<typename T>
-    const char* ComponentName();
-
-    template<>
-    const char* ComponentName<SpriteComponent>() { return "Sprite Component"; }
-
-    template<>
-    const char* ComponentName<TransformComponent>() { return "Transform Component"; }
-
-    template<>
-    const char* ComponentName<TagComponent>() { return "Tag Component"; }
-
-    static void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValues = 0.0f, float columnWidth = 100.0f);
-
 	SceneHierarchyPanel::SceneHierarchyPanel(const Ref<Scene>& context)
 	{
 		mContext = context;
@@ -53,8 +39,6 @@ namespace aio
                 !ImGui::IsAnyItemHovered())
                 mSelectionContext = {};
 
-
-            // Only open popup if right-click AND not over an item
             if (ImGui::IsWindowHovered() &&
                 ImGui::IsMouseClicked(ImGuiMouseButton_Right) &&
                 !itemHovered)
@@ -77,34 +61,6 @@ namespace aio
             if (mSelectionContext)
             {
                 DrawComponents(mSelectionContext);
-
-                if (ImGui::Button("Add Component"))
-                    ImGui::OpenPopup("AddComponentPopup");
-
-                if (ImGui::BeginPopup("AddComponentPopup"))
-                {
-                    if (!mSelectionContext.HasComponent<SpriteComponent>())
-                    {
-                        if (ImGui::MenuItem(ComponentName<SpriteComponent>()))
-                            mSelectionContext.AddComponent<SpriteComponent>();
-                    }
-
-                    ImGui::EndPopup();
-                }
-
-                if (ImGui::Button("Remove Component"))
-                    ImGui::OpenPopup("RemoveComponentPopup");
-
-                if (ImGui::BeginPopup("RemoveComponentPopup"))
-                {
-                    if (mSelectionContext.HasComponent<SpriteComponent>())
-                    {
-                        if (ImGui::MenuItem(ComponentName<SpriteComponent>()))
-                            mSelectionContext.RemoveComponent<SpriteComponent>();
-                    }
-
-                    ImGui::EndPopup();
-                }
             }
         }
         ImGui::End();
@@ -127,17 +83,14 @@ namespace aio
         if (ImGui::IsItemClicked())
             mSelectionContext = entity;
 
+        bool isEntityDeleted = false;
         if (ImGui::BeginPopupContextItem())
-            {
-                if (ImGui::MenuItem("Delete"))
-                {
-                    mContext->DestroyEntity(entity);
-                    if (mSelectionContext == entity)
-                        mSelectionContext = {}; // clear selection
-                }
+        {
+            if (ImGui::MenuItem("Delete"))
+                isEntityDeleted = true;
 
-                ImGui::EndPopup();
-            }
+            ImGui::EndPopup();
+        }
 
         if (opened)
         {
@@ -145,7 +98,128 @@ namespace aio
             ImGui::TreeNodeEx((void*)9816582, flags, tagComponent.Tag.c_str());
             ImGui::TreePop();
         }
+
+        if (isEntityDeleted)
+        {
+            mContext->DestroyEntity(entity);
+            if (mSelectionContext == entity)
+                mSelectionContext = {};
+        }
 	}
+
+    template <typename T, typename UIFunction>
+    static void DrawComponent(const std::string& name, Entity entity, UIFunction uiFunction)
+    {
+        ImGuiIO& io = ImGui::GetIO();
+        auto boldFont = io.Fonts->Fonts[1];
+        ImVec2 contentRegionAvailable = ImGui::GetContentRegionAvail();
+
+        ImGuiTreeNodeFlags treeNodeFlags =
+            ImGuiTreeNodeFlags_DefaultOpen |
+            ImGuiTreeNodeFlags_Framed |
+            ImGuiTreeNodeFlags_SpanAvailWidth |
+            ImGuiTreeNodeFlags_AllowItemOverlap;
+        
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 4, 4 });
+        float lineHeight = ImGui::GetFontSize() + GImGui->Style.FramePadding.y * 2.0f;
+        ImGui::PushFont(boldFont);
+        bool open = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treeNodeFlags, name.c_str());
+        ImGui::PopFont();
+        ImGui::PopStyleVar();
+
+        ImGui::SameLine(contentRegionAvailable.x - lineHeight * 0.5f);
+        if (ImGui::Button("+", ImVec2{ lineHeight, lineHeight }))
+        {
+            ImGui::OpenPopup("Component Settings");
+        }
+
+        bool removeComponent = false;
+        if (name != "Transform")
+        {
+            if (ImGui::BeginPopup("Component Settings"))
+            {
+                if (ImGui::MenuItem("Remove Component"))
+                    removeComponent = true;
+
+                ImGui::EndPopup();
+            }
+        }
+
+        if (open)
+        {
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(10, 10));
+            auto& component = entity.GetComponent<T>();
+            uiFunction(component);
+            ImGui::PopStyleVar();
+
+            ImGui::TreePop();
+            ImGui::Spacing();
+            ImGui::Separator();
+        }
+
+
+        if (removeComponent)
+            entity.RemoveComponent<T>();
+    }
+
+    template <typename T>
+    static void AddComponentToPanel(const char* name, Entity selectionEntity)
+    {
+        if (!selectionEntity.HasComponent<T>())
+        {
+            if (ImGui::MenuItem(name))
+            {
+                selectionEntity.AddComponent<T>();
+                ImGui::CloseCurrentPopup();
+            }
+        }
+    }
+
+    static void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValues = 0.0f, float columnWidth = 100.0f)
+    {
+        ImGui::PushID(label.c_str());
+        
+        ImGui::Columns(2);
+        ImGui::SetColumnWidth(0, columnWidth);
+        ImGui::Text(label.c_str());
+        
+        ImGui::NextColumn();
+        
+        ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+        
+        float lineHeight = ImGui::GetFontSize() + GImGui->Style.FramePadding.y * 2.0f;
+        ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };
+        
+        if (ImGui::Button("X", buttonSize))
+            values.x = resetValues;
+        
+        ImGui::SameLine();
+        ImGui::DragFloat("##X", &values.x, 0.1f);
+        ImGui::PopItemWidth();
+        ImGui::SameLine();
+        
+        if (ImGui::Button("Y", buttonSize))
+            values.y = resetValues;
+        
+        ImGui::SameLine();
+        ImGui::DragFloat("##Y", &values.y, 0.1f);
+        ImGui::PopItemWidth();
+        ImGui::SameLine();
+        
+        if (ImGui::Button("Z", buttonSize))
+            values.z = resetValues;
+        
+        ImGui::SameLine();
+        ImGui::DragFloat("##Z", &values.z, 0.1f);
+        ImGui::PopItemWidth();
+        
+        ImGui::PopStyleVar();
+        
+        ImGui::Columns(1);
+        
+        ImGui::PopID();
+    }
 
     void SceneHierarchyPanel::DrawComponents(Entity entity)
     {
@@ -160,101 +234,83 @@ namespace aio
             {
                 tagComponent.Tag = std::string(buffer);
             }
+            ImGui::Separator();
         }
 
         if (entity.HasComponent<TransformComponent>())
         {
-            if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Transform"))
+            DrawComponent<TransformComponent>("Transform", entity, [](auto& component)
             {
-                TransformComponent& transformComponent = entity.GetComponent<TransformComponent>();
-
-                ImGui::PushStyleColor(ImGuiCol_Button, { 0.3f, 0.3f, 0.3f, 1.0f });
-                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, { 0.5f, 0.5f, 0.5f, 1.0f });
-                ImGui::PushStyleColor(ImGuiCol_ButtonActive, { 0.2f, 0.2f, 0.2f, 1.0f });
-                DrawVec3Control("Position", transformComponent.Position);
-                Vector3 rotationInDegrees = glm::degrees(transformComponent.Rotation);
+                DrawVec3Control("Position", component.Position);
+                Vector3 rotationInDegrees = glm::degrees(component.Rotation);
                 DrawVec3Control("Rotation", rotationInDegrees);
-                transformComponent.Rotation = glm::radians(rotationInDegrees);
-                DrawVec3Control("Scale", transformComponent.Scale, 1.0f);
-                ImGui::PopStyleColor(3);
-
-                ImGui::TreePop();
-            }
-
+                component.Rotation = glm::radians(rotationInDegrees);
+                DrawVec3Control("Scale", component.Scale, 1.0f);
+            });
         }
 
         if (entity.HasComponent<CameraComponent>())
         {
-            if (ImGui::TreeNodeEx((void*)typeid(CameraComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Camera"))
+            DrawComponent<CameraComponent>("Camera", entity, [](auto& component)
             {
-                auto& camera = entity.GetComponent<CameraComponent>();
-                ImGui::Checkbox("Primary", &camera.Primary);
-                ImGui::Text("Orthographic size:");
-                if (ImGui::DragFloat(" ", &camera.OrthographicSize))
-                    camera.Camera.SetOrthographicSize(camera.OrthographicSize);
+                if (ImGui::BeginTable("CameraComponentTable", 2, ImGuiTableFlags_SizingStretchProp))
+                {
+                    ImGui::TableNextColumn();
+                    ImGui::Text("Primary");
 
-                ImGui::TreePop();
-            }
+                    ImGui::TableNextColumn();
 
+                    // Center the checkbox inside the column
+                    float columnWidth = ImGui::GetColumnWidth(1); // column index 1 = second column
+                    float checkboxWidth = ImGui::CalcTextSize("X").x + ImGui::GetStyle().FramePadding.x * 2.0f;
+
+                    ImGui::SetCursorPosX(ImGui::GetCursorPosX() + (columnWidth - checkboxWidth) * 0.5f);
+                    ImGui::Checkbox("##PrimaryCamera", &component.Primary);
+
+                    ImGui::TableNextRow();
+                    ImGui::TableNextColumn();
+                    ImGui::Text("Size");
+
+                    ImGui::TableNextColumn();
+
+                    ImGui::SetNextItemWidth(-FLT_MIN);
+                    if (ImGui::DragFloat("##CameraSize", &component.OrthographicSize, 0.1f, 0.0f, 0.0f, "%.3f"))
+                        component.Camera.SetOrthographicSize(component.OrthographicSize);
+
+                    ImGui::EndTable();
+                }
+            });
         }
 
         if (entity.HasComponent<SpriteComponent>())
         {
-            if (ImGui::TreeNodeEx((void*)typeid(SpriteComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "SpriteRenderer"))
+            DrawComponent<SpriteComponent>("Sprite", entity, [](auto& component)
             {
-                SpriteComponent& sprComponent = entity.GetComponent<SpriteComponent>();
-
-                ImGui::ColorEdit4("Color", glm::value_ptr(sprComponent.Color));
-
-                ImGui::TreePop();
-            }
+                ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+            });
         }
-    }
 
+        // Add spacing before the button
+        ImGui::Dummy(ImVec2(0.0f, 5.0f));
 
-    static void DrawVec3Control(const std::string& label, glm::vec3& values, float resetValues, float columnWidth)
-    {
-        ImGui::PushID(label.c_str());
+        // --- Centered Add Component Button ---
+        float regionWidth = ImGui::GetContentRegionAvail().x;
+        float regionHeight = ImGui::GetContentRegionAvail().y;
+        float buttonWidth = 200.0f; // choose any width you like
+        float buttonHeight = 30.0f; // choose any width you like
 
-        ImGui::Columns(2);
-        ImGui::SetColumnWidth(0, columnWidth);
-        ImGui::Text(label.c_str());
+        float cursorX = (regionWidth - buttonWidth) * 0.5f;
+        ImGui::SetCursorPosX(cursorX);
 
-        ImGui::NextColumn();
+        if (ImGui::Button("Add Component", ImVec2{ buttonWidth, buttonHeight }))
+            ImGui::OpenPopup("AddComponentPopup");
 
-        ImGui::PushMultiItemsWidths(3, ImGui::CalcItemWidth());
-        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+        if (ImGui::BeginPopup("AddComponentPopup"))
+        {
+            AddComponentToPanel<CameraComponent>("CameraComponent", mSelectionContext);
+            AddComponentToPanel<SpriteComponent>("SpriteComponent", mSelectionContext);
 
-        float lineHeight = ImGui::GetFontSize() + GImGui->Style.FramePadding.y * 2.0f;
-        ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };
-
-        if (ImGui::Button("X", buttonSize))
-            values.x = resetValues;
-
-        ImGui::SameLine();
-        ImGui::DragFloat("##X", &values.x, 0.1f);
-        ImGui::PopItemWidth();
-        ImGui::SameLine();
-
-        if (ImGui::Button("Y", buttonSize))
-            values.y = resetValues;
-
-        ImGui::SameLine();
-        ImGui::DragFloat("##Y", &values.y, 0.1f);
-        ImGui::PopItemWidth();
-        ImGui::SameLine();
-
-        if (ImGui::Button("Z", buttonSize))
-            values.z = resetValues;
-
-        ImGui::SameLine();
-        ImGui::DragFloat("##Z", &values.z, 0.1f);
-        ImGui::PopItemWidth();
-
-        ImGui::PopStyleVar();
-
-        ImGui::Columns(1);
-
-        ImGui::PopID();
+            ImGui::EndPopup();
+        }
     }
 }
