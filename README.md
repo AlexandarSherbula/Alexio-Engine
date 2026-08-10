@@ -11,6 +11,7 @@ Currently Engine is supported only on Windows. Linux support will be added event
 
 ## Prerequisites:
 - GPU that supports OpenGL 4.5 or DirectX11
+- C++ 20
 - Git
 - CMake 3.15
 - Visual Studio (IDE that was tested on. It should work on other compilers too, but proceed with caution)
