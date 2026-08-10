@@ -43,17 +43,13 @@ namespace aio
 		style.WindowPadding = ImVec2(8, 8);
 		style.ItemSpacing = ImVec2(6, 4);
 
-		io.FontDefault = io.Fonts->AddFontFromFileTTF(GetFilePath_str(ASSETS_DIRECTORY / "fonts" / "Roboto" / "static" / "Roboto-Regular.ttf").c_str(), 18.0f);
-		io.Fonts->AddFontFromFileTTF(GetFilePath_str(ASSETS_DIRECTORY / "fonts" / "Roboto" / "static" / "Roboto-Bold.ttf").c_str(), 18.0f);
-
+		SetFonts();
 		SetDarkThemeColors();
 
 		Application& app = Application::Get();
 		Window* window = app.GetAppWindow().get();
 
 		mGraphicsContext = window->GetContext();
-
-		//API init here
 		mGraphicsContext->ImGuiBackendInit();
 	}
 
@@ -81,6 +77,16 @@ namespace aio
 			e.Handled |= e.IsInCategory(EventCategoryMouse) && io.WantCaptureMouse;
 			e.Handled |= e.IsInCategory(EventCategoryKeyboard) && io.WantCaptureKeyboard;
 		}
+	}
+
+	void ImGuiLayer::SetFonts()
+	{
+		ImGuiIO& io = ImGui::GetIO();
+
+		const std::string& filepath = GetFilePath_str(ASSETS_DIRECTORY / "fonts" / "Roboto" / "static");
+
+		io.FontDefault = io.Fonts->AddFontFromFileTTF(std::string(filepath + "\\Roboto-Regular.ttf").c_str(), 18.0f);
+		io.Fonts->AddFontFromFileTTF(std::string(filepath + "\\Roboto-Bold.ttf").c_str(), 18.0f);
 	}
 
 	void ImGuiLayer::SetDarkThemeColors()

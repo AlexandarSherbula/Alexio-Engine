@@ -17,11 +17,11 @@ namespace aio
 		void OnImGuiRender() override;
 		void OnEvent(Event& e) override;
 
+		void SetFonts();
 		void SetDarkThemeColors();
 		void BlockEvents(bool block) { mBlockEvents = block; }
 
 		void Begin();
-		void End();
 	private:
 		bool mBlockEvents = true;
 
