@@ -37,11 +37,6 @@ namespace aio
 
 		return filepath.stem().string();
 	}
-
-	std::string GetFilePath_str(const std::filesystem::path& filepath)
-	{
-		return filepath.string();
-	}
 }
 
 

@@ -22,6 +22,5 @@ namespace aio
 	std::string ReadFromFiles(const std::filesystem::path& filepath);
 
 	std::string GetFileName(const std::filesystem::path& filepath);
-	std::string GetFilePath_str(const std::filesystem::path& filepath);
 }
 

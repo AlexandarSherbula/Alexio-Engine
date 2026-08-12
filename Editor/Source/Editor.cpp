@@ -133,6 +133,18 @@ void EditorLayer::OnImGuiRender()
         {
             if (ImGui::BeginMenu("File"))
             {
+                if (ImGui::MenuItem("Load Scene"))
+                {
+                    SceneSerializer serializer(currentScene);
+                    serializer.Deserialize(ASSETS_DIRECTORY / "Scenes" / "test.yaml");
+                }
+
+                if (ImGui::MenuItem("Save Scene"))
+                {
+                    SceneSerializer serializer(currentScene);
+                    serializer.Serialize(ASSETS_DIRECTORY / "Scenes" / "test.yaml");
+                }
+
                 if (ImGui::MenuItem("Exit")) 
                     Application::Get().Stop();
                 ImGui::EndMenu();

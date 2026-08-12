@@ -3,3 +3,5 @@
 build/
 Sandbox/Assets/cache/
 Sandbox/Assets/audio/
+Editor/Assets/audio/
+Editor/Assets/cache/

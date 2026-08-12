@@ -2,6 +2,8 @@
 #include <entt/entt.hpp>
 #include "Utils/Math.hpp"
 
+#include "SceneSerializer.hpp"
+
 namespace aio
 {
 	class Entity;
@@ -26,5 +28,6 @@ namespace aio
 		Vector2 mViewportSize;
 
 		friend class SceneHierarchyPanel;
+		friend class SceneSerializer;
 	};
 }

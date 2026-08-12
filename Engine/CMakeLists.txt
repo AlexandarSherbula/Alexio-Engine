@@ -97,6 +97,16 @@ endif()
 add_subdirectory(vendor/imgui EXCLUDE_FROM_ALL)
 target_link_libraries(Engine PUBLIC imgui)
 
+
+#YAML-CPP
+set(YAML_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+set(YAML_CPP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(YAML_CPP_BUILD_TOOLS OFF CACHE BOOL "" FORCE)
+
+add_subdirectory(vendor/yaml-cpp EXCLUDE_FROM_ALL)
+target_link_libraries(Engine PUBLIC yaml-cpp)
+
+
 # Put SDL submodules under Dependencies folder
 foreach(t SDL3-static SDL3_test SDL3_Headers SDL_uclibc)
     if (TARGET ${t})
@@ -106,4 +116,4 @@ endforeach()
 
 set_target_properties(glad  PROPERTIES FOLDER "Dependencies")
 set_target_properties(imgui PROPERTIES FOLDER "Dependencies")
-set_target_properties(EnTT  PROPERTIES FOLDER "Dependencies")
+set_target_properties(yaml-cpp  PROPERTIES FOLDER "Dependencies")
