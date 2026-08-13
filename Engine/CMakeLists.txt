@@ -117,9 +117,7 @@ endforeach()
 include(${CMAKE_SOURCE_DIR}/Engine/vendor/nativefiledialog/CMakeLists.txt)
 target_link_libraries(Engine PUBLIC nfd)
 
-set_target_properties(glad  PROPERTIES FOLDER "Dependencies")
-set_target_properties(imgui PROPERTIES FOLDER "Dependencies")
+set_target_properties(glad      PROPERTIES FOLDER "Dependencies")
+set_target_properties(imgui     PROPERTIES FOLDER "Dependencies")
 set_target_properties(yaml-cpp  PROPERTIES FOLDER "Dependencies")
-set_target_properties(nfd  PROPERTIES FOLDER "Dependencies")
-
-
+set_target_properties(nfd       PROPERTIES FOLDER "Dependencies")
