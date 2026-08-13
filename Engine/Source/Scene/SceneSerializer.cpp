@@ -156,7 +156,6 @@ namespace aio
                 AIO_LOG_INFO("Loaded entity with an ID: {0} and tag <{1}>", (uint32_t)entity, entity.GetComponent<TagComponent>().Tag);
             }
         }
-
         
     }
 }

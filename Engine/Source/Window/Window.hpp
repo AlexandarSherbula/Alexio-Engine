@@ -22,6 +22,7 @@ namespace aio
 		int32_t pixelHeight = 1;
 		bool vSync = true;
 		bool isFullScreen = false;
+		bool startMaximized = false;
 
 		EventCallbackFn eventCallback;
 	};

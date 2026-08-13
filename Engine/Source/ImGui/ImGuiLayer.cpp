@@ -4,7 +4,7 @@
 
 #include "Core/Application.hpp"
 #include "Window/SDL_Window.hpp"
-#include "Utils/FileReading.hpp"
+#include "Utils/FileUtils.hpp"
 
 #include <imgui.h>
 
@@ -24,6 +24,18 @@ namespace aio
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+
+
+		static std::filesystem::path iniFP = ASSETS_DIRECTORY / "Config" / "EditorLayout.ini";
+		if (std::filesystem::exists(iniFP))
+		{
+			std::string iniFP_str = iniFP.string();
+			io.IniFilename = iniFP_str.c_str();
+
+			// Load previous layout
+			ImGui::LoadIniSettingsFromDisk(io.IniFilename);
+		}
+		
 		
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{
@@ -72,6 +84,7 @@ namespace aio
 
 	void ImGuiLayer::OnDetach()
 	{
+		ImGui::SaveIniSettingsToDisk(ImGui::GetIO().IniFilename);
 		mGraphicsContext->ImGuiBackendShutDown();
 	}
 

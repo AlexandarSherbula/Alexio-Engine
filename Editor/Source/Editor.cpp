@@ -43,23 +43,6 @@ void EditorLayer::OnAttach()
     framebuffer = Framebuffer::Create(fbSpec);
 
     mSceneHierarchyPanel.SetContext(currentScene);
-
-    nfdchar_t* outPath = nullptr;
-    nfdresult_t result = NFD_OpenDialog("txt", nullptr, &outPath);
-
-    if (result == NFD_OKAY)
-    {
-        std::cout << "Selected file: " << outPath << std::endl;
-        free(outPath);
-    }
-    else if (result == NFD_CANCEL)
-    {
-        std::cout << "User canceled dialog\n";
-    }
-    else
-    {
-        std::cout << "NFD Error: " << NFD_GetError() << std::endl;
-    }
 }
 
 void EditorLayer::OnUpdate()
@@ -136,16 +119,32 @@ void EditorLayer::OnImGuiRender()
         {
             if (ImGui::BeginMenu("File"))
             {
+                if (ImGui::MenuItem("New Scene"))
+                {
+                    currentScene = CreateRef<Scene>();
+                    mSceneHierarchyPanel.SetContext(currentScene);
+                }
+
                 if (ImGui::MenuItem("Load Scene"))
                 {
-                    SceneSerializer serializer(currentScene);
-                    serializer.Deserialize(ASSETS_DIRECTORY / "Scenes" / "test.yaml");
+                    std::filesystem::path sceneFilePath = FileDialog::Open("yaml");
+                    if (!sceneFilePath.empty())
+                    {
+                        currentScene = CreateRef<Scene>();
+                        mSceneHierarchyPanel.SetContext(currentScene);
+                        SceneSerializer serializer(currentScene);
+                        serializer.Deserialize(sceneFilePath);
+                    }
                 }
 
                 if (ImGui::MenuItem("Save Scene"))
                 {
-                    SceneSerializer serializer(currentScene);
-                    serializer.Serialize(ASSETS_DIRECTORY / "Scenes" / "test.yaml");
+                    std::filesystem::path sceneFilePath = FileDialog::Save("yaml");
+                    if (!sceneFilePath.empty())
+                    {
+                        SceneSerializer serializer(currentScene);
+                        serializer.Serialize(sceneFilePath);
+                    }
                 }
 
                 if (ImGui::MenuItem("Exit")) 

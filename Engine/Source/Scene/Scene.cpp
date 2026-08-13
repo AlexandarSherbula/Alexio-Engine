@@ -8,6 +8,7 @@ namespace aio
 {
 	Scene::Scene()
 	{
+
 	}
 	
 	Scene::~Scene()

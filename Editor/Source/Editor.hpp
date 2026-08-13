@@ -33,7 +33,6 @@ private:
 	FramebufferSpecification fbSpec;
 	Ref<Framebuffer> framebuffer;
 
-	Entity mSelectedEntity;
 	SceneHierarchyPanel mSceneHierarchyPanel;
 	Ref<Scene> currentScene;
 };

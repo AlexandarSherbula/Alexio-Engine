@@ -6,7 +6,7 @@
 #include "WAV_Audio.hpp"
 #include "FLAC_Audio.hpp"
 
-#include "Utils/FileReading.hpp"
+#include "Utils/FileUtils.hpp"
 
 #define MINIAUDIO_IMPLEMENTATION
 #include "miniaudio.h"

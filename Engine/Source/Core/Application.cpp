@@ -5,7 +5,7 @@
 #include "Utils/Timer.hpp"
 #include "Renderer/Camera.hpp"
 
-#include "Utils/FileReading.hpp"
+#include "Utils/FileUtils.hpp"
 
 namespace aio
 {

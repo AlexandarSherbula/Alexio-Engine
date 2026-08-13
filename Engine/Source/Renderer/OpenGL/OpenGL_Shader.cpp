@@ -1,6 +1,6 @@
 #include "aio_pch.hpp"
 #include "OpenGL_Shader.hpp"
-#include "Utils/FileReading.hpp"
+#include "Utils/FileUtils.hpp"
 
 namespace aio
 {

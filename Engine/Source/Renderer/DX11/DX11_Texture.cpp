@@ -5,7 +5,7 @@
 #include "Core/Application.hpp"
 #include "stb_image.hpp"
 
-#include "Utils/FileReading.hpp"
+#include "Utils/FileUtils.hpp"
 
 namespace aio
 {

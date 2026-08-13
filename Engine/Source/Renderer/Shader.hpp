@@ -6,7 +6,7 @@
 #include "Utils/Math.hpp"
 #include "Buffers.hpp"
 
-#include "Utils/FileReading.hpp"
+#include "Utils/FileUtils.hpp"
 
 #include "slang.h"
 #include "slang-com-helper.h"

@@ -17,11 +17,17 @@ namespace aio
 		mSpecs.height = mProjectionSize.y = windowSpec.height;
 		mSpecs.vSync = windowSpec.vSync;
 		mSpecs.isFullScreen = windowSpec.isFullScreen;
+		mSpecs.startMaximized = windowSpec.startMaximized;
 		mSpecs.eventCallback = windowSpec.eventCallback;
 
 		AIO_ASSERT(SDL_Init(SDL_INIT_VIDEO), "Failed to initalize SDL");
 
-		mHandle = SDL_CreateWindow(mSpecs.title, mSpecs.width, mSpecs.height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+		SDL_WindowFlags winFlags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
+
+		if (mSpecs.startMaximized)
+			winFlags |= SDL_WINDOW_MAXIMIZED;
+
+		mHandle = SDL_CreateWindow(mSpecs.title, mSpecs.width, mSpecs.height, winFlags);
 		AIO_ASSERT(mHandle, "Failed to create a window: {0}\n", SDL_GetError());
 
 		if (mSpecs.isFullScreen)

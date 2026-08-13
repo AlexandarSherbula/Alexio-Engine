@@ -4,7 +4,7 @@ Entities:
     TagComponent:
       Tag: Primary Camera
     TransformComponent:
-      Position: [0, 0, 0]
+      Position: [6.1, -6.9, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
     CameraComponent:
@@ -14,7 +14,7 @@ Entities:
     TagComponent:
       Tag: Red Square
     TransformComponent:
-      Position: [5, 7, 0]
+      Position: [5, -0.7, 0]
       Rotation: [0, 0, 0]
       Scale: [2, 2, 1]
     SpriteComponent:
@@ -23,8 +23,17 @@ Entities:
     TagComponent:
       Tag: Blue Square
     TransformComponent:
-      Position: [-5, -7, 0]
+      Position: [6.4, -7, 0]
       Rotation: [0, 0, 0]
       Scale: [2, 2, 1]
     SpriteComponent:
       Color: [0, 0, 1, 1]
+  - Entity: 13212654686584
+    TagComponent:
+      Tag: Yellow Square
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [2, 2, 1]
+    SpriteComponent:
+      Color: [1, 1, 0, 1]

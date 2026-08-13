@@ -21,6 +21,8 @@
 #include "Utils/Utilities.hpp"
 #include "Utils/Instrumentor.hpp"
 
+
+#include "nfd.h"
 #include "glad/glad.h"
 #define SDL_MAIN_HANDLED 1
 #include "SDL3/SDL.h"

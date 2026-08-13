@@ -22,5 +22,11 @@ namespace aio
 	std::string ReadFromFiles(const std::filesystem::path& filepath);
 
 	std::string GetFileName(const std::filesystem::path& filepath);
+
+	struct FileDialog
+	{
+		static std::filesystem::path Open(const char* filter, const std::filesystem::path& defaultPath = ASSETS_DIRECTORY);
+		static std::filesystem::path Save(const char* filter, const std::filesystem::path& defaultPath = ASSETS_DIRECTORY);
+	};
 }
 

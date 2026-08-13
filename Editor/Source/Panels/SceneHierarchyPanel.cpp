@@ -13,6 +13,7 @@ namespace aio
 	void SceneHierarchyPanel::SetContext(const Ref<Scene>& context)
 	{
 		mContext = context;
+        mSelectionContext = {};
 	}
 
 	void SceneHierarchyPanel::OnImGuiRender()
@@ -33,7 +34,6 @@ namespace aio
                 if (ImGui::IsItemHovered())
                     itemHovered = true;
             }
-
 
             if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered(ImGuiHoveredFlags_RootWindow) &&
                 !ImGui::IsAnyItemHovered())

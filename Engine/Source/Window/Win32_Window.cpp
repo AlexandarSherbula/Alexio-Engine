@@ -20,6 +20,7 @@ namespace aio
 		mSpecs.vSync = windowSpec.vSync;
 		mSpecs.eventCallback = windowSpec.eventCallback;
 		mSpecs.isFullScreen = windowSpec.isFullScreen;
+		mSpecs.startMaximized = windowSpec.startMaximized;
 		
 		mWindowClass = "Win32 Class";
 		m_hInstance = GetModuleHandle(nullptr);
@@ -81,7 +82,9 @@ namespace aio
 		MARGINS margins = { 0 };
 		DwmExtendFrameIntoClientArea(mHandle, &margins);
 
-		ShowWindow(mHandle, SW_SHOW);
+		int32_t cmdShow = mSpecs.startMaximized ? SW_MAXIMIZE : SW_SHOW;
+
+ 		ShowWindow(mHandle, cmdShow);
 		SetForegroundWindow(mHandle);
 		UpdateWindow(mHandle);
 

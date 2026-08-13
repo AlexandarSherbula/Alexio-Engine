@@ -5,7 +5,7 @@
 #include "DX11_Shader.hpp"
 #include "Core/Application.hpp"
 
-#include "Utils/FileReading.hpp"
+#include "Utils/FileUtils.hpp"
 
 namespace aio
 {
