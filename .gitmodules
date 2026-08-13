@@ -16,3 +16,6 @@
 [submodule "Engine/vendor/yaml-cpp"]
 	path = Engine/vendor/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp
+[submodule "Engine/vendor/nativefiledialog"]
+	path = Engine/vendor/nativefiledialog
+	url = https://github.com/AlexandarSherbula/nativefiledialog

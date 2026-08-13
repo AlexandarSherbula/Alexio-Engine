@@ -30,16 +30,10 @@ public:
 
 	bool ViewportFocused = false, ViewportHovered = false;
 private:
-	Ref<Framebuffer> framebuffer;
 	FramebufferSpecification fbSpec;
-
-	Ref<Scene> currentScene;
-
-	Entity ent_primaryCamera;
-	Entity ent_blueSquare;
-	Entity ent_redSquare;
+	Ref<Framebuffer> framebuffer;
 
 	Entity mSelectedEntity;
-
 	SceneHierarchyPanel mSceneHierarchyPanel;
+	Ref<Scene> currentScene;
 };

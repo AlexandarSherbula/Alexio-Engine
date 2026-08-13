@@ -5,6 +5,8 @@
 #include <sstream>
 #include <fstream>
 
+#include <nfd.h>
+
 Editor::Editor()
 {
 	
@@ -35,28 +37,29 @@ void EditorLayer::OnAttach()
 
     currentScene = CreateRef<Scene>();
 
-    ent_blueSquare = currentScene->CreateEntity("Blue Square");
-    ent_blueSquare.AddComponent<SpriteComponent>(Vector4(0.0f, 0.0f, 1.0f, 1.0f));
-    ent_blueSquare.GetComponent<TransformComponent>().Position = { -5.0f, 0.0f, 0.0f };
-    ent_blueSquare.GetComponent<TransformComponent>().Scale = { 2.0f, 2.0f, 1.0f };
-
-    ent_redSquare = currentScene->CreateEntity("Red Square");
-    ent_redSquare.AddComponent<SpriteComponent>(Vector4(1.0f, 0.0f, 0.0f, 1.0f));
-    ent_redSquare.GetComponent<TransformComponent>().Position = { 5.0f, 0.0f, 0.0f };
-    ent_redSquare.GetComponent<TransformComponent>().Scale = { 2.0f, 2.0f, 1.0f };
-
-    ent_primaryCamera = currentScene->CreateEntity("Primary Camera");
-    CameraComponent& cam = ent_primaryCamera.AddComponent<CameraComponent>();
-    cam.Primary = true;
-
-    ent_primaryCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
-
     fbSpec.width = Application::Get().GetAppWindow()->GetSpecs().width;
     fbSpec.height = Application::Get().GetAppWindow()->GetSpecs().height;
 
     framebuffer = Framebuffer::Create(fbSpec);
 
     mSceneHierarchyPanel.SetContext(currentScene);
+
+    nfdchar_t* outPath = nullptr;
+    nfdresult_t result = NFD_OpenDialog("txt", nullptr, &outPath);
+
+    if (result == NFD_OKAY)
+    {
+        std::cout << "Selected file: " << outPath << std::endl;
+        free(outPath);
+    }
+    else if (result == NFD_CANCEL)
+    {
+        std::cout << "User canceled dialog\n";
+    }
+    else
+    {
+        std::cout << "NFD Error: " << NFD_GetError() << std::endl;
+    }
 }
 
 void EditorLayer::OnUpdate()
