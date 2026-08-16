@@ -160,7 +160,7 @@ namespace aio
 		}
 		case SDL_EVENT_KEY_DOWN:
 		{
-			KeyPressedEvent event(sdl_event.key.key, true);
+			KeyPressedEvent event(Keyboard::MapKeys[sdl_event.key.scancode], true);
 			window->GetSpecs().eventCallback(event);
 			size_t scancode = Keyboard::MapKeys[sdl_event.key.scancode];
 			Input::GetKeyboard()->SetNewState(scancode, true);
@@ -168,20 +168,20 @@ namespace aio
 		}
 		case SDL_EVENT_KEY_UP:
 		{
-			KeyReleasedEvent event(sdl_event.key.key);
+			KeyReleasedEvent event(Keyboard::MapKeys[sdl_event.key.scancode]);
 			window->GetSpecs().eventCallback(event);
 			Input::GetKeyboard()->SetNewState(Keyboard::MapKeys[sdl_event.key.scancode], false);
 			break;
 		}
 		case SDL_EVENT_TEXT_INPUT:
 		{
-			KeyTypedEvent event(sdl_event.key.key);
+			KeyTypedEvent event(Keyboard::MapKeys[sdl_event.key.scancode]);
 			window->GetSpecs().eventCallback(event);
 			break;
 		}
 		case SDL_EVENT_MOUSE_BUTTON_DOWN:
 		{
-			MouseButtonPressedEvent event(sdl_event.button.button);
+			MouseButtonPressedEvent event(Mouse::MapButtons[sdl_event.button.button]);
 			window->GetSpecs().eventCallback(event);
 			Input::GetMouse()->SetNewState(Mouse::MapButtons[sdl_event.button.button], true);
 			
@@ -189,7 +189,7 @@ namespace aio
 		}
 		case SDL_EVENT_MOUSE_BUTTON_UP:
 		{
-			MouseButtonReleasedEvent event(sdl_event.button.button);
+			MouseButtonReleasedEvent event(Mouse::MapButtons[sdl_event.button.button]);
 			window->GetSpecs().eventCallback(event);
 			Input::GetMouse()->SetNewState(Mouse::MapButtons[sdl_event.button.button], false);
 			break;

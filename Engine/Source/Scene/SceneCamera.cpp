@@ -30,6 +30,6 @@ namespace aio
 		float orthoTop = mOrthographicSize;
 	
 		mProjection = glm::ortho(orthoLeft, orthoRight,
-			orthoBottom, orthoTop, -100.0f, 100.0f);
+			orthoBottom, orthoTop, -1.0f, 1.0f);
 	}
 }

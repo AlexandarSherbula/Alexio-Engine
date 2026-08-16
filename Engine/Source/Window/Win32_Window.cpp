@@ -228,7 +228,7 @@ namespace aio
 				if ((GetKeyState(VK_MENU) & 0x8000) && wParam == VK_F4)
 					break; 
 
-				KeyPressedEvent event(wParam, LOWORD(lParam));
+				KeyPressedEvent event(keycode, LOWORD(lParam));
 				data->eventCallback(event);
 				Input::GetKeyboard()->SetNewState(keycode, true);
 				return 0;
@@ -244,7 +244,7 @@ namespace aio
 					 keycode = (isRight) ? KeyCode::R_ALT : KeyCode::L_ALT; 
 				else
 					keycode = Keyboard::MapKeys[wParam];
-				KeyPressedEvent event(wParam, LOWORD(lParam));
+				KeyPressedEvent event(keycode, LOWORD(lParam));
 				data->eventCallback(event);
 				Input::GetKeyboard()->SetNewState(keycode, false);
 				return 0;
@@ -252,9 +252,6 @@ namespace aio
 			case WM_KEYDOWN:
 			{
 				WindowSpecifications* data = (WindowSpecifications*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
-
-				KeyPressedEvent event(wParam, LOWORD(lParam));
-				data->eventCallback(event);
 
 				int32_t keycode;
 				bool isRight;
@@ -275,16 +272,15 @@ namespace aio
 					keycode = Keyboard::MapKeys[wParam];
 				}
 
+				KeyPressedEvent event(keycode, LOWORD(lParam));
+				data->eventCallback(event);
+
 				Input::GetKeyboard()->SetNewState(keycode, true);
 				return 0;
 			}
 			case WM_KEYUP:
 			{
 				WindowSpecifications* data = (WindowSpecifications*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
-
-				KeyReleasedEvent event(wParam);
-				data->eventCallback(event);
-
 
 				int32_t keycode;
 				int32_t isRight;
@@ -305,6 +301,9 @@ namespace aio
 					keycode = Keyboard::MapKeys[wParam];
 				}
 
+				KeyReleasedEvent event(keycode);
+				data->eventCallback(event);
+
 				Input::GetKeyboard()->SetNewState(keycode, false);
 				return 0;
 			}
@@ -314,7 +313,7 @@ namespace aio
 			{
 				WindowSpecifications* data = (WindowSpecifications*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
-				MouseButtonPressedEvent event(MK_LBUTTON);
+				MouseButtonPressedEvent event(L_BUTTON);
 				data->eventCallback(event);
 
 				Input::GetMouse()->SetNewState(L_BUTTON, true);
@@ -324,7 +323,7 @@ namespace aio
 			{
 				WindowSpecifications* data = (WindowSpecifications*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
-				MouseButtonPressedEvent event(MK_RBUTTON);
+				MouseButtonPressedEvent event(R_BUTTON);
 				data->eventCallback(event);
 
 				Input::GetMouse()->SetNewState(R_BUTTON, true);
@@ -345,13 +344,13 @@ namespace aio
 				WindowSpecifications* data = (WindowSpecifications*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
 				int32_t mouseButton = (wParam & MK_XBUTTON1) | (wParam & MK_XBUTTON2);
-				MouseButtonPressedEvent event(mouseButton);
-				data->eventCallback(event);
 				if (mouseButton == 32)
 					mouseButton = X_BUTTON1;
 				else if (mouseButton == 64)
 					mouseButton = X_BUTTON2;
 
+				MouseButtonPressedEvent event(mouseButton);
+				data->eventCallback(event);
 				Input::GetMouse()->SetNewState(mouseButton, true);
 				return 0;
 			}
@@ -361,7 +360,7 @@ namespace aio
 			{
 				WindowSpecifications* data = (WindowSpecifications*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
-				MouseButtonReleasedEvent event(MK_LBUTTON);
+				MouseButtonReleasedEvent event(L_BUTTON);
 				data->eventCallback(event);
 
 				Input::GetMouse()->SetNewState(L_BUTTON, false);
@@ -371,7 +370,7 @@ namespace aio
 			{
 				WindowSpecifications* data = (WindowSpecifications*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
-				MouseButtonReleasedEvent event(MK_RBUTTON);
+				MouseButtonReleasedEvent event(R_BUTTON);
 				data->eventCallback(event);
 
 				Input::GetMouse()->SetNewState(R_BUTTON, false);
@@ -381,7 +380,7 @@ namespace aio
 			{
 				WindowSpecifications* data = (WindowSpecifications*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
-				MouseButtonReleasedEvent event(MK_MBUTTON);
+				MouseButtonReleasedEvent event(M_BUTTON);
 				data->eventCallback(event);
 
 				Input::GetMouse()->SetNewState(M_BUTTON, false);
@@ -394,12 +393,13 @@ namespace aio
 				UINT xbuttoncode = wParam;
 				if (wParam == 131072)		xbuttoncode = (wParam | 0x0040) & 0x0040;
 				else if (wParam == 65536)	xbuttoncode = (wParam | 0x0020) & 0x0020;
-				MouseButtonReleasedEvent event(xbuttoncode);
-				data->eventCallback(event);
 				if (xbuttoncode == 32)
 					xbuttoncode = X_BUTTON1;
 				else if (xbuttoncode == 64)
 					xbuttoncode = X_BUTTON2;
+
+				MouseButtonReleasedEvent event(xbuttoncode);
+				data->eventCallback(event);
 
 				Input::GetMouse()->SetNewState(xbuttoncode, false);
 				return 0;

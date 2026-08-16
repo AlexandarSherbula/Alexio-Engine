@@ -119,32 +119,19 @@ void EditorLayer::OnImGuiRender()
         {
             if (ImGui::BeginMenu("File"))
             {
-                if (ImGui::MenuItem("New Scene"))
+                if (ImGui::MenuItem("New Scene", "Ctrl+N"))
                 {
-                    currentScene = CreateRef<Scene>();
-                    mSceneHierarchyPanel.SetContext(currentScene);
+                    NewScene();
                 }
 
-                if (ImGui::MenuItem("Load Scene"))
+                if (ImGui::MenuItem("Load Scene", "Ctrl+O"))
                 {
-                    std::filesystem::path sceneFilePath = FileDialog::Open("yaml");
-                    if (!sceneFilePath.empty())
-                    {
-                        currentScene = CreateRef<Scene>();
-                        mSceneHierarchyPanel.SetContext(currentScene);
-                        SceneSerializer serializer(currentScene);
-                        serializer.Deserialize(sceneFilePath);
-                    }
+                    LoadScene();
                 }
 
-                if (ImGui::MenuItem("Save Scene"))
+                if (ImGui::MenuItem("Save Scene", "Ctrl+Shift+S"))
                 {
-                    std::filesystem::path sceneFilePath = FileDialog::Save("yaml");
-                    if (!sceneFilePath.empty())
-                    {
-                        SceneSerializer serializer(currentScene);
-                        serializer.Serialize(sceneFilePath);
-                    }
+                    SaveScene();
                 }
 
                 if (ImGui::MenuItem("Exit")) 
@@ -189,7 +176,7 @@ void EditorLayer::OnImGuiRender()
         {
             ViewportFocused = ImGui::IsWindowFocused();
             ViewportHovered = ImGui::IsWindowHovered();
-            Application::Get().GetImGuiLayer()->BlockEvents(!ViewportFocused);
+            Application::Get().GetImGuiLayer()->BlockEvents(ImGui::GetIO().WantTextInput);
     
             ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
             mViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
@@ -209,4 +196,74 @@ void EditorLayer::OnImGuiRender()
 
 void EditorLayer::OnEvent(Event& event)
 {
+    EventDispatcher dispatcher(event);
+    dispatcher.Dispatch<KeyPressedEvent>(AIO_BIND_EVENT_FN(EditorLayer::OnKeyPressedEvent));
+}
+
+bool EditorLayer::OnKeyPressedEvent(KeyPressedEvent& e)
+{
+    bool control = Input::GetKeyboard()->IsHeld(KeyCode::L_CTRL) || Input::GetKeyboard()->IsHeld(KeyCode::R_CTRL);
+    bool shift   = Input::GetKeyboard()->IsHeld(KeyCode::L_SHIFT) || Input::GetKeyboard()->IsHeld(KeyCode::R_SHIFT);
+
+    switch (e.GetKeyCode())
+    {
+        case KeyCode::N:
+        {
+            if (control)
+                NewScene();
+            return true;
+        }
+        case KeyCode::O:
+        {
+            if (control)
+                LoadScene();
+            return true;
+        }
+        case KeyCode::S:
+        {
+            if (control && shift)
+                SaveScene();
+            return true;
+        }
+        case KeyCode::DEL:
+        {
+            mSceneHierarchyPanel.EntityDeleted = true;
+            return true;
+        }
+        case KeyCode::F2:
+        {
+            mSceneHierarchyPanel.RenamingEntity = true;
+            return true;
+        }
+    };
+
+    return false;
+}
+
+void EditorLayer::NewScene()
+{
+    currentScene = CreateRef<Scene>();
+    mSceneHierarchyPanel.SetContext(currentScene);
+}
+
+void EditorLayer::LoadScene()
+{
+    std::filesystem::path sceneFilePath = FileDialog::Open("yaml");
+    if (!sceneFilePath.empty())
+    {
+        NewScene();
+
+        SceneSerializer serializer(currentScene);
+        serializer.Deserialize(sceneFilePath);
+    }
+}
+
+void EditorLayer::SaveScene()
+{
+    std::filesystem::path sceneFilePath = FileDialog::Save("yaml");
+    if (!sceneFilePath.empty())
+    {
+        SceneSerializer serializer(currentScene);
+        serializer.Serialize(sceneFilePath);
+    }
 }

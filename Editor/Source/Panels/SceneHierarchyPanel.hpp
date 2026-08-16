@@ -6,6 +6,9 @@
 
 namespace aio
 {
+
+
+
 	class SceneHierarchyPanel
 	{
 	public:
@@ -18,8 +21,12 @@ namespace aio
 	private:
 		void DrawEntityNode(Entity entity);
 		void DrawComponents(Entity entity);
+	public:
+		bool EntityDeleted = false;
+		bool RenamingEntity = false;
 	private:
+		Entity mSelectedEntity;
 		Ref<Scene> mContext;
-		Entity mSelectionContext;
+		char mRenameBuffer[256];
 	};
 }

@@ -13,7 +13,7 @@ namespace aio
 	void SceneHierarchyPanel::SetContext(const Ref<Scene>& context)
 	{
 		mContext = context;
-        mSelectionContext = {};
+        mSelectedEntity = {};
 	}
 
 	void SceneHierarchyPanel::OnImGuiRender()
@@ -37,7 +37,14 @@ namespace aio
 
             if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered(ImGuiHoveredFlags_RootWindow) &&
                 !ImGui::IsAnyItemHovered())
-                mSelectionContext = {};
+            {
+                if (RenamingEntity)
+                {
+                    mSelectedEntity.GetComponent<TagComponent>().Tag = mRenameBuffer;
+                    RenamingEntity = false;
+                }
+                mSelectedEntity = {};
+            }
 
             if (ImGui::IsWindowHovered() &&
                 ImGui::IsMouseClicked(ImGuiMouseButton_Right) &&
@@ -58,9 +65,9 @@ namespace aio
 
         ImGui::Begin("Inspector");
         {
-            if (mSelectionContext)
+            if (mSelectedEntity)
             {
-                DrawComponents(mSelectionContext);
+                DrawComponents(mSelectedEntity);
             }
         }
         ImGui::End();
@@ -70,9 +77,24 @@ namespace aio
 	{
         TagComponent& tagComponent = entity.GetComponent<TagComponent>();
         ImGuiTreeNodeFlags flags =
-            ((mSelectionContext == entity) ? ImGuiTreeNodeFlags_Selected : 0)
+            ((mSelectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0)
             | ImGuiTreeNodeFlags_OpenOnArrow
             | ImGuiTreeNodeFlags_SpanAvailWidth;
+
+        if (RenamingEntity && mSelectedEntity == entity)
+        {
+            strcpy(mRenameBuffer, tagComponent.Tag.c_str());
+            ImGui::PushID(entity);
+
+            if (ImGui::InputText("##RenameEntity", mRenameBuffer, sizeof(mRenameBuffer), ImGuiInputTextFlags_EnterReturnsTrue))
+            {
+                tagComponent.Tag = mRenameBuffer;
+                RenamingEntity = false;
+            }
+
+            ImGui::PopID();
+            return;
+        }
 
         bool opened = ImGui::TreeNodeEx(
             (void*)(uint64_t)(uint32_t)entity,
@@ -81,13 +103,18 @@ namespace aio
         );
 
         if (ImGui::IsItemClicked())
-            mSelectionContext = entity;
+            mSelectedEntity = entity;
 
-        bool isEntityDeleted = false;
+        // Double-click to rename
+        if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
+        {
+            RenamingEntity = true;
+        }
+
         if (ImGui::BeginPopupContextItem())
         {
             if (ImGui::MenuItem("Delete"))
-                isEntityDeleted = true;
+                EntityDeleted = true;
 
             ImGui::EndPopup();
         }
@@ -99,11 +126,11 @@ namespace aio
             ImGui::TreePop();
         }
 
-        if (isEntityDeleted)
+        if (EntityDeleted)
         {
             mContext->DestroyEntity(entity);
-            if (mSelectionContext == entity)
-                mSelectionContext = {};
+            if (mSelectedEntity == entity)
+                mSelectedEntity = {};
         }
 	}
 
@@ -307,8 +334,8 @@ namespace aio
 
         if (ImGui::BeginPopup("AddComponentPopup"))
         {
-            AddComponentToPanel<CameraComponent>("CameraComponent", mSelectionContext);
-            AddComponentToPanel<SpriteComponent>("SpriteComponent", mSelectionContext);
+            AddComponentToPanel<CameraComponent>("CameraComponent", mSelectedEntity);
+            AddComponentToPanel<SpriteComponent>("SpriteComponent", mSelectedEntity);
 
             ImGui::EndPopup();
         }

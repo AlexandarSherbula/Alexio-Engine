@@ -25,11 +25,16 @@ public:
 	void OnUpdate() override;
 	void OnImGuiRender() override;
 	void OnEvent(Event& event) override;
+	bool OnKeyPressedEvent(KeyPressedEvent& event);
+private:
+	void NewScene();
+	void LoadScene();
+	void SaveScene();
 
-	Vector2 mViewportSize = { 0.0f, 0.0f };
-
+public:
 	bool ViewportFocused = false, ViewportHovered = false;
 private:
+	Vector2 mViewportSize = { 0.0f, 0.0f };
 	FramebufferSpecification fbSpec;
 	Ref<Framebuffer> framebuffer;
 
