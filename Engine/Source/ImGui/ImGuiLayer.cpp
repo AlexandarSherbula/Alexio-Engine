@@ -25,13 +25,12 @@ namespace aio
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
 
-
 		static std::filesystem::path iniFP = ASSETS_DIRECTORY / "Config" / "EditorLayout.ini";
 		if (std::filesystem::exists(iniFP))
 		{
 			std::string iniFP_str = iniFP.string();
 			io.IniFilename = iniFP_str.c_str();
-
+		
 			// Load previous layout
 			ImGui::LoadIniSettingsFromDisk(io.IniFilename);
 		}
@@ -46,7 +45,7 @@ namespace aio
 
 		ImGui::StyleColorsDark();
 		ImGuiStyle& style = ImGui::GetStyle();
-		style.WindowRounding = 0.0f;		
+		style.WindowRounding = 0.0f;
 		style.GrabRounding = 1.0f;
 		style.FrameRounding = 2.0f;
 		style.FrameBorderSize = 1.0f;
