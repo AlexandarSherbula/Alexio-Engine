@@ -63,14 +63,25 @@ namespace aio
 		inline static void SetAPI(GraphicsAPI api) { sAPI = api; }
 #endif
 		static void DrawLine(const Vector2& p1, const Vector2& p2, const Vector4& color = Vector4(1.0f));
+		static void DrawLine(const Vector3& p1, const Vector3& p2, const Vector4& color = Vector4(1.0f));
+
 		static void DrawTriangle(const Vector2& p1, const Vector2& p2, const Vector2& p3, const Vector4& color, bool isFilled = true);
-		static void DrawQuad(const Vector2& position, const Vector2& size, const Vector4& color, bool isFilled = true);
-		static void DrawRotatedQuad(const Vector2& position, const Vector2& size, const Vector4& color = Vector4(1.0f), float angle = 0.0f);
-		static void DrawCircle(const Vector2& position, const Vector4& color = Vector4(1.0f), float radius = 0.5f, float thickness = 1.0f, float fade = 0.005f);
+		static void DrawTriangle(const Vector3& p1, const Vector3& p2, const Vector3& p3, const Vector4& color, bool isFilled = true);
 
 		static void DrawQuad(const Mat4x4& transform, const Vector4& color);
+		static void DrawQuad(const Vector2& position, const Vector2& size, const Vector4& color, bool isFilled = true);
+		static void DrawQuad(const Vector3& position, const Vector2& size, const Vector4& color, bool isFilled = true);
+
+		static void DrawCircle(const Vector2& position, const Vector4& color = Vector4(1.0f), float radius = 0.5f, float thickness = 1.0f, float fade = 0.005f);
+		static void DrawCircle(const Vector3& position, const Vector4& color = Vector4(1.0f), float radius = 0.5f, float thickness = 1.0f, float fade = 0.005f);
+
 		static void DrawSprite(const Ref<Texture>& texture, const Vector2& position, const Vector2& size, const Vector4& color = Vector4(1.0f));
+		static void DrawSprite(const Ref<Texture>& texture, const Vector3& position, const Vector2& size, const Vector4& color = Vector4(1.0f));
 		static void DrawSubSprite(const Ref<Texture>& texture, const Vector2& position, const Vector2& size, const Vector2& tileOffset, const Vector2& tileSize, const Vector4& colorTint = Vector4(1.0f));
+		static void DrawSubSprite(const Ref<Texture>& texture, const Vector3& position, const Vector2& size, const Vector2& tileOffset, const Vector2& tileSize, const Vector4& colorTint = Vector4(1.0f));
+
+
+		static void DrawRotatedQuad(const Vector2& position, const Vector2& size, const Vector4& color = Vector4(1.0f), float angle = 0.0f);
 		static void DrawRotatedSprite(const Ref<Texture>& texture, const Vector2& position, const Vector2& size, const Vector4& color = Vector4(1.0f), float angle = 0.0f);
 	public:
 		struct Statistics
