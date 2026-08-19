@@ -24,8 +24,8 @@ namespace aio
 	public:
 		bool EntityDeleted = false;
 		bool RenamingEntity = false;
+		Entity SelectedEntity;
 	private:
-		Entity mSelectedEntity;
 		Ref<Scene> mContext;
 		char mRenameBuffer[256];
 	};

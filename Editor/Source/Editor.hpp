@@ -3,8 +3,10 @@
 #include "Alexio.hpp"
 
 #include "Panels/SceneHierarchyPanel.hpp"
+#include "ImGuizmo.h"
 
 using namespace aio;
+
 
 class Editor : public Application
 {

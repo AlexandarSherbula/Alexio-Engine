@@ -13,7 +13,7 @@ namespace aio
 	void SceneHierarchyPanel::SetContext(const Ref<Scene>& context)
 	{
 		mContext = context;
-        mSelectedEntity = {};
+        SelectedEntity = {};
 	}
 
 	void SceneHierarchyPanel::OnImGuiRender()
@@ -40,10 +40,10 @@ namespace aio
             {
                 if (RenamingEntity)
                 {
-                    mSelectedEntity.GetComponent<TagComponent>().Tag = mRenameBuffer;
+                    SelectedEntity.GetComponent<TagComponent>().Tag = mRenameBuffer;
                     RenamingEntity = false;
                 }
-                mSelectedEntity = {};
+                SelectedEntity = {};
             }
 
             if (ImGui::IsWindowHovered() &&
@@ -65,9 +65,9 @@ namespace aio
 
         ImGui::Begin("Inspector");
         {
-            if (mSelectedEntity)
+            if (SelectedEntity)
             {
-                DrawComponents(mSelectedEntity);
+                DrawComponents(SelectedEntity);
             }
         }
         ImGui::End();
@@ -77,11 +77,11 @@ namespace aio
 	{
         TagComponent& tagComponent = entity.GetComponent<TagComponent>();
         ImGuiTreeNodeFlags flags =
-            ((mSelectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0)
+            ((SelectedEntity == entity) ? ImGuiTreeNodeFlags_Selected : 0)
             | ImGuiTreeNodeFlags_OpenOnArrow
             | ImGuiTreeNodeFlags_SpanAvailWidth;
 
-        if (RenamingEntity && mSelectedEntity == entity)
+        if (RenamingEntity && SelectedEntity == entity)
         {
             strcpy(mRenameBuffer, tagComponent.Tag.c_str());
             ImGui::PushID(entity);
@@ -103,7 +103,7 @@ namespace aio
         );
 
         if (ImGui::IsItemClicked())
-            mSelectedEntity = entity;
+            SelectedEntity = entity;
 
         // Double-click to rename
         if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
@@ -129,8 +129,8 @@ namespace aio
         if (EntityDeleted)
         {
             mContext->DestroyEntity(entity);
-            if (mSelectedEntity == entity)
-                mSelectedEntity = {};
+            if (SelectedEntity == entity)
+                SelectedEntity = {};
         }
 	}
 
@@ -334,8 +334,8 @@ namespace aio
 
         if (ImGui::BeginPopup("AddComponentPopup"))
         {
-            AddComponentToPanel<CameraComponent>("CameraComponent", mSelectedEntity);
-            AddComponentToPanel<SpriteComponent>("SpriteComponent", mSelectedEntity);
+            AddComponentToPanel<CameraComponent>("CameraComponent", SelectedEntity);
+            AddComponentToPanel<SpriteComponent>("SpriteComponent", SelectedEntity);
 
             ImGui::EndPopup();
         }

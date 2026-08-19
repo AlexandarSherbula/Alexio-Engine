@@ -97,6 +97,10 @@ endif()
 add_subdirectory(vendor/imgui EXCLUDE_FROM_ALL)
 target_link_libraries(Engine PUBLIC imgui)
 
+# ImGuizmo
+add_subdirectory(vendor/imguizmo EXCLUDE_FROM_ALL)
+target_link_libraries(Engine PUBLIC imguizmo)
+
 
 #YAML-CPP
 set(YAML_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
@@ -114,10 +118,11 @@ foreach(t SDL3-static SDL3_test SDL3_Headers SDL_uclibc)
     endif()
 endforeach()
 
-include(${CMAKE_SOURCE_DIR}/Engine/vendor/nativefiledialog/CMakeLists.txt)
+add_subdirectory(vendor/nativefiledialog EXCLUDE_FROM_ALL)
 target_link_libraries(Engine PUBLIC nfd)
 
 set_target_properties(glad      PROPERTIES FOLDER "Dependencies")
 set_target_properties(imgui     PROPERTIES FOLDER "Dependencies")
+set_target_properties(imguizmo  PROPERTIES FOLDER "Dependencies")
 set_target_properties(yaml-cpp  PROPERTIES FOLDER "Dependencies")
 set_target_properties(nfd       PROPERTIES FOLDER "Dependencies")

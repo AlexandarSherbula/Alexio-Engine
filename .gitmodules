@@ -19,3 +19,6 @@
 [submodule "Engine/vendor/nativefiledialog"]
 	path = Engine/vendor/nativefiledialog
 	url = https://github.com/AlexandarSherbula/nativefiledialog
+[submodule "Engine/vendor/ImGuizmo"]
+	path = Engine/vendor/ImGuizmo
+	url = https://github.com/AlexandarSherbula/ImGuizmo

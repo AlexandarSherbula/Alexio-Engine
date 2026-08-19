@@ -7,6 +7,7 @@
 #include "Utils/FileUtils.hpp"
 
 #include <imgui.h>
+#include <ImGuizmo.h>
 
 namespace aio
 {
@@ -70,6 +71,7 @@ namespace aio
 	void ImGuiLayer::Begin()
 	{
 		mGraphicsContext->ImGuiBackendBegin();
+		ImGuizmo::BeginFrame();
 	}
 
 	ImFont* ImGuiLayer::AddFontFromFileTTF(const std::filesystem::path& filepath, float size_pixels, const ImFontConfig* font_cfg, const ImWchar* glyph_ranges)

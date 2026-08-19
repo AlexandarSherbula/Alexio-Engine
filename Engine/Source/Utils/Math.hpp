@@ -1,7 +1,9 @@
 #pragma once
 
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
 #include "glm/gtc/matrix_transform.hpp"
+#include <glm/gtx/matrix_decompose.hpp>
 #include "glm/gtc/type_ptr.hpp"
 
 #include <iostream>
@@ -33,9 +35,9 @@ namespace aio
 	using Mat4x4 = glm::mat4;
 	using Mat4x4 = glm::mat4x4;
 
-	inline float Length(const Vector2& v) { return glm::length(v); }
-	inline float Length(const Vector3& v) { return glm::length(v); }
-	inline float Length(const Vector4& v) { return glm::length(v); }
+	float Length(const Vector2& v);
+	float Length(const Vector3& v);
+	float Length(const Vector4& v);
 
 	template<typename T>
 	inline T Length(T x) { return glm::length(x); }
@@ -46,7 +48,9 @@ namespace aio
 	template<typename T>
 	inline T Degree(T radians) { return glm::degrees(radians); }
 
-	inline std::ostream& operator<< (std::ostream& os, const Vector2& vec2) { os << vec2.x << " : " << vec2.y; return os; }
-	inline std::ostream& operator<< (std::ostream& os, const Vector3& vec3) { os << vec3.x << " : " << vec3.y << " : " << vec3.z; return os; }
-	inline std::ostream& operator<< (std::ostream& os, const Vector4& vec4) { os << vec4.x << " : " << vec4.y << " : " << vec4.z << " : " << vec4.w; return os; }
+	std::ostream& operator<< (std::ostream& os, const Vector2& vec2);
+	std::ostream& operator<< (std::ostream& os, const Vector3& vec3);
+	std::ostream& operator<< (std::ostream& os, const Vector4& vec4);
+
+	bool DecomposeTransform(const Mat4x4& transform, Vector3& translation, Vector3& rotation, Vector3& scale);
 }

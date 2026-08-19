@@ -146,7 +146,7 @@ namespace aio
 #define PROFILING 1
 #endif 
 
-#if PROFILING == 1
+#if PROFILING == 0
 #define CLEAN_FUNC_SIG()                                            ::aio::CleanFunctionSignature(FUNCTION_SIG)
 #define AIO_BEGIN_SESSION(name, filepath)                           ::aio::Instrumentor::Get().BeginSession(name, filepath)
 #define AIO_END_SESSION()                                           ::aio::Instrumentor::Get().EndSession()

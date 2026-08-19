@@ -35,14 +35,14 @@ namespace aio
 	{
 		{
 			auto view = mRegistry.view<NativeScriptComponent>();
-			for (auto entity : view) 
+			for (auto entityHandle : view)
 			{
-				auto& nsc = view.get<NativeScriptComponent>(entity);
+				auto& nsc = view.get<NativeScriptComponent>(entityHandle);
 
 				if (!nsc.Instance) {
 					nsc.Instance = nsc.InstantiateScript();
 					AIO_ASSERT(nsc.Instance, "Instantiate Script returned nullptr!"); // A safety net for if by any off chance nsc. Instance is still nullptr at this point
-					nsc.Instance->mEntity = { entity, this };
+					nsc.Instance->mEntity = { entityHandle, this };
 					nsc.Instance->OnCreate();
 				}
 
@@ -56,10 +56,10 @@ namespace aio
 
 		{
 			auto view = mRegistry.view<TransformComponent, CameraComponent>();
-			for (auto [entity, transform, camera] : view.each())
+			for (auto [entityHandle, transform, camera] : view.each())
 			{
-				transform = view.get<TransformComponent>(entity);
-				camera = view.get<CameraComponent>(entity);
+				transform = view.get<TransformComponent>(entityHandle);
+				camera = view.get<CameraComponent>(entityHandle);
 			
 				if (camera.Primary)
 				{
@@ -78,10 +78,10 @@ namespace aio
 			Renderer::GetProjectionBuffer()->Bind(0);
 
 			auto group = mRegistry.group<TransformComponent>(entt::get<SpriteComponent>);
-			for (auto entity : group)
+			for (auto entityHandle : group)
 			{
-				auto& transform = group.get<TransformComponent>(entity);
-				auto& sprite = group.get<SpriteComponent>(entity);
+				auto& transform = group.get<TransformComponent>(entityHandle);
+				auto& sprite = group.get<SpriteComponent>(entityHandle);
 
 				const glm::mat4& matrix = transform.GetTransform();
 				Renderer::DrawQuad(matrix, sprite.Color);
@@ -94,8 +94,8 @@ namespace aio
 	void Scene::OnDestroy()
 	{
 		auto view = mRegistry.view<NativeScriptComponent>();
-		for (auto entity : view) {
-			auto& nsc = view.get<NativeScriptComponent>(entity);
+		for (auto entityHandle : view) {
+			auto& nsc = view.get<NativeScriptComponent>(entityHandle);
 			if (nsc.Instance) 
 			{
 				nsc.Instance->OnDestroy();
@@ -110,10 +110,22 @@ namespace aio
 		mViewportSize.y = height;
 
 		auto view = mRegistry.view<CameraComponent>();
-		for (auto entity : view)
+		for (auto entityHandle : view)
 		{
-			auto& cameraComponent = view.get<CameraComponent>(entity);
+			auto& cameraComponent = view.get<CameraComponent>(entityHandle);
 			cameraComponent.Camera.SetViewportSize(width, height);
 		}
+	}
+
+	Entity Scene::GetPrimaryCamera()
+	{
+		auto view = mRegistry.view<CameraComponent>();
+		for (auto entityHandle : view)
+		{
+			const auto& cameraEntityHandle = view.get<CameraComponent>(entityHandle);
+			if (cameraEntityHandle.Primary)
+				return Entity{ entityHandle, this };
+		}
+		return Entity();
 	}
 }

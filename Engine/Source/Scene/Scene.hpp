@@ -23,6 +23,8 @@ namespace aio
 		inline entt::registry& Reg() { return mRegistry; }
 
 		void OnViewportResize(float width, float height);
+
+		Entity GetPrimaryCamera();
 	private:
 		entt::registry mRegistry;
 		Vector2 mViewportSize;

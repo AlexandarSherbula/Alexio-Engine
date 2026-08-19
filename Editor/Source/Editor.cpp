@@ -64,6 +64,9 @@ void EditorLayer::OnUpdate()
     framebuffer->Unbind();
 }
 
+static ImGuizmo::OPERATION currentGizmoOperation(ImGuizmo::TRANSLATE);
+static ImGuizmo::MODE currentGizmoMode(ImGuizmo::LOCAL);
+
 void EditorLayer::OnImGuiRender()
 {
     ImGuiIO& io = ImGui::GetIO();
@@ -158,14 +161,67 @@ void EditorLayer::OnImGuiRender()
             ViewportFocused = ImGui::IsWindowFocused();
             ViewportHovered = ImGui::IsWindowHovered();
             Application::Get().GetImGuiLayer()->BlockEvents(ImGui::GetIO().WantTextInput);
-    
+
             ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
             mViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
-    
+
             ImVec2 uv0 = Renderer::CheckAPI() == GraphicsAPI::OpenGL ? ImVec2(0, 1) : ImVec2(0, 0); // Top-left UV coordinate
             ImVec2 uv1 = Renderer::CheckAPI() == GraphicsAPI::OpenGL ? ImVec2(1, 0) : ImVec2(1, 1); // Bottom-right UV coordinate
             ImGui::Image(framebuffer->GetColorAttachmentID(), ImVec2(mViewportSize.x, mViewportSize.y), uv0, uv1);
-    
+
+            Entity selectedEntity = mSceneHierarchyPanel.SelectedEntity;
+            if (selectedEntity)
+            {
+                ImGuizmo::SetOrthographic(true);
+                ImGuizmo::SetDrawlist();
+                
+                ImVec2 windowPos = ImGui::GetWindowPos();
+                ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
+                ImVec2 contentMax = ImGui::GetWindowContentRegionMax();
+
+                float x = windowPos.x + contentMin.x;
+                float y = windowPos.y + contentMin.y;
+                float w = contentMax.x - contentMin.x;
+                float h = contentMax.y - contentMin.y;
+
+                ImGuizmo::SetRect(x, y, w, h);
+
+                auto primaryCameraEntity = currentScene->GetPrimaryCamera();
+
+                Mat4x4 cameraView = glm::inverse(primaryCameraEntity.GetComponent<TransformComponent>().GetTransform());
+                Mat4x4 cameraProjection = primaryCameraEntity.GetComponent<CameraComponent>().Camera.GetProjection();
+
+                if (Input::GetKeyboard()->IsPressed(T))
+                    currentGizmoOperation = ImGuizmo::TRANSLATE;
+                if (Input::GetKeyboard()->IsPressed(E))
+                    currentGizmoOperation = ImGuizmo::ROTATE;
+                if (Input::GetKeyboard()->IsPressed(R))
+                    currentGizmoOperation = ImGuizmo::SCALE;
+
+                bool snap = Input::GetKeyboard()->IsHeld(L_CTRL);
+                float snapValue = 0.5f;
+                if (currentGizmoOperation == ImGuizmo::OPERATION::ROTATE)
+                    snapValue = 45.0f;
+
+                auto& entityTC = selectedEntity.GetComponent<TransformComponent>();
+                Mat4x4 entityTransform = entityTC.GetTransform();
+                ImGuizmo::Manipulate(glm::value_ptr(cameraView), glm::value_ptr(cameraProjection), currentGizmoOperation,
+                    currentGizmoMode, glm::value_ptr(entityTransform), nullptr, snap ? &snapValue : nullptr);
+
+                if (ImGuizmo::IsUsing())
+                {
+                    Vector3 translation, rotation, scale;
+
+                    DecomposeTransform(entityTransform, translation, rotation, scale);
+
+                    Vector3 deltaRotation = rotation - entityTC.Rotation;
+
+                    entityTC.Position = translation;
+                    entityTC.Rotation += deltaRotation;
+                    entityTC.Scale = scale;
+                }
+            }
+
         }
         ImGui::End();
 

@@ -2,6 +2,33 @@ Scene: Untitled
 Entities:
   - Entity: 13212654686584
     TagComponent:
+      Tag: Yellow Square
+    TransformComponent:
+      Position: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [2, 2, 1]
+    SpriteComponent:
+      Color: [1, 1, 0, 1]
+  - Entity: 13212654686584
+    TagComponent:
+      Tag: Blue Square
+    TransformComponent:
+      Position: [6.4, -2.851394, 0]
+      Rotation: [0, 0, 0]
+      Scale: [2, 2, 1]
+    SpriteComponent:
+      Color: [0, 0, 1, 1]
+  - Entity: 13212654686584
+    TagComponent:
+      Tag: Red Square
+    TransformComponent:
+      Position: [-6.1455092, -0.7, 0]
+      Rotation: [0, 0, 0]
+      Scale: [2, 2, 1]
+    SpriteComponent:
+      Color: [1, 0, 0, 1]
+  - Entity: 13212654686584
+    TagComponent:
       Tag: Primary Camera
     TransformComponent:
       Position: [0, 0, 0]
@@ -10,30 +37,3 @@ Entities:
     CameraComponent:
       Primary: true
       Size: 10
-  - Entity: 13212654686584
-    TagComponent:
-      Tag: Red Square
-    TransformComponent:
-      Position: [5, -0.7, 0]
-      Rotation: [0, 0, 0]
-      Scale: [2, 2, 1]
-    SpriteComponent:
-      Color: [1, 0, 0, 1]
-  - Entity: 13212654686584
-    TagComponent:
-      Tag: Blue Square
-    TransformComponent:
-      Position: [6.4, -7, 0]
-      Rotation: [0, 0, 0]
-      Scale: [2, 2, 1]
-    SpriteComponent:
-      Color: [0, 0, 1, 1]
-  - Entity: 13212654686584
-    TagComponent:
-      Tag: Yellow Square
-    TransformComponent:
-      Position: [0, 0, 0]
-      Rotation: [0, 0, 0]
-      Scale: [2, 2, 1]
-    SpriteComponent:
-      Color: [1, 1, 0, 1]
