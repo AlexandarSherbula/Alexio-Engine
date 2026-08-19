@@ -98,7 +98,7 @@ add_subdirectory(vendor/imgui EXCLUDE_FROM_ALL)
 target_link_libraries(Engine PUBLIC imgui)
 
 # ImGuizmo
-add_subdirectory(vendor/imguizmo EXCLUDE_FROM_ALL)
+add_subdirectory(vendor/ImGuizmo EXCLUDE_FROM_ALL)
 target_link_libraries(Engine PUBLIC imguizmo)
 
 
