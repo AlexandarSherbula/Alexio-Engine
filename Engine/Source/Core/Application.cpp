@@ -4,6 +4,7 @@
 
 #include "Utils/Timer.hpp"
 #include "Renderer/Camera.hpp"
+#include "Renderer/EditorCamera.hpp"
 
 #include "Utils/FileUtils.hpp"
 
@@ -133,7 +134,7 @@ namespace aio
 	bool Application::OnMouseScrolled(MouseScrolledEvent& e)
 	{
 		Input::GetMouse()->NewMouseWheelState(Vector2(e.GetXOffset(), e.GetYOffset()));
-		return true;
+		return false;
 	}
 }
 

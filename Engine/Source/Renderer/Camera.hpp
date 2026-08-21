@@ -19,5 +19,6 @@ namespace aio
 		Mat4x4& GetProjection()  { return mProjection; }
 	protected:
 		Mat4x4 mProjection;
+		float mAspectRatio = 0.0f;
 	};
 }

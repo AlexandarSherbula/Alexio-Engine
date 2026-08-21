@@ -1,8 +1,8 @@
 #pragma once
 #include <entt/entt.hpp>
 #include "Utils/Math.hpp"
-
 #include "SceneSerializer.hpp"
+#include "Renderer/EditorCamera.hpp"
 
 namespace aio
 {
@@ -16,8 +16,9 @@ namespace aio
 	
 		Entity CreateEntity(const std::string& name = std::string());
 		void DestroyEntity(Entity entity);
-	
+		
 		void OnUpdate();
+		void OnUpdateEditor(Ref<EditorCamera>& camera);
 		void OnDestroy();
 	
 		inline entt::registry& Reg() { return mRegistry; }

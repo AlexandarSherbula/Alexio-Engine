@@ -20,7 +20,5 @@ namespace aio
 		void RecalculateProjection();
 	private:
 		float mOrthographicSize = 10.0f;
-	
-		float mAspectRatio = 0.0f;
 	};
 }

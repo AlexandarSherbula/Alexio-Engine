@@ -73,7 +73,7 @@ namespace aio
 		if (mainCameraProjection)
 		{
 			Mat4x4 viewProj = *mainCameraProjection * glm::inverse(mainCameraTransform);
-
+			
 			Renderer::GetProjectionBuffer()->SetData(&viewProj, sizeof(Mat4x4));
 			Renderer::GetProjectionBuffer()->Bind(0);
 
@@ -89,6 +89,23 @@ namespace aio
 
 			Renderer::Flush();
 		}
+	}
+
+	void Scene::OnUpdateEditor(Ref<EditorCamera>& camera)
+	{
+		camera->OnUpdate();
+
+		auto group = mRegistry.group<TransformComponent>(entt::get<SpriteComponent>);
+		for (auto entityHandle : group)
+		{
+			auto& transform = group.get<TransformComponent>(entityHandle);
+			auto& sprite = group.get<SpriteComponent>(entityHandle);
+
+			const glm::mat4& matrix = transform.GetTransform();
+			Renderer::DrawQuad(matrix, sprite.Color);
+		}
+
+		Renderer::Flush();
 	}
 	
 	void Scene::OnDestroy()

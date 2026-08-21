@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Alexio.hpp"
+#include "Renderer/EditorCamera.hpp"
 
 #include "Panels/SceneHierarchyPanel.hpp"
 #include "ImGuizmo.h"
@@ -32,7 +33,6 @@ private:
 	void NewScene();
 	void LoadScene();
 	void SaveScene();
-
 public:
 	bool ViewportFocused = false, ViewportHovered = false;
 private:
@@ -42,4 +42,14 @@ private:
 
 	SceneHierarchyPanel mSceneHierarchyPanel;
 	Ref<Scene> currentScene;
+	Ref<EditorCamera> mEditorCamera;
+
+	enum class SceneState
+	{
+		Editor,
+		Runtime
+	};
+
+	SceneState mSceneState;
+
 };

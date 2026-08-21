@@ -69,11 +69,10 @@ namespace aio
 
 	void Renderer::BeginScene(SceneCamera& camera)
 	{
-	}	
+	}
 
 	void Renderer::EndScene()
 	{
-		
 	}
 
 	void Renderer::DrawLine(const Vector2& p1, const Vector2& p2, const Vector4& color)
