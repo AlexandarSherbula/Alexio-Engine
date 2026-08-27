@@ -16,8 +16,11 @@ namespace aio
 		switch (format)
 		{
 		case TextureFormat::RED8UN:               return DXGI_FORMAT_R8_UNORM;
+		case TextureFormat::RED8I:                return DXGI_FORMAT_R8_SINT;
 		case TextureFormat::RED8UI:               return DXGI_FORMAT_R8_UINT;
+		case TextureFormat::RED16I:               return DXGI_FORMAT_R16_SINT;
 		case TextureFormat::RED16UI:              return DXGI_FORMAT_R16_UINT;
+		case TextureFormat::RED32I:               return DXGI_FORMAT_R32_SINT;
 		case TextureFormat::RED32UI:              return DXGI_FORMAT_R32_UINT;
 		case TextureFormat::RED32F:               return DXGI_FORMAT_R32_FLOAT;
 		case TextureFormat::RG8:                  return DXGI_FORMAT_R8G8_UNORM;

@@ -8,6 +8,14 @@
 
 using namespace aio;
 
+struct PanelSpecification
+{
+	Vector2 position = {0.0f, 0.0f};
+	Vector2 size = { 0.0f, 0.0f };
+	Vector2 regionMin = { 0.0f, 0.0f };
+	Vector2 regionMax = { 0.0f, 0.0f };
+};
+
 
 class Editor : public Application
 {
@@ -36,7 +44,7 @@ private:
 public:
 	bool ViewportFocused = false, ViewportHovered = false;
 private:
-	Vector2 mViewportSize = { 0.0f, 0.0f };
+	PanelSpecification mViewportSpec;
 	FramebufferSpecification fbSpec;
 	Ref<Framebuffer> framebuffer;
 

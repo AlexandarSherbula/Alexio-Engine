@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Renderer/Framebuffer.hpp"
-#include "OpenGL_Texture.hpp"
 
 namespace aio
 {
@@ -20,7 +19,7 @@ namespace aio
         void Resize(uint32_t width, uint32_t height) override;
 
         inline void* GetColorAttachmentID(uint32_t index = 0) const override { AIO_ASSERT(index < mColorAttachments.size());  return reinterpret_cast<void*>(mColorAttachments[index]); }
-        uint32_t ReadPixel(const Vector2& mousePos) override;
+        int32_t ReadPixel(const Vector2& mousePos, int32_t index) override;
     private:
         uint32_t mID;
         std::vector<uint32_t> mColorAttachments, mDepthAttachments;

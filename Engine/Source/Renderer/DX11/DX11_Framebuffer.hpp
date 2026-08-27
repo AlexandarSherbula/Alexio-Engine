@@ -10,6 +10,13 @@
 
 namespace aio
 {
+    struct DX11_ColorAttachment
+    {
+        Microsoft::WRL::ComPtr<ID3D11Texture2D> Texture;
+        Microsoft::WRL::ComPtr<ID3D11RenderTargetView> RTV;
+        Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> SRV;
+    };
+
     class DX11_Framebuffer : public Framebuffer
     {
     public:
@@ -23,13 +30,10 @@ namespace aio
         void Resize(uint32_t width, uint32_t height) override;
         void ClearColor(const Vector4& color) override;
 
-        inline void* GetColorAttachmentID(uint32_t index = 0) const override { return mColorAttachmentSRV.Get(); }
-        inline uint32_t ReadPixel(const Vector2& mousePos) override { return 0; }
+        inline void* GetColorAttachmentID(uint32_t index = 0) const override { return mColorAttachments[index].SRV.Get(); }
+        int32_t ReadPixel(const Vector2& mousePos, int32_t index) override;
     private:
-        Microsoft::WRL::ComPtr<ID3D11Texture2D> mBackBuffer;
-        Microsoft::WRL::ComPtr<ID3D11RenderTargetView> mFrameBufferRTV;
-        Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> mColorAttachmentSRV;
-
+        std::vector<DX11_ColorAttachment> mColorAttachments;
         Ref<DX11_Context> mContext;
     };
 }
@@ -52,7 +56,7 @@ namespace aio
 
         void Resize(uint32_t width, uint32_t height) override {}
 
-        inline void* GetColorAttachmentID() const override { return nullptr; }
+        inline void* GetColorAttachmentID(uint32_t index = 0) const override { return nullptr; }
         uint32_t ReadPixel(const Vector2& mousePos) override { return 0; }
     };
 }

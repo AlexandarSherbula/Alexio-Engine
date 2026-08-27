@@ -43,7 +43,7 @@ void EditorLayer::OnAttach()
 
     fbSpec.width = Application::Get().GetAppWindow()->GetSpecs().width;
     fbSpec.height = Application::Get().GetAppWindow()->GetSpecs().height;
-    fbSpec.Attachments.TextureSpecifications = { TextureFormat::RGBA , TextureFormat::RED32UI };
+    fbSpec.Attachments.TextureSpecifications = { TextureFormat::RGBA , TextureFormat::RED32I };
 
     mEditorCamera = EditorCamera(static_cast<float>(fbSpec.width / fbSpec.height));
     framebuffer = Framebuffer::Create(fbSpec);
@@ -57,11 +57,11 @@ void EditorLayer::OnUpdate()
 {
 	AIO_PROFILE_FUNCTION();
 
-    if (mViewportSize.x > 0.0f && mViewportSize.y > 0.0f && // zero sized framebuffer is invalid
-        (fbSpec.width != mViewportSize.x || fbSpec.height != mViewportSize.y))
+    if (mViewportSpec.size.x > 0.0f && mViewportSpec.size.y > 0.0f && // zero sized framebuffer is invalid
+        (fbSpec.width != mViewportSpec.size.x || fbSpec.height != mViewportSpec.size.y))
     {
-        framebuffer->Resize((uint32_t)mViewportSize.x, (uint32_t)mViewportSize.y);
-        currentScene->OnViewportResize(mViewportSize.x, mViewportSize.y);
+        framebuffer->Resize((uint32_t)mViewportSpec.size.x, (uint32_t)mViewportSpec.size.y);
+        currentScene->OnViewportResize(mViewportSpec.size.x, mViewportSpec.size.y);
     }
 
     framebuffer->Bind();
@@ -82,6 +82,27 @@ void EditorLayer::OnUpdate()
             mEditorCamera.OnUpdate();
 
             currentScene->DrawEntities();
+
+            float viewportX = mViewportSpec.position.x + mViewportSpec.regionMin.x;
+            float viewportY = mViewportSpec.position.y + mViewportSpec.regionMin.y;
+
+            float mouseX = Input::GetMouse()->GetPosition().x;
+            float mouseY = Input::GetMouse()->GetPosition().y;
+
+            float localX = mouseX - viewportX;
+            float localY = mouseY - viewportY;
+
+            // Flip Y because OpenGL framebuffer origin is bottom-left
+            if (Renderer::CheckAPI() == GraphicsAPI::OpenGL)
+                localY = mViewportSpec.size.y - localY;
+
+            if (localX >= 0 && localY >= 0 &&
+                localX < mViewportSpec.size.x &&
+                localY < mViewportSpec.size.y)
+            {
+                int32_t id = framebuffer->ReadPixel({ localX, localY }, 1);
+                AIO_LOG_TRACE("ID buffer pixel = {0}", id);
+            }
 
             break;
         }
@@ -191,30 +212,14 @@ void EditorLayer::OnImGuiRender()
             ViewportHovered = ImGui::IsWindowHovered();
             Application::Get().GetImGuiLayer()->BlockEvents(ImGui::GetIO().WantTextInput);
 
-            ImVec2 viewportPanelSize = ImGui::GetContentRegionAvail();
-            mViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
+            mViewportSpec.position = { ImGui::GetWindowPos().x, ImGui::GetWindowPos().y };
+            mViewportSpec.size = { ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y };
+            mViewportSpec.regionMin = { ImGui::GetWindowContentRegionMin().x , ImGui::GetWindowContentRegionMin().y };
+            mViewportSpec.regionMax = { ImGui::GetWindowContentRegionMax().x , ImGui::GetWindowContentRegionMax().y };
 
             ImVec2 uv0 = Renderer::CheckAPI() == GraphicsAPI::OpenGL ? ImVec2(0, 1) : ImVec2(0, 0); // Top-left UV coordinate
             ImVec2 uv1 = Renderer::CheckAPI() == GraphicsAPI::OpenGL ? ImVec2(1, 0) : ImVec2(1, 1); // Bottom-right UV coordinate
-            ImGui::Image(framebuffer->GetColorAttachmentID(), ImVec2(mViewportSize.x, mViewportSize.y), uv0, uv1);
-
-            ImVec2 viewportPos = ImGui::GetWindowPos();
-            ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
-
-            float viewportX = viewportPos.x + contentMin.x;
-            float viewportY = viewportPos.y + contentMin.y;
-
-            float mouseX = Input::GetMouse()->GetPosition().x;
-            float mouseY = Input::GetMouse()->GetPosition().y;
-
-            float localX = mouseX - viewportX;
-            float localY = mouseY - viewportY;
-
-            // Flip Y because OpenGL framebuffer origin is bottom-left
-            if (Renderer::CheckAPI() == GraphicsAPI::OpenGL)
-                localY = mViewportSize.y - localY;
-
-            framebuffer->ReadPixel({ localX, localY });
+            ImGui::Image(framebuffer->GetColorAttachmentID(), ImVec2(mViewportSpec.size.x, mViewportSpec.size.y), uv0, uv1);
 
             if (mSceneView == SceneView::Editor)
             {
