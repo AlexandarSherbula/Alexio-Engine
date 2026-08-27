@@ -57,7 +57,7 @@ namespace aio
         void Resize(uint32_t width, uint32_t height) override {}
 
         inline void* GetColorAttachmentID(uint32_t index = 0) const override { return nullptr; }
-        uint32_t ReadPixel(const Vector2& mousePos) override { return 0; }
+        int32_t ReadPixel(const Vector2& mousePos, int32_t index) override { return -1; }
     };
 }
 
