@@ -5,6 +5,10 @@
 
 namespace aio
 {
+	GLenum ConvertToGLFormat(TextureFormat format);
+	GLenum ConvertToGLWrap(TextureWrap wrap);
+	GLenum ConvertToGLFilter(TextureFilter filter);
+
 	class OpenGL_Texture : public Texture
 	{
 	public:
@@ -17,8 +21,6 @@ namespace aio
 
 		void SetData(const void* data, uint32_t size) override;
 	private:
-		GLenum mUploadImageFormat;
+		GLenum mUploadTextureFormat;
 	};
 }
-
-

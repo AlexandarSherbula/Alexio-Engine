@@ -10,6 +10,10 @@
 
 namespace aio
 {
+	DXGI_FORMAT ConvertToDXGIFormat(TextureFormat format);
+	D3D11_FILTER ConvertToDXFilter(TextureFilter filter);
+	D3D11_TEXTURE_ADDRESS_MODE ConvertToDXWrap(TextureWrap wrap);
+
 	class DX11_Texture : public Texture
 	{
 	public:

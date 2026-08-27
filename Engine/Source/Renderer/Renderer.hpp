@@ -68,7 +68,7 @@ namespace aio
 		static void DrawTriangle(const Vector2& p1, const Vector2& p2, const Vector2& p3, const Vector4& color, bool isFilled = true);
 		static void DrawTriangle(const Vector3& p1, const Vector3& p2, const Vector3& p3, const Vector4& color, bool isFilled = true);
 
-		static void DrawQuad(const Mat4x4& transform, const Vector4& color);
+		static void DrawQuad(const Mat4x4& transform, const Vector4& color, uint32_t entityID);
 		static void DrawQuad(const Vector2& position, const Vector2& size, const Vector4& color, bool isFilled = true);
 		static void DrawQuad(const Vector3& position, const Vector2& size, const Vector4& color, bool isFilled = true);
 

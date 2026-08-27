@@ -23,7 +23,8 @@ namespace aio
         void Resize(uint32_t width, uint32_t height) override;
         void ClearColor(const Vector4& color) override;
 
-        inline void* GetColorAttachmentID() const override { return mColorAttachmentSRV.Get(); }
+        inline void* GetColorAttachmentID(uint32_t index = 0) const override { return mColorAttachmentSRV.Get(); }
+        inline uint32_t ReadPixel(const Vector2& mousePos) override { return 0; }
     private:
         Microsoft::WRL::ComPtr<ID3D11Texture2D> mBackBuffer;
         Microsoft::WRL::ComPtr<ID3D11RenderTargetView> mFrameBufferRTV;
@@ -52,6 +53,7 @@ namespace aio
         void Resize(uint32_t width, uint32_t height) override {}
 
         inline void* GetColorAttachmentID() const override { return nullptr; }
+        uint32_t ReadPixel(const Vector2& mousePos) override { return 0; }
     };
 }
 

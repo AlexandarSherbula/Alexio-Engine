@@ -9,7 +9,7 @@ int main()
 	appSpecs.windowSpecs.height = 900;
 	appSpecs.windowSpecs.isFullScreen = false;
 	appSpecs.windowSpecs.startMaximized = true;
-	appSpecs.graphicsAPI = GraphicsAPI::DX11;
+	appSpecs.graphicsAPI = GraphicsAPI::OpenGL;
 
 	AIO_BEGIN_SESSION("Start", "Start.json");
 	Editor editor(appSpecs);

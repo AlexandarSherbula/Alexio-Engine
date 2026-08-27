@@ -59,6 +59,7 @@ namespace aio
 		Vector4 color;
 		Vector2 texCoord;
 		uint32_t textureIndex;
+		uint32_t entityID;
 	};
 
 	class QuadRenderer

@@ -7,9 +7,9 @@
 
 #include <nfd.h>
 
-
 static ImGuizmo::OPERATION currentGizmoOperation(ImGuizmo::TRANSLATE);
 static ImGuizmo::MODE currentGizmoMode(ImGuizmo::LOCAL);
+static bool isEditorView = true;
 
 Editor::Editor()
 {
@@ -43,13 +43,14 @@ void EditorLayer::OnAttach()
 
     fbSpec.width = Application::Get().GetAppWindow()->GetSpecs().width;
     fbSpec.height = Application::Get().GetAppWindow()->GetSpecs().height;
+    fbSpec.Attachments.TextureSpecifications = { TextureFormat::RGBA , TextureFormat::RED32UI };
 
-    mEditorCamera = CreateRef<EditorCamera>(static_cast<float>(fbSpec.width / fbSpec.height));
+    mEditorCamera = EditorCamera(static_cast<float>(fbSpec.width / fbSpec.height));
     framebuffer = Framebuffer::Create(fbSpec);
 
     mSceneHierarchyPanel.SetContext(currentScene);
 
-    mSceneState = SceneState::Editor;
+    mSceneView = SceneView::Editor;
 }
 
 void EditorLayer::OnUpdate()
@@ -66,18 +67,25 @@ void EditorLayer::OnUpdate()
     framebuffer->Bind();
     framebuffer->ClearColor(Vector4(0.1f, 0.1f, 0.1f, 1.0f));
 
-    switch (mSceneState)
+    if (isEditorView)
+        mSceneView = SceneView::Editor;
+    else
+        mSceneView = SceneView::Runtime;
+
+    switch (mSceneView)
     {
-        case SceneState::Editor:
+        case SceneView::Editor:
         {
             if (ViewportHovered && ViewportFocused)
-                mEditorCamera->OnMove();
+                mEditorCamera.OnMove();
 
-            currentScene->OnUpdateEditor(mEditorCamera);
+            mEditorCamera.OnUpdate();
+
+            currentScene->DrawEntities();
 
             break;
         }
-        case SceneState::Runtime:
+        case SceneView::Runtime:
         {
             currentScene->OnUpdate();
             break;
@@ -172,6 +180,7 @@ void EditorLayer::OnImGuiRender()
             ImGui::Text("Circles: %d", Renderer::Stats.Circles);
             ImGui::Text("DrawCircle: %d", Renderer::Stats.DrawCircle);
             ImGui::Text("");
+            ImGui::Checkbox("Editor View", &isEditorView);
             ImGui::Unindent();
         }
         ImGui::End();
@@ -189,7 +198,25 @@ void EditorLayer::OnImGuiRender()
             ImVec2 uv1 = Renderer::CheckAPI() == GraphicsAPI::OpenGL ? ImVec2(1, 0) : ImVec2(1, 1); // Bottom-right UV coordinate
             ImGui::Image(framebuffer->GetColorAttachmentID(), ImVec2(mViewportSize.x, mViewportSize.y), uv0, uv1);
 
-            if (mSceneState == SceneState::Editor)
+            ImVec2 viewportPos = ImGui::GetWindowPos();
+            ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
+
+            float viewportX = viewportPos.x + contentMin.x;
+            float viewportY = viewportPos.y + contentMin.y;
+
+            float mouseX = Input::GetMouse()->GetPosition().x;
+            float mouseY = Input::GetMouse()->GetPosition().y;
+
+            float localX = mouseX - viewportX;
+            float localY = mouseY - viewportY;
+
+            // Flip Y because OpenGL framebuffer origin is bottom-left
+            if (Renderer::CheckAPI() == GraphicsAPI::OpenGL)
+                localY = mViewportSize.y - localY;
+
+            framebuffer->ReadPixel({ localX, localY });
+
+            if (mSceneView == SceneView::Editor)
             {
                 Entity selectedEntity = mSceneHierarchyPanel.SelectedEntity;
                 if (selectedEntity)
@@ -222,7 +249,7 @@ void EditorLayer::OnImGuiRender()
 
                     auto& entityTC = selectedEntity.GetComponent<TransformComponent>();
                     Mat4x4 entityTransform = entityTC.GetTransform();
-                    ImGuizmo::Manipulate(glm::value_ptr(mEditorCamera->GetView()), glm::value_ptr(mEditorCamera->GetProjection()), currentGizmoOperation,
+                    ImGuizmo::Manipulate(glm::value_ptr(mEditorCamera.GetView()), glm::value_ptr(mEditorCamera.GetProjection()), currentGizmoOperation,
                         currentGizmoMode, glm::value_ptr(entityTransform), nullptr, snap ? &snapValue : nullptr);
 
                     if (ImGuizmo::IsUsing())
@@ -252,7 +279,7 @@ void EditorLayer::OnImGuiRender()
 void EditorLayer::OnEvent(Event& event)
 {
     if (ViewportHovered && ViewportFocused)
-        mEditorCamera->OnEvent(event);
+        mEditorCamera.OnEvent(event);
 
     EventDispatcher dispatcher(event);
     dispatcher.Dispatch<KeyPressedEvent>(AIO_BIND_EVENT_FN(EditorLayer::OnKeyPressedEvent));

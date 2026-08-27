@@ -18,7 +18,9 @@ namespace aio
 		void DestroyEntity(Entity entity);
 		
 		void OnUpdate();
-		void OnUpdateEditor(Ref<EditorCamera>& camera);
+		void OnUpdateEditor(EditorCamera& camera);
+
+		void DrawEntities();
 		void OnDestroy();
 	
 		inline entt::registry& Reg() { return mRegistry; }

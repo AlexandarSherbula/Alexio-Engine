@@ -168,7 +168,8 @@ namespace aio
             {ShaderDataType::Float3, "aPosition" },
             {ShaderDataType::Float4, "aColor"    },
             {ShaderDataType::Float2, "aTexCoord" },
-            {ShaderDataType::Int,    "aTexIndex" }
+            {ShaderDataType::Int,    "aTexIndex" },
+            {ShaderDataType::Int,    "aEntityID" }
         };
 
         vertexBuffer->SetLayout(layout);

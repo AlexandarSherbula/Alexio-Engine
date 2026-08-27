@@ -11,33 +11,33 @@ namespace aio
 {
 	uint32_t DX11_Texture::sID = 1;
 
-	static DXGI_FORMAT DXGIFormatFromImageFormat(ImageFormat format)
+	DXGI_FORMAT ConvertToDXGIFormat(TextureFormat format)
 	{
 		switch (format)
 		{
-		case ImageFormat::RED8UN:               return DXGI_FORMAT_R8_UNORM;
-		case ImageFormat::RED8UI:               return DXGI_FORMAT_R8_UINT;
-		case ImageFormat::RED16UI:              return DXGI_FORMAT_R16_UINT;
-		case ImageFormat::RED32UI:              return DXGI_FORMAT_R32_UINT;
-		case ImageFormat::RED32F:               return DXGI_FORMAT_R32_FLOAT;
-		case ImageFormat::RG8:                  return DXGI_FORMAT_R8G8_UNORM;
-		case ImageFormat::RG16F:                return DXGI_FORMAT_R16G16_FLOAT;
-		case ImageFormat::RG32F:                return DXGI_FORMAT_R32G32_FLOAT;
-		case ImageFormat::RGB:                  // DX11 lacks RGB-only
-		case ImageFormat::RGBA:                 return DXGI_FORMAT_R8G8B8A8_UNORM;
-		case ImageFormat::RGBA16F:              return DXGI_FORMAT_R16G16B16A16_FLOAT;
-		case ImageFormat::RGBA32F:              return DXGI_FORMAT_R32G32B32A32_FLOAT;
-		case ImageFormat::B10R11G11UF:          return DXGI_FORMAT_R11G11B10_FLOAT;
-		case ImageFormat::SRGB:                 
-		case ImageFormat::SRGBA:                return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-		case ImageFormat::DEPTH32FSTENCIL8UINT: return DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
-		case ImageFormat::DEPTH32F:             return DXGI_FORMAT_D32_FLOAT;
-		case ImageFormat::DEPTH24STENCIL8:      return DXGI_FORMAT_D24_UNORM_S8_UINT;
+		case TextureFormat::RED8UN:               return DXGI_FORMAT_R8_UNORM;
+		case TextureFormat::RED8UI:               return DXGI_FORMAT_R8_UINT;
+		case TextureFormat::RED16UI:              return DXGI_FORMAT_R16_UINT;
+		case TextureFormat::RED32UI:              return DXGI_FORMAT_R32_UINT;
+		case TextureFormat::RED32F:               return DXGI_FORMAT_R32_FLOAT;
+		case TextureFormat::RG8:                  return DXGI_FORMAT_R8G8_UNORM;
+		case TextureFormat::RG16F:                return DXGI_FORMAT_R16G16_FLOAT;
+		case TextureFormat::RG32F:                return DXGI_FORMAT_R32G32_FLOAT;
+		case TextureFormat::RGB:                  // DX11 lacks RGB-only
+		case TextureFormat::RGBA:                 return DXGI_FORMAT_R8G8B8A8_UNORM;
+		case TextureFormat::RGBA16F:              return DXGI_FORMAT_R16G16B16A16_FLOAT;
+		case TextureFormat::RGBA32F:              return DXGI_FORMAT_R32G32B32A32_FLOAT;
+		case TextureFormat::B10R11G11UF:          return DXGI_FORMAT_R11G11B10_FLOAT;
+		case TextureFormat::SRGB:                 
+		case TextureFormat::SRGBA:                return DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+		case TextureFormat::DEPTH32FSTENCIL8UINT: return DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
+		case TextureFormat::DEPTH32F:             return DXGI_FORMAT_D32_FLOAT;
+		case TextureFormat::DEPTH24STENCIL8:      return DXGI_FORMAT_D24_UNORM_S8_UINT;
 		default:                                return DXGI_FORMAT_UNKNOWN;
 		}
 	}
 
-	static D3D11_FILTER DXFilterFromTextureFilter(TextureFilter filter)
+	D3D11_FILTER ConvertToDXFilter(TextureFilter filter)
 	{
 		switch (filter)
 		{
@@ -52,7 +52,7 @@ namespace aio
 		}
 	}
 
-	static D3D11_TEXTURE_ADDRESS_MODE DXWrapFromTextureWrap(TextureWrap wrap)
+	D3D11_TEXTURE_ADDRESS_MODE ConvertToDXWrap(TextureWrap wrap)
 	{
 		switch (wrap)
 		{
@@ -71,7 +71,7 @@ namespace aio
 		ZeroMemory(&textureDesc, sizeof(textureDesc));
 		textureDesc.MipLevels = 1;
 		textureDesc.ArraySize = 1;
-		textureDesc.Format = DXGIFormatFromImageFormat(mSpecification.Format);
+		textureDesc.Format = ConvertToDXGIFormat(mSpecification.Format);
 		textureDesc.SampleDesc.Count = 1;
 		textureDesc.SampleDesc.Quality = 0;
 		textureDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -82,10 +82,10 @@ namespace aio
 		D3D11_SAMPLER_DESC sampDesc;
 		ZeroMemory(&sampDesc, sizeof(sampDesc));
 
-		sampDesc.Filter = DXFilterFromTextureFilter(mSpecification.SamplerFilter);
-		sampDesc.AddressU = DXWrapFromTextureWrap(mSpecification.SamplerWrap);
-		sampDesc.AddressV = DXWrapFromTextureWrap(mSpecification.SamplerWrap);
-		sampDesc.AddressW = DXWrapFromTextureWrap(mSpecification.SamplerWrap);
+		sampDesc.Filter = ConvertToDXFilter(mSpecification.SamplerFilter);
+		sampDesc.AddressU = ConvertToDXWrap(mSpecification.SamplerWrap);
+		sampDesc.AddressV = ConvertToDXWrap(mSpecification.SamplerWrap);
+		sampDesc.AddressW = ConvertToDXWrap(mSpecification.SamplerWrap);
 		sampDesc.MipLODBias = 0.0f;
 		sampDesc.MaxAnisotropy = 1;
 		sampDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;

@@ -33,6 +33,26 @@ namespace aio
 	
 	void Scene::OnUpdate()
 	{
+		Mat4x4* mainCameraProjection = nullptr;
+		Mat4x4 mainCameraTransform;
+
+		{
+			auto view = mRegistry.view<TransformComponent, CameraComponent>();
+			for (auto [entityHandle, transform, camera] : view.each())
+			{
+				transform = view.get<TransformComponent>(entityHandle);
+				camera = view.get<CameraComponent>(entityHandle);
+
+				if (camera.Primary)
+				{
+					mainCameraProjection = &camera.Camera.GetProjection();
+					mainCameraTransform = transform.GetTransform();
+					break;
+				}
+			}
+		}
+
+
 		{
 			auto view = mRegistry.view<NativeScriptComponent>();
 			for (auto entityHandle : view)
@@ -50,26 +70,6 @@ namespace aio
 			}
 		}
 
-
-		Mat4x4* mainCameraProjection = nullptr;
-		Mat4x4 mainCameraTransform;
-
-		{
-			auto view = mRegistry.view<TransformComponent, CameraComponent>();
-			for (auto [entityHandle, transform, camera] : view.each())
-			{
-				transform = view.get<TransformComponent>(entityHandle);
-				camera = view.get<CameraComponent>(entityHandle);
-			
-				if (camera.Primary)
-				{
-					mainCameraProjection = &camera.Camera.GetProjection();
-					mainCameraTransform = transform.GetTransform();
-					break;
-				}
-			}
-		}
-
 		if (mainCameraProjection)
 		{
 			Mat4x4 viewProj = *mainCameraProjection * glm::inverse(mainCameraTransform);
@@ -77,24 +77,19 @@ namespace aio
 			Renderer::GetProjectionBuffer()->SetData(&viewProj, sizeof(Mat4x4));
 			Renderer::GetProjectionBuffer()->Bind(0);
 
-			auto group = mRegistry.group<TransformComponent>(entt::get<SpriteComponent>);
-			for (auto entityHandle : group)
-			{
-				auto& transform = group.get<TransformComponent>(entityHandle);
-				auto& sprite = group.get<SpriteComponent>(entityHandle);
-
-				const glm::mat4& matrix = transform.GetTransform();
-				Renderer::DrawQuad(matrix, sprite.Color);
-			}
-
-			Renderer::Flush();
+			DrawEntities();
 		}
 	}
 
-	void Scene::OnUpdateEditor(Ref<EditorCamera>& camera)
+	void Scene::OnUpdateEditor(EditorCamera& camera)
 	{
-		camera->OnUpdate();
+		camera.OnUpdate();
 
+		
+	}
+	
+	void Scene::DrawEntities()
+	{
 		auto group = mRegistry.group<TransformComponent>(entt::get<SpriteComponent>);
 		for (auto entityHandle : group)
 		{
@@ -102,12 +97,12 @@ namespace aio
 			auto& sprite = group.get<SpriteComponent>(entityHandle);
 
 			const glm::mat4& matrix = transform.GetTransform();
-			Renderer::DrawQuad(matrix, sprite.Color);
+			Renderer::DrawQuad(matrix, sprite.Color, (uint32_t)entityHandle);
 		}
 
 		Renderer::Flush();
 	}
-	
+
 	void Scene::OnDestroy()
 	{
 		auto view = mRegistry.view<NativeScriptComponent>();

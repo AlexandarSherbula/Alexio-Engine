@@ -2,12 +2,15 @@
 
 namespace aio
 {
-	enum class ImageFormat 
+	enum class TextureFormat 
 	{
 		None = 0, 
 		RED8UN, 
+		RED8I,
 		RED8UI, 
+		RED16I,
 		RED16UI, 
+		RED32I,
 		RED32UI, 
 		RED32F, 
 		RG8, 
@@ -41,7 +44,7 @@ namespace aio
 
 	struct TextureSpecification
 	{
-		ImageFormat Format = ImageFormat::RGBA;
+		TextureFormat Format = TextureFormat::RGBA;
 		uint32_t Width = 1;
 		uint32_t Height = 1;
 		TextureWrap SamplerWrap = TextureWrap::Repeat;
@@ -49,7 +52,6 @@ namespace aio
 
 		bool GenerateMips = true;
 	};
-
 
 	class Texture
 	{

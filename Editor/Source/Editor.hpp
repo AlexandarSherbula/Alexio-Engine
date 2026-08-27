@@ -42,14 +42,14 @@ private:
 
 	SceneHierarchyPanel mSceneHierarchyPanel;
 	Ref<Scene> currentScene;
-	Ref<EditorCamera> mEditorCamera;
+	EditorCamera mEditorCamera;
 
-	enum class SceneState
+	enum class SceneView
 	{
 		Editor,
 		Runtime
 	};
 
-	SceneState mSceneState;
+	SceneView mSceneView;
 
 };
