@@ -131,7 +131,8 @@ namespace aio
 
 			mContext->GetDevice()->CreateTexture2D(&desc, nullptr, &stagingTexture);
 
-			TextureStagedForPixelReading = true;
+			if (!TextureStagedForPixelReading)
+				TextureStagedForPixelReading = true;
 		}
 
 		mContext->GetDeviceContext()->CopyResource(

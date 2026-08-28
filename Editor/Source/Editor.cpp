@@ -76,32 +76,42 @@ void EditorLayer::OnUpdate()
     {
         case SceneView::Editor:
         {
-            if (ViewportHovered && ViewportFocused)
+            if (mViewportSpec.isHovered && mViewportSpec.isFocused)
                 mEditorCamera.OnMove();
 
             mEditorCamera.OnUpdate();
 
             currentScene->DrawEntities();
 
-            float viewportX = mViewportSpec.position.x + mViewportSpec.regionMin.x;
-            float viewportY = mViewportSpec.position.y + mViewportSpec.regionMin.y;
-
-            float mouseX = Input::GetMouse()->GetPosition().x;
-            float mouseY = Input::GetMouse()->GetPosition().y;
-
-            float localX = mouseX - viewportX;
-            float localY = mouseY - viewportY;
-
-            // Flip Y because OpenGL framebuffer origin is bottom-left
-            if (Renderer::CheckAPI() == GraphicsAPI::OpenGL)
-                localY = mViewportSpec.size.y - localY;
-
-            if (localX >= 0 && localY >= 0 &&
-                localX < mViewportSpec.size.x &&
-                localY < mViewportSpec.size.y)
+            if (!ImGuizmo::IsUsing())
             {
-                int32_t id = framebuffer->ReadPixel({ localX, localY }, 1);
-                AIO_LOG_TRACE("ID buffer pixel = {0}", id);
+                float viewportX = mViewportSpec.position.x + mViewportSpec.regionMin.x;
+                float viewportY = mViewportSpec.position.y + mViewportSpec.regionMin.y;
+
+                float mouseX = ImGui::GetMousePos().x;
+                float mouseY = ImGui::GetMousePos().y;
+
+                float localX = mouseX - viewportX;
+                float localY = mouseY - viewportY;
+
+                // Flip Y because OpenGL framebuffer origin is bottom-left
+                if (Renderer::CheckAPI() == GraphicsAPI::OpenGL)
+                    localY = mViewportSpec.size.y - localY;
+
+                if (localX >= 0 && localY >= 0 &&
+                    localX < mViewportSpec.size.x &&
+                    localY < mViewportSpec.size.y)
+                {
+                    int32_t id = framebuffer->ReadPixel({ localX, localY }, 1);
+
+                    if (ImGui::IsMouseDown(0))
+                    {
+                        if (id != -1)
+                            mSceneHierarchyPanel.SelectedEntity = { static_cast<entt::entity>(id), currentScene.get() };
+                        else
+                            mSceneHierarchyPanel.SelectedEntity = {};
+                    }
+                }
             }
 
             break;
@@ -208,14 +218,17 @@ void EditorLayer::OnImGuiRender()
     
         ImGui::Begin("Viewport");
         {
-            ViewportFocused = ImGui::IsWindowFocused();
-            ViewportHovered = ImGui::IsWindowHovered();
-            Application::Get().GetImGuiLayer()->BlockEvents(ImGui::GetIO().WantTextInput);
+            mViewportSpec =
+            {
+                { ImGui::GetWindowPos().x, ImGui::GetWindowPos().y },
+                { ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y },
+                { ImGui::GetWindowContentRegionMin().x , ImGui::GetWindowContentRegionMin().y },
+                { ImGui::GetWindowContentRegionMax().x , ImGui::GetWindowContentRegionMax().y },
+                ImGui::IsWindowFocused(),
+                ImGui::IsWindowHovered()
+            };
 
-            mViewportSpec.position = { ImGui::GetWindowPos().x, ImGui::GetWindowPos().y };
-            mViewportSpec.size = { ImGui::GetContentRegionAvail().x, ImGui::GetContentRegionAvail().y };
-            mViewportSpec.regionMin = { ImGui::GetWindowContentRegionMin().x , ImGui::GetWindowContentRegionMin().y };
-            mViewportSpec.regionMax = { ImGui::GetWindowContentRegionMax().x , ImGui::GetWindowContentRegionMax().y };
+            Application::Get().GetImGuiLayer()->BlockEvents(ImGui::GetIO().WantTextInput);
 
             ImVec2 uv0 = Renderer::CheckAPI() == GraphicsAPI::OpenGL ? ImVec2(0, 1) : ImVec2(0, 0); // Top-left UV coordinate
             ImVec2 uv1 = Renderer::CheckAPI() == GraphicsAPI::OpenGL ? ImVec2(1, 0) : ImVec2(1, 1); // Bottom-right UV coordinate
@@ -230,13 +243,11 @@ void EditorLayer::OnImGuiRender()
                     ImGuizmo::SetDrawlist();
 
                     ImVec2 windowPos = ImGui::GetWindowPos();
-                    ImVec2 contentMin = ImGui::GetWindowContentRegionMin();
-                    ImVec2 contentMax = ImGui::GetWindowContentRegionMax();
 
-                    float x = windowPos.x + contentMin.x;
-                    float y = windowPos.y + contentMin.y;
-                    float w = contentMax.x - contentMin.x;
-                    float h = contentMax.y - contentMin.y;
+                    float x = windowPos.x + mViewportSpec.regionMin.x;
+                    float y = windowPos.y + mViewportSpec.regionMin.y;
+                    float w = mViewportSpec.regionMax.x - mViewportSpec.regionMin.x;
+                    float h = mViewportSpec.regionMax.y - mViewportSpec.regionMin.y;
 
                     ImGuizmo::SetRect(x, y, w, h);
 
@@ -283,7 +294,7 @@ void EditorLayer::OnImGuiRender()
 
 void EditorLayer::OnEvent(Event& event)
 {
-    if (ViewportHovered && ViewportFocused)
+    if (mViewportSpec.isHovered && mViewportSpec.isFocused)
         mEditorCamera.OnEvent(event);
 
     EventDispatcher dispatcher(event);

@@ -14,6 +14,8 @@ struct PanelSpecification
 	Vector2 size = { 0.0f, 0.0f };
 	Vector2 regionMin = { 0.0f, 0.0f };
 	Vector2 regionMax = { 0.0f, 0.0f };
+	bool isFocused = false;
+	bool isHovered = false;
 };
 
 
@@ -41,8 +43,6 @@ private:
 	void NewScene();
 	void LoadScene();
 	void SaveScene();
-public:
-	bool ViewportFocused = false, ViewportHovered = false;
 private:
 	PanelSpecification mViewportSpec;
 	FramebufferSpecification fbSpec;
