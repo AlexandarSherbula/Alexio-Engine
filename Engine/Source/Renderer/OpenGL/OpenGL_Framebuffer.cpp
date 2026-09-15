@@ -15,9 +15,9 @@ namespace aio
 
 	void OpenGL_Framebuffer::Recreate()
 	{
-		if (mSpec.Attachments.TextureSpecifications.size())
+		if (mSpec.Attachments.TextureConfigurations.size())
 		{
-			mColorAttachments.resize(mSpec.Attachments.TextureSpecifications.size());
+			mColorAttachments.resize(mSpec.Attachments.TextureConfigurations.size());
 
 			glCreateFramebuffers(1, &mID);
 			glBindFramebuffer(GL_FRAMEBUFFER, mID);
@@ -27,14 +27,14 @@ namespace aio
 				glCreateTextures(GL_TEXTURE_2D, 1, &mColorAttachments[i]);
 				glBindTexture(GL_TEXTURE_2D, mColorAttachments[i]);
 
-				switch (mSpec.Attachments.TextureSpecifications[i].Format)
+				switch (mSpec.Attachments.TextureConfigurations[i].Format)
 				{
 				case TextureFormat::RGBA: glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, mSpec.width, mSpec.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr); break;
 				case TextureFormat::RED32I: glTexImage2D(GL_TEXTURE_2D, 0, GL_R32I, mSpec.width, mSpec.height, 0, GL_RED_INTEGER, GL_INT, nullptr); break;
 				}
 
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ConvertToGLFilter(mSpec.Attachments.TextureSpecifications[i].SamplerFilter));
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ConvertToGLFilter(mSpec.Attachments.TextureSpecifications[i].SamplerFilter));
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, ConvertToGLFilter(mSpec.Attachments.TextureConfigurations[i].SamplerFilter));
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, ConvertToGLFilter(mSpec.Attachments.TextureConfigurations[i].SamplerFilter));
 
 				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, mColorAttachments[i], 0);
 			}

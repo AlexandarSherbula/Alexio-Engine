@@ -16,7 +16,7 @@ namespace aio
 	{
 	}
 
-	Application::Application(AppSpecifications& appSpecs)
+	Application::Application(AppConfiguration& appCfg)
 	{
 		AIO_PROFILE_FUNCTION();
 		Log::Init();
@@ -25,13 +25,13 @@ namespace aio
 
 		mRunning = true;
 
-		mAppSpecs = appSpecs;
+		mappCfg = appCfg;
 
-		SET_API(mAppSpecs.graphicsAPI);
+		SET_API(mappCfg.graphicsAPI);
 
-		mAppSpecs.windowSpecs.eventCallback = AIO_BIND_EVENT_FN(Application::OnEvent);
+		mappCfg.windowCfg.eventCallback = AIO_BIND_EVENT_FN(Application::OnEvent);
 
-		mAppWindow = Window::Create(mAppSpecs.windowSpecs);
+		mAppWindow = Window::Create(mappCfg.windowCfg);
 		Input::Init();
 
 		Renderer::Init();

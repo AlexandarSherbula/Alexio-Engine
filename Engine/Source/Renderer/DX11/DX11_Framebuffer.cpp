@@ -16,9 +16,9 @@ namespace aio
 
 	void DX11_Framebuffer::Recreate()
 	{
-		if (mSpec.Attachments.TextureSpecifications.size())
+		if (mSpec.Attachments.TextureConfigurations.size())
 		{
-			mColorAttachments.resize(mSpec.Attachments.TextureSpecifications.size());
+			mColorAttachments.resize(mSpec.Attachments.TextureConfigurations.size());
 
 			for (size_t i = 0; i < mColorAttachments.size(); i++)
 			{
@@ -29,7 +29,7 @@ namespace aio
 				texDesc.Height = mSpec.height;
 				texDesc.MipLevels = 1;
 				texDesc.ArraySize = 1;
-				texDesc.Format = ConvertToDXGIFormat(mSpec.Attachments.TextureSpecifications[i].Format);
+				texDesc.Format = ConvertToDXGIFormat(mSpec.Attachments.TextureConfigurations[i].Format);
 				texDesc.SampleDesc.Count = 1;
 				texDesc.SampleDesc.Quality = 0;
 				texDesc.Usage = D3D11_USAGE_DEFAULT;

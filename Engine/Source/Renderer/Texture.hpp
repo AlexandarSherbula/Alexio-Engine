@@ -1,5 +1,8 @@
 #pragma once
 
+#include <filesystem>
+#include <unordered_map>
+
 namespace aio
 {
 	enum class TextureFormat 
@@ -42,7 +45,7 @@ namespace aio
 		Nearest
 	};
 
-	struct TextureSpecification
+	struct TextureConfiguration
 	{
 		TextureFormat Format = TextureFormat::RGBA;
 		uint32_t Width = 1;
@@ -66,17 +69,18 @@ namespace aio
 		virtual void Unbind() const = 0;
 
 		virtual void SetData(const void* data, uint32_t size) = 0;
+		virtual void* GetHandle() const = 0;
 
-		inline TextureSpecification& GetSpecs() { return mSpecification; }
+		inline TextureConfiguration& GetSpecs() { return mSpecification; }
 
-		static Ref<Texture> Create(const TextureSpecification& specification, const std::filesystem::path& filepath = "", std::string name = "");
-		static Ref<Texture> CreateAsset(const TextureSpecification& specification, const std::string& imageFile = "", std::string name = "");
+		static Ref<Texture> Create(const TextureConfiguration& specification, const std::filesystem::path& filepath = "", std::string name = "");
+		static Ref<Texture> CreateAsset(const TextureConfiguration& specification, const std::string& imageFile = "", std::string name = "");
 
 		static Ref<Texture> Get(const std::string& name);
 		static void Add(const Ref<Texture>& texture, std::string name = "");
 		static bool Exists(const std::string& name);
 	protected:
-		TextureSpecification mSpecification;
+		TextureConfiguration mSpecification;
 		uint32_t mID;
 		std::string mName;
 

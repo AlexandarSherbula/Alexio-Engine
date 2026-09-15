@@ -6,7 +6,7 @@ class Sandbox : public aio::Application
 {
 public:
 	Sandbox();
-	Sandbox(aio::AppSpecifications& appSpecs);
+	Sandbox(aio::AppConfiguration& appCfg);
 	~Sandbox();
 
 	void Start() override;

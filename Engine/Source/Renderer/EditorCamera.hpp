@@ -19,6 +19,9 @@ namespace aio
         Mat4x4 GetView() const { return mView; }
         Mat4x4 GetViewProjection() const { return mViewProjection; }
 
+        void SetViewportSize(float width, float height);
+    private:
+        void RecalculateProjection();
     private:
         float mZoomLevel;
         glm::vec2 mPosition;

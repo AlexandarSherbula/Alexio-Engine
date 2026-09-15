@@ -12,7 +12,7 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 
 namespace aio
 {
-	Win32_Window::Win32_Window(const WindowSpecifications& windowSpec)
+	Win32_Window::Win32_Window(const WindowConfiguration& windowSpec)
 	{
 		mSpecs.title = windowSpec.title;
 		mSpecs.width = mProjectionSize.x = windowSpec.width;
@@ -186,7 +186,7 @@ namespace aio
 			case WM_CREATE:
 			{
 				CREATESTRUCT* createStruct = reinterpret_cast<CREATESTRUCT*>(lParam);
-				WindowSpecifications* data = reinterpret_cast<WindowSpecifications*>(createStruct->lpCreateParams);
+				WindowConfiguration* data = reinterpret_cast<WindowConfiguration*>(createStruct->lpCreateParams);
 				SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(data));
 				return 0;
 			}
@@ -195,7 +195,7 @@ namespace aio
 				UINT width = LOWORD(lParam);
 				UINT height = HIWORD(lParam);
 
-				WindowSpecifications* data = (WindowSpecifications*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+				WindowConfiguration* data = (WindowConfiguration*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 				data->width = width;
 				data->height = height;
 
@@ -205,7 +205,7 @@ namespace aio
 			}
 			case WM_CLOSE:
 			{
-				WindowSpecifications* data = (WindowSpecifications*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+				WindowConfiguration* data = (WindowConfiguration*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
 				WindowCloseEvent event;
 				data->eventCallback(event);
@@ -215,7 +215,7 @@ namespace aio
 			//// KEY EVENTS
 			case WM_SYSKEYDOWN:
 			{
-				WindowSpecifications* data = (WindowSpecifications*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+				WindowConfiguration* data = (WindowConfiguration*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
 				int32_t keycode;
 				int32_t isRight = (lParam >> 24) & 0x01;
@@ -235,7 +235,7 @@ namespace aio
 			}
 			case WM_SYSKEYUP:
 			{
-				WindowSpecifications* data = (WindowSpecifications*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+				WindowConfiguration* data = (WindowConfiguration*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
 				int32_t keycode;
 				int32_t isRight = (lParam >> 24) & 0x01;
@@ -251,7 +251,7 @@ namespace aio
 			}
 			case WM_KEYDOWN:
 			{
-				WindowSpecifications* data = (WindowSpecifications*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+				WindowConfiguration* data = (WindowConfiguration*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
 				int32_t keycode;
 				bool isRight;
@@ -280,7 +280,7 @@ namespace aio
 			}
 			case WM_KEYUP:
 			{
-				WindowSpecifications* data = (WindowSpecifications*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+				WindowConfiguration* data = (WindowConfiguration*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
 				int32_t keycode;
 				int32_t isRight;
@@ -311,7 +311,7 @@ namespace aio
 			// MOUSE PRESS EVENTS
 			case WM_LBUTTONDOWN:
 			{
-				WindowSpecifications* data = (WindowSpecifications*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+				WindowConfiguration* data = (WindowConfiguration*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
 				MouseButtonPressedEvent event(L_BUTTON);
 				data->eventCallback(event);
@@ -321,7 +321,7 @@ namespace aio
 			}
 			case WM_RBUTTONDOWN:
 			{
-				WindowSpecifications* data = (WindowSpecifications*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+				WindowConfiguration* data = (WindowConfiguration*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
 				MouseButtonPressedEvent event(R_BUTTON);
 				data->eventCallback(event);
@@ -331,7 +331,7 @@ namespace aio
 			}
 			case WM_MBUTTONDOWN:
 			{
-				WindowSpecifications* data = (WindowSpecifications*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+				WindowConfiguration* data = (WindowConfiguration*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
 				MouseButtonPressedEvent event(MK_MBUTTON);
 				data->eventCallback(event);
@@ -341,7 +341,7 @@ namespace aio
 			}
 			case WM_XBUTTONDOWN:
 			{
-				WindowSpecifications* data = (WindowSpecifications*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+				WindowConfiguration* data = (WindowConfiguration*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
 				int32_t mouseButton = (wParam & MK_XBUTTON1) | (wParam & MK_XBUTTON2);
 				if (mouseButton == 32)
@@ -358,7 +358,7 @@ namespace aio
 			// MOUSE RELEASE EVENTS
 			case WM_LBUTTONUP:
 			{
-				WindowSpecifications* data = (WindowSpecifications*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+				WindowConfiguration* data = (WindowConfiguration*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
 				MouseButtonReleasedEvent event(L_BUTTON);
 				data->eventCallback(event);
@@ -368,7 +368,7 @@ namespace aio
 			}
 			case WM_RBUTTONUP:
 			{
-				WindowSpecifications* data = (WindowSpecifications*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+				WindowConfiguration* data = (WindowConfiguration*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
 				MouseButtonReleasedEvent event(R_BUTTON);
 				data->eventCallback(event);
@@ -378,7 +378,7 @@ namespace aio
 			}
 			case WM_MBUTTONUP:
 			{
-				WindowSpecifications* data = (WindowSpecifications*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+				WindowConfiguration* data = (WindowConfiguration*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
 				MouseButtonReleasedEvent event(M_BUTTON);
 				data->eventCallback(event);
@@ -388,7 +388,7 @@ namespace aio
 			}
 			case WM_XBUTTONUP:
 			{
-				WindowSpecifications* data = (WindowSpecifications*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+				WindowConfiguration* data = (WindowConfiguration*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
 				UINT xbuttoncode = wParam;
 				if (wParam == 131072)		xbuttoncode = (wParam | 0x0040) & 0x0040;
@@ -408,7 +408,7 @@ namespace aio
 			// MOUSE SCROLL EVENTS
 			case WM_MOUSEWHEEL:
 			{
-				WindowSpecifications* data = (WindowSpecifications*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+				WindowConfiguration* data = (WindowConfiguration*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
 				MouseScrolledEvent event(0.0f, GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA);
 				data->eventCallback(event);
@@ -416,7 +416,7 @@ namespace aio
 			}
 			case WM_MOUSEHWHEEL: // I have no mouse to test the x-axis scrolling so i don't know if this works as intended
 			{
-				WindowSpecifications* data = (WindowSpecifications*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+				WindowConfiguration* data = (WindowConfiguration*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
 				// the sign is inverted so it matches expected behavior (scroll right = positive)
 				MouseScrolledEvent event(-GET_WHEEL_DELTA_WPARAM(wParam) / (float)WHEEL_DELTA, 0.0f);
@@ -427,7 +427,7 @@ namespace aio
 			// MOUSE MOVE EVENTS
 			case WM_MOUSEMOVE:
 			{
-				WindowSpecifications* data = (WindowSpecifications*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
+				WindowConfiguration* data = (WindowConfiguration*)GetWindowLongPtr(hwnd, GWLP_USERDATA);
 
 				MouseMovedEvent event((float)LOWORD(lParam), (float)HIWORD(lParam));
 				data->eventCallback(event);

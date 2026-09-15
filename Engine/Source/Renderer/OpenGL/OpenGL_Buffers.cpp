@@ -30,7 +30,6 @@ namespace aio
 	OpenGL_VertexBuffer::~OpenGL_VertexBuffer()
 	{
 		glDeleteBuffers(1, &mVBO);
-
 	}
 
 	void OpenGL_VertexBuffer::Bind() const

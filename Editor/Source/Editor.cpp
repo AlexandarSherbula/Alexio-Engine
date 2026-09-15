@@ -16,8 +16,8 @@ Editor::Editor()
 	
 }
 
-Editor::Editor(AppSpecifications& appSpecs)
-	: Application (appSpecs)
+Editor::Editor(AppConfiguration& appCfg)
+	: Application (appCfg)
 {
 	PushLayer(new EditorLayer());
 }
@@ -43,7 +43,7 @@ void EditorLayer::OnAttach()
 
     fbSpec.width = Application::Get().GetAppWindow()->GetSpecs().width;
     fbSpec.height = Application::Get().GetAppWindow()->GetSpecs().height;
-    fbSpec.Attachments.TextureSpecifications = { TextureFormat::RGBA , TextureFormat::RED32I };
+    fbSpec.Attachments.TextureConfigurations = { TextureFormat::RGBA , TextureFormat::RED32I };
 
     mEditorCamera = EditorCamera(static_cast<float>(fbSpec.width / fbSpec.height));
     framebuffer = Framebuffer::Create(fbSpec);
@@ -62,6 +62,7 @@ void EditorLayer::OnUpdate()
     {
         framebuffer->Resize((uint32_t)mViewportSpec.size.x, (uint32_t)mViewportSpec.size.y);
         currentScene->OnViewportResize(mViewportSpec.size.x, mViewportSpec.size.y);
+        mEditorCamera.SetViewportSize(mViewportSpec.size.x, mViewportSpec.size.y);
     }
 
     framebuffer->Bind();
@@ -128,6 +129,8 @@ void EditorLayer::OnUpdate()
 
 void EditorLayer::OnImGuiRender()
 {
+    //ImGui::ShowDemoWindow();
+
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     io.ConfigDockingTransparentPayload = true;
@@ -157,7 +160,7 @@ void EditorLayer::OnImGuiRender()
     {
         ImGuiID dockspaceID = ImGui::GetID("EditorDockSpaceID");
         ImGui::DockSpace(dockspaceID, ImVec2(0, 0), ImGuiDockNodeFlags_None);
-    
+
         ImGui::BeginMenuBar();
         {
             if (ImGui::BeginMenu("File"))
@@ -177,18 +180,22 @@ void EditorLayer::OnImGuiRender()
                     SaveScene();
                 }
 
-                if (ImGui::MenuItem("Exit")) 
+                if (ImGui::MenuItem("Exit"))
                     Application::Get().Stop();
                 ImGui::EndMenu();
             }
-    
+
         }
         ImGui::EndMenuBar();
 
         const char* apiName = "";
         CHECK_API(apiName = "OpenGL 4.5", apiName = "DirectX 11");
 
-        ImGui::Begin("App Info");
+        ImGuiWindowFlags overlay_window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+
+        bool isOverlayOpen = true;
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0.35f)); // Transparent background
+        if (ImGui::Begin("Example: Simple overlay", &isOverlayOpen, overlay_window_flags))
         {
             ImGui::Text("Graphics API: %s", apiName);
             ImGui::Text("");
@@ -215,7 +222,8 @@ void EditorLayer::OnImGuiRender()
             ImGui::Unindent();
         }
         ImGui::End();
-    
+        ImGui::PopStyleColor();
+
         ImGui::Begin("Viewport");
         {
             mViewportSpec =
@@ -287,7 +295,7 @@ void EditorLayer::OnImGuiRender()
         ImGui::End();
 
         mSceneHierarchyPanel.OnImGuiRender();
-
+        mContentBrowserPanel.OnImGuiRender();
     }
     ImGui::End();
 }

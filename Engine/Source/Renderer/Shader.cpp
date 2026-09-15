@@ -10,218 +10,12 @@
 
 namespace aio
 {
-	Slang::ComPtr<slang::IGlobalSession> SlangCompiler::sGlobalSession;
 	std::unordered_map<std::string, Ref<Shader>> Shader::sShaders;
+	Slang::ComPtr<slang::IGlobalSession> SlangCompiler::sGlobalSession;
 
 	static const char* PrintKind(slang::TypeReflection::Kind kind);
 	static void PrintParameterLayout(slang::VariableLayoutReflection* varLayout);
 	static std::string GetSampledTexture();
-
-	void SlangCompiler::Run(const std::filesystem::path& slangFile, const std::string& slangSource, const std::string& name)
-	{
-		createGlobalSession(sGlobalSession.writeRef());
-
-		slang::SessionDesc sessionDesc = {};
-		slang::TargetDesc targetDesc = {};
-
-		auto profileName = []()
-			{
-				CHECK_API(return "glsl_450", return "sm_5_0");
-				return "";
-			};
-
-		auto targetFormat = []()
-			{
-				CHECK_API(return SLANG_GLSL, return SLANG_DXBC);
-				return SLANG_TARGET_UNKNOWN;
-			};
-
-		targetDesc.format = targetFormat();
-		targetDesc.profile = sGlobalSession->findProfile(profileName());
-
-		sessionDesc.targets = &targetDesc;
-		sessionDesc.targetCount = 1;
-
-		Slang::ComPtr<slang::ISession> session;
-		sGlobalSession->createSession(sessionDesc, session.writeRef());
-
-		Slang::ComPtr<slang::IModule> slangModule;
-		{
-			Slang::ComPtr<slang::IBlob> diagnosticsBlob;
-			slangModule = session->loadModuleFromSourceString(
-				name.c_str(),
-				slangFile.string().c_str(),
-				slangSource.c_str(),
-				diagnosticsBlob.writeRef());
-			DiagnoseIfNeeded(diagnosticsBlob);
-			AIO_ASSERT(slangModule, "Failed to create a slang module");
-		}
-
-		Slang::ComPtr<slang::IEntryPoint> vsEntry, psEntry;
-		slangModule->findEntryPointByName("VSMain", vsEntry.writeRef());
-		AIO_ASSERT(vsEntry, "Failed to get Vertex Shader entry point");
-
-		slangModule->findEntryPointByName("PSMain", psEntry.writeRef());
-		AIO_ASSERT(psEntry, "Failed to get Pixel Shader entry point");
-
-		std::array<slang::IComponentType*, 3> componentTypes = { slangModule, vsEntry, psEntry };
-		Slang::ComPtr<slang::IComponentType> slangProgram;
-		{
-			Slang::ComPtr<slang::IBlob> diagnosticsBlob;
-			SlangResult result = session->createCompositeComponentType(
-				componentTypes.data(),
-				componentTypes.size(),
-				slangProgram.writeRef(),
-				diagnosticsBlob.writeRef());
-			DiagnoseIfNeeded(diagnosticsBlob);
-			AIO_ASSERT(SLANG_SUCCEEDED(result), "Failed to create a program");
-		}
-
-		Slang::ComPtr<slang::IComponentType> linkedProgram;
-		{
-			Slang::ComPtr<slang::IBlob> diagnosticsBlob;
-			SlangResult result = slangProgram->link(
-				linkedProgram.writeRef(),
-				diagnosticsBlob.writeRef());
-			DiagnoseIfNeeded(diagnosticsBlob);
-			AIO_ASSERT(SLANG_SUCCEEDED(result), "Failed to link a program");
-		}
-
-		Slang::ComPtr<slang::IBlob> vsCode;
-		{
-			Slang::ComPtr<slang::IBlob> diagnosticsBlob;
-			linkedProgram->getEntryPointCode(0, 0, vsCode.writeRef(), diagnosticsBlob.writeRef());
-			SlangResult result = linkedProgram->getEntryPointCode(
-				0, // entry point index
-				0, // target index
-				vsCode.writeRef(),
-				diagnosticsBlob.writeRef());
-			DiagnoseIfNeeded(diagnosticsBlob);
-			AIO_ASSERT(SLANG_SUCCEEDED(result), "Failed to create Vertex Shader code blob");
-		}
-
-		Slang::ComPtr<slang::IBlob> psCode;
-		{
-			Slang::ComPtr<slang::IBlob> diagnosticsBlob;
-			linkedProgram->getEntryPointCode(1, 0, psCode.writeRef(), diagnosticsBlob.writeRef());
-			SlangResult result = linkedProgram->getEntryPointCode(
-				1, // entry point index
-				0, // target index
-				psCode.writeRef(),
-				diagnosticsBlob.writeRef());
-			DiagnoseIfNeeded(diagnosticsBlob);
-			AIO_ASSERT(SLANG_SUCCEEDED(result), "Failed to create Pixel Shader code blob");
-		}
-
-		AIO_LOG_INFO("Vertex Shader succesfully compiled to {0} bytes of binary", vsCode->getBufferSize());
-		AIO_LOG_INFO("Pixel Shader succesfully compiled to {0} bytes of binary", psCode->getBufferSize());
-
-		auto writeBlobToFile = [](const std::filesystem::path& filepath, slang::IBlob* blob)
-			{
-				std::filesystem::create_directories(GetShaderCacheDirectory());
-
-				std::ofstream file(filepath, std::ios::binary);
-				if (!file)
-					return false;
-
-				file.write(
-					reinterpret_cast<const char*>(blob->getBufferPointer()),
-					static_cast<std::streamsize>(blob->getBufferSize())
-				);
-
-				return file.good();
-			};
-
-		auto writeSlangToCacheFile = [](const std::filesystem::path& filepath, const std::string& source)
-			{
-				std::filesystem::create_directories(GetShaderCacheDirectory());
-
-				std::ofstream file(filepath, std::ios::binary);
-				if (!file)
-					return false;
-
-				file.write(
-					source.c_str(),
-					static_cast<std::streamsize>(source.size())
-				);
-
-				return file.good();
-			};
-
-		writeBlobToFile(GetVertexShaderCacheFilePath(name), vsCode);
-		writeBlobToFile(GetPixelShaderCacheFilePath(name), psCode);
-
-		writeSlangToCacheFile(GetShaderCacheDirectory() / std::filesystem::path(name + ".cache"), slangSource);
-
-		/////////////////////////////////////////////////////
-		//////////////REFLECTION/////////////////////////////
-		/////////////////////////////////////////////////////
-
-		printf("\n");
-		AIO_LOG_TRACE("SLANG COMPILING REFLECTION");
-		printf("\n");
-		AIO_LOG_TRACE("Global Parameters");
-		slang::ProgramLayout* layout = linkedProgram->getLayout(0);
-		int32_t paramCount = layout->getParameterCount();
-
-		for (int32_t i = 0; i < paramCount; ++i)
-		{
-			auto param = layout->getParameterByIndex(i);
-			const char* name = param->getName();
-			AIO_LOG_INFO(" parameter name: {0}", name);
-			PrintParameterLayout(param);
-		}
-
-		printf("\n");
-		AIO_LOG_TRACE("Entry Point Parameters");
-		int32_t entryCount = layout->getEntryPointCount();
-		for (int32_t ei = 0; ei < entryCount; ++ei)
-		{
-			auto entry = layout->getEntryPointByIndex(ei);
-			AIO_LOG_INFO(" entry: {0}", entry->getName());
-			int usedParams = entry->getParameterCount();
-			for (int pi = 0; pi < usedParams; ++pi)
-			{
-				auto p = entry->getParameterByIndex(pi);
-				AIO_LOG_INFO(" param: {0}", p->getName());
-				PrintParameterLayout(p);
-			}
-		}
-	}
-
-	std::filesystem::path SlangCompiler::GetVertexShaderCacheFilePath(const std::string& shaderName)
-	{
-		std::string fileExtension;
-
-		CHECK_API
-		(
-			fileExtension = ".vert",
-			fileExtension = ".cso"
-		);
-
-		return SlangCompiler::GetShaderCacheDirectory() / std::filesystem::path(shaderName + "-vs" + fileExtension);
-	}
-
-	std::filesystem::path SlangCompiler::GetPixelShaderCacheFilePath(const std::string& shaderName)
-	{
-		std::string fileExtension;
-
-		CHECK_API
-		(
-			fileExtension = ".frag",
-			fileExtension = ".cso"
-		);
-
-		return SlangCompiler::GetShaderCacheDirectory() / std::filesystem::path(shaderName + "-ps" + fileExtension);
-	}
-
-	void SlangCompiler::DiagnoseIfNeeded(slang::IBlob* diagnosticsBlob)
-	{
-		if (diagnosticsBlob != nullptr)
-		{
-			AIO_LOG_ERROR((const char*)diagnosticsBlob->getBufferPointer());
-		}
-	}
 
 	Ref<Shader> Shader::Create(const std::filesystem::path& filepath, const Ref<VertexInput>& vertexInput, std::string name)
 	{
@@ -334,6 +128,212 @@ namespace aio
 	bool Shader::Exists(const std::string& name)
 	{
 		return sShaders.find(name) != sShaders.end();
+	}
+
+	void SlangCompiler::Run(const std::filesystem::path& slangFile, const std::string& slangSource, const std::string& name)
+	{
+		createGlobalSession(sGlobalSession.writeRef());
+
+		slang::SessionDesc sessionDesc = {};
+		slang::TargetDesc targetDesc = {};
+
+		auto profileName = []()
+			{
+				CHECK_API(return "glsl_450", return "sm_5_0");
+				return "";
+			};
+
+		auto targetFormat = []()
+			{
+				CHECK_API(return SLANG_GLSL, return SLANG_DXBC);
+				return SLANG_TARGET_UNKNOWN;
+			};
+
+		targetDesc.format = targetFormat();
+		targetDesc.profile = sGlobalSession->findProfile(profileName());
+
+		sessionDesc.targets = &targetDesc;
+		sessionDesc.targetCount = 1;
+
+		Slang::ComPtr<slang::ISession> session;
+		sGlobalSession->createSession(sessionDesc, session.writeRef());
+
+		Slang::ComPtr<slang::IModule> slangModule;
+		{
+			Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+			slangModule = session->loadModuleFromSourceString(
+				name.c_str(),
+				slangFile.string().c_str(),
+				slangSource.c_str(),
+				diagnosticsBlob.writeRef());
+			Diagnose(diagnosticsBlob);
+			AIO_ASSERT(slangModule, "Failed to create a slang module");
+		}
+
+		Slang::ComPtr<slang::IEntryPoint> vsEntry, psEntry;
+		slangModule->findEntryPointByName("VSMain", vsEntry.writeRef());
+		AIO_ASSERT(vsEntry, "Failed to get Vertex Shader entry point");
+
+		slangModule->findEntryPointByName("PSMain", psEntry.writeRef());
+		AIO_ASSERT(psEntry, "Failed to get Pixel Shader entry point");
+
+		std::array<slang::IComponentType*, 3> componentTypes = { slangModule, vsEntry, psEntry };
+		Slang::ComPtr<slang::IComponentType> slangProgram;
+		{
+			Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+			SlangResult result = session->createCompositeComponentType(
+				componentTypes.data(),
+				componentTypes.size(),
+				slangProgram.writeRef(),
+				diagnosticsBlob.writeRef());
+			Diagnose(diagnosticsBlob);
+			AIO_ASSERT(SLANG_SUCCEEDED(result), "Failed to create a program");
+		}
+
+		Slang::ComPtr<slang::IComponentType> linkedProgram;
+		{
+			Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+			SlangResult result = slangProgram->link(
+				linkedProgram.writeRef(),
+				diagnosticsBlob.writeRef());
+			Diagnose(diagnosticsBlob);
+			AIO_ASSERT(SLANG_SUCCEEDED(result), "Failed to link a program");
+		}
+
+		Slang::ComPtr<slang::IBlob> vsCode;
+		{
+			Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+			linkedProgram->getEntryPointCode(0, 0, vsCode.writeRef(), diagnosticsBlob.writeRef());
+			SlangResult result = linkedProgram->getEntryPointCode(
+				0, // entry point index
+				0, // target index
+				vsCode.writeRef(),
+				diagnosticsBlob.writeRef());
+			Diagnose(diagnosticsBlob);
+			AIO_ASSERT(SLANG_SUCCEEDED(result), "Failed to create Vertex Shader code blob");
+		}
+
+		Slang::ComPtr<slang::IBlob> psCode;
+		{
+			Slang::ComPtr<slang::IBlob> diagnosticsBlob;
+			linkedProgram->getEntryPointCode(1, 0, psCode.writeRef(), diagnosticsBlob.writeRef());
+			SlangResult result = linkedProgram->getEntryPointCode(
+				1, // entry point index
+				0, // target index
+				psCode.writeRef(),
+				diagnosticsBlob.writeRef());
+			Diagnose(diagnosticsBlob);
+			AIO_ASSERT(SLANG_SUCCEEDED(result), "Failed to create Pixel Shader code blob");
+		}
+
+		AIO_LOG_INFO("Vertex Shader succesfully compiled to {0} bytes of binary", vsCode->getBufferSize());
+		AIO_LOG_INFO("Pixel Shader succesfully compiled to {0} bytes of binary", psCode->getBufferSize());
+
+		auto writeBlobToFile = [](const std::filesystem::path& filepath, slang::IBlob* blob)
+			{
+				std::filesystem::create_directories(GetShaderCacheDirectory());
+
+				std::ofstream file(filepath, std::ios::binary);
+				if (!file)
+					return false;
+
+				file.write(
+					reinterpret_cast<const char*>(blob->getBufferPointer()),
+					static_cast<std::streamsize>(blob->getBufferSize())
+				);
+
+				return file.good();
+			};
+
+		auto writeSlangToCacheFile = [](const std::filesystem::path& filepath, const std::string& source)
+			{
+				std::filesystem::create_directories(GetShaderCacheDirectory());
+
+				std::ofstream file(filepath, std::ios::binary);
+				if (!file)
+					return false;
+
+				file.write(
+					source.c_str(),
+					static_cast<std::streamsize>(source.size())
+				);
+
+				return file.good();
+			};
+
+		writeBlobToFile(GetVertexShaderCacheFilePath(name), vsCode);
+		writeBlobToFile(GetPixelShaderCacheFilePath(name), psCode);
+
+		writeSlangToCacheFile(GetShaderCacheDirectory() / std::filesystem::path(name + ".cache"), slangSource);
+
+		/////////////////////////////////////////////////////
+		//////////////REFLECTION/////////////////////////////
+		/////////////////////////////////////////////////////
+
+		printf("\n");
+		AIO_LOG_TRACE("SLANG COMPILING REFLECTION");
+		printf("\n");
+		AIO_LOG_TRACE("Global Parameters");
+		slang::ProgramLayout* layout = linkedProgram->getLayout(0);
+		int32_t paramCount = layout->getParameterCount();
+
+		for (int32_t i = 0; i < paramCount; ++i)
+		{
+			auto param = layout->getParameterByIndex(i);
+			const char* name = param->getName();
+			AIO_LOG_INFO(" parameter name: {0}", name);
+			PrintParameterLayout(param);
+		}
+
+		printf("\n");
+		AIO_LOG_TRACE("Entry Point Parameters");
+		int32_t entryCount = layout->getEntryPointCount();
+		for (int32_t ei = 0; ei < entryCount; ++ei)
+		{
+			auto entry = layout->getEntryPointByIndex(ei);
+			AIO_LOG_INFO(" entry: {0}", entry->getName());
+			int usedParams = entry->getParameterCount();
+			for (int pi = 0; pi < usedParams; ++pi)
+			{
+				auto p = entry->getParameterByIndex(pi);
+				AIO_LOG_INFO(" param: {0}", p->getName());
+				PrintParameterLayout(p);
+			}
+		}
+	}
+
+	std::filesystem::path SlangCompiler::GetVertexShaderCacheFilePath(const std::string& shaderName)
+	{
+		std::string fileExtension;
+
+		CHECK_API
+		(
+			fileExtension = ".vert",
+			fileExtension = ".cso"
+		);
+
+		return SlangCompiler::GetShaderCacheDirectory() / std::filesystem::path(shaderName + "-vs" + fileExtension);
+	}
+
+	std::filesystem::path SlangCompiler::GetPixelShaderCacheFilePath(const std::string& shaderName)
+	{
+		std::string fileExtension;
+
+		CHECK_API
+		(
+			fileExtension = ".frag",
+			fileExtension = ".cso"
+		);
+
+		return SlangCompiler::GetShaderCacheDirectory() / std::filesystem::path(shaderName + "-ps" + fileExtension);
+	}
+
+	void SlangCompiler::Diagnose(slang::IBlob* diagnosticsBlob)
+	{
+		if (diagnosticsBlob != nullptr)
+		{
+			AIO_LOG_ERROR((const char*)diagnosticsBlob->getBufferPointer());
+		}
 	}
 
 	std::string GetSampledTexture()

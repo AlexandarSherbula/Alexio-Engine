@@ -6,9 +6,6 @@
 
 namespace aio
 {
-
-
-
 	class SceneHierarchyPanel
 	{
 	public:

@@ -20,22 +20,20 @@ namespace aio
 	{
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
-		ImGui::StyleColorsDark();
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
 
 		static std::filesystem::path iniFP = ASSETS_DIRECTORY / "Config" / "EditorLayout.ini";
+		
 		if (std::filesystem::exists(iniFP))
 		{
 			std::string iniFP_str = iniFP.string();
 			io.IniFilename = iniFP_str.c_str();
-		
 			// Load previous layout
 			ImGui::LoadIniSettingsFromDisk(io.IniFilename);
 		}
-		
 		
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{

@@ -4,6 +4,7 @@
 #include "Renderer/EditorCamera.hpp"
 
 #include "Panels/SceneHierarchyPanel.hpp"
+#include "Panels/ContentBrowserPanel.hpp"
 #include "ImGuizmo.h"
 
 using namespace aio;
@@ -23,7 +24,7 @@ class Editor : public Application
 {
 public:
 	Editor();
-	Editor(AppSpecifications& appSpecs);
+	Editor(AppConfiguration& appCfg);
 	~Editor();
 
 	void Start() override;
@@ -49,6 +50,7 @@ private:
 	Ref<Framebuffer> framebuffer;
 
 	SceneHierarchyPanel mSceneHierarchyPanel;
+	ContentBrowserPanel mContentBrowserPanel;
 	Ref<Scene> currentScene;
 	EditorCamera mEditorCamera;
 

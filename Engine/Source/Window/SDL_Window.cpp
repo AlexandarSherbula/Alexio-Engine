@@ -10,7 +10,7 @@ namespace aio
 	static void ProcessEvents(SDL_Event& sdl_event, aio::SDLWindow* window);
 
 
-	SDLWindow::SDLWindow(const WindowSpecifications& windowSpec)
+	SDLWindow::SDLWindow(const WindowConfiguration& windowSpec)
 	{
 		mSpecs.title = windowSpec.title;
 		mSpecs.width = mProjectionSize.x = windowSpec.width;

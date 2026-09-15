@@ -10,9 +10,9 @@
 
 namespace aio
 {
-	struct AppSpecifications
+	struct AppConfiguration
 	{
-		WindowSpecifications windowSpecs;
+		WindowConfiguration windowCfg;
 
 		GraphicsAPI graphicsAPI = GraphicsAPI::OpenGL;
 	};
@@ -21,7 +21,7 @@ namespace aio
 	{
 	public:
 		Application();
-		Application(AppSpecifications& appSpecs);
+		Application(AppConfiguration& appCfg);
 		~Application();
 
 		virtual void Start() = 0;
@@ -43,7 +43,7 @@ namespace aio
 		bool OnMouseScrolled(MouseScrolledEvent& e);
 	private:
 		bool mRunning;
-		AppSpecifications mAppSpecs;
+		AppConfiguration mappCfg;
 
 		Ref<Window> mAppWindow;
 		LayerStack mLayerStack;

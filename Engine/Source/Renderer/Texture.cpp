@@ -15,7 +15,7 @@ namespace aio
 {
 	std::unordered_map<std::string, Ref<Texture>> Texture::sTextures;
 
-	Ref<Texture> Texture::Create(const TextureSpecification& specification, const std::filesystem::path& filepath, std::string name)
+	Ref<Texture> Texture::Create(const TextureConfiguration& specification, const std::filesystem::path& filepath, std::string name)
 	{
 		if (filepath != "")
 		{
@@ -39,7 +39,7 @@ namespace aio
 		return nullptr;
 	}
 
-	Ref<Texture> Texture::CreateAsset(const TextureSpecification& specification, const std::string& imageFile, std::string name)
+	Ref<Texture> Texture::CreateAsset(const TextureConfiguration& specification, const std::string& imageFile, std::string name)
 	{
 		std::filesystem::path textureFilePath = imageFile;
 

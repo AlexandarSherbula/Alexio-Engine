@@ -105,6 +105,7 @@ namespace aio
         if (ImGui::IsItemClicked())
             SelectedEntity = entity;
 
+
         // Double-click to rename
         if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
         {

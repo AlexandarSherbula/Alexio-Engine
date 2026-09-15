@@ -10,7 +10,7 @@ namespace aio
 	class Win32_Window : public Window
 	{
 	public:
-		Win32_Window(const WindowSpecifications& windowSpec);
+		Win32_Window(const WindowConfiguration& windowSpec);
 		~Win32_Window();
 		void Init() override {}
 		void PollEvents() override;
@@ -39,7 +39,7 @@ namespace aio
 	class Win32_Window : public Window
 	{
 	public:
-		Win32_Window(const WindowSpecifications& windowSpec) {}
+		Win32_Window(const WindowConfiguration& windowSpec) {}
 		~Win32_Window() {}
 		void Init() override {}
 		void PollEvents() override {}

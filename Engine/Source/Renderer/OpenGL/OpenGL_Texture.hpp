@@ -12,7 +12,7 @@ namespace aio
 	class OpenGL_Texture : public Texture
 	{
 	public:
-		OpenGL_Texture(const TextureSpecification& specification, const std::filesystem::path& filepath, std::string name = "");
+		OpenGL_Texture(const TextureConfiguration& specification, const std::filesystem::path& filepath, std::string name = "");
 
 		~OpenGL_Texture();
 
@@ -20,6 +20,7 @@ namespace aio
 		void Unbind() const override;
 
 		void SetData(const void* data, uint32_t size) override;
+		inline void* GetHandle() const override { return reinterpret_cast<void*>(mID); }
 	private:
 		GLenum mUploadTextureFormat;
 	};

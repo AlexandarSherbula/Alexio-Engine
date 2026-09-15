@@ -178,9 +178,9 @@ namespace aio
 
         shader = Shader::Create(ASSETS_DIRECTORY / "shaders" / "Quad.slang", vertexInput);
 
-        TextureSpecification texSpec;
+        TextureConfiguration textureCFG;
 
-        WhiteTexture = Texture::Create(texSpec);
+        WhiteTexture = Texture::Create(textureCFG);
         TextureIDs[TextureSlotIndex] = WhiteTexture->GetID();
         TextureSlotIndex++;
     }

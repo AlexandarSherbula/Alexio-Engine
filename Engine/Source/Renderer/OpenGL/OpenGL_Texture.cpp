@@ -53,7 +53,7 @@ namespace aio
 		}
 	}
 
-	OpenGL_Texture::OpenGL_Texture(const TextureSpecification& specification, const std::filesystem::path& filepath, std::string name)
+	OpenGL_Texture::OpenGL_Texture(const TextureConfiguration& specification, const std::filesystem::path& filepath, std::string name)
 	{
 		mSpecification = specification;
 

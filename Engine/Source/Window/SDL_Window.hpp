@@ -11,7 +11,7 @@ namespace aio
 	class SDLWindow : public Window
 	{
 	public:
-		SDLWindow(const WindowSpecifications& windowSpec);
+		SDLWindow(const WindowConfiguration& windowSpec);
 		~SDLWindow();
 		void Init() override;
 		void PollEvents() override;

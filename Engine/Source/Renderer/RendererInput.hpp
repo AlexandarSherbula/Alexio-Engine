@@ -96,6 +96,7 @@ namespace aio
 		Vector4 color;
 		float thickness;
 		float fade;
+		uint32_t entityID;
 	};
 
 	class CircleRenderer

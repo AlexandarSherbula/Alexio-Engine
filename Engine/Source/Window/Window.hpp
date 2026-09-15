@@ -13,7 +13,7 @@ namespace aio
 {
 	using EventCallbackFn = std::function<void(Event&)>;
 
-	struct WindowSpecifications
+	struct WindowConfiguration
 	{
 		const char* title = "Alexio Engine";
 		int32_t width = 1280;
@@ -43,14 +43,14 @@ namespace aio
 		virtual void SetFullScreen() = 0;
 		virtual void PixelResize(uint32_t pixelSize) = 0;
 
-		WindowSpecifications& GetSpecs() { return mSpecs; }
+		WindowConfiguration& GetSpecs() { return mSpecs; }
 		const Ref<GraphicsContext>& GetContext() const { return mGraphicsContext; }
 		inline bool IsFullScreen() const { return mSpecs.isFullScreen; }
 
-		static Scope<Window> Create(const WindowSpecifications& windowSpec);
+		static Scope<Window> Create(const WindowConfiguration& windowSpec);
 	protected:
 		aio::Vector2i mProjectionSize;
-		WindowSpecifications mSpecs;
+		WindowConfiguration mSpecs;
 		Ref<GraphicsContext> mGraphicsContext;
 	};
 }

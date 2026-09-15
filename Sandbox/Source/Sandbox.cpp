@@ -11,8 +11,8 @@ Sandbox::Sandbox()
 	
 }
 
-Sandbox::Sandbox(aio::AppSpecifications& appSpecs)
-	: Application (appSpecs)
+Sandbox::Sandbox(aio::AppConfiguration& appCfg)
+	: Application (appCfg)
 {
 	PushLayer(new MainLayer());
 }
@@ -34,9 +34,9 @@ void MainLayer::OnAttach()
 {
 	AIO_PROFILE_FUNCTION();
 
-	TextureSpecification texSpec;
-	Assets::Create<Texture>(texSpec, "awesomeface.png");
-	Assets::Create<Texture>(texSpec, "AlexioLogo.png");
+	TextureConfiguration textureCFG;
+	Assets::Create<Texture>(textureCFG, "awesomeface.png");
+	Assets::Create<Texture>(textureCFG, "AlexioLogo.png");
 }
 
 void MainLayer::OnUpdate()

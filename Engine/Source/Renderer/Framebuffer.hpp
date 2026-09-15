@@ -7,10 +7,10 @@
 
 namespace aio
 {
-    struct FramebufferTextureSpecification
+    struct FramebufferTextureConfiguration
     {
-        FramebufferTextureSpecification() = default;
-        FramebufferTextureSpecification(TextureFormat format) : Format(format) {}
+        FramebufferTextureConfiguration() = default;
+        FramebufferTextureConfiguration(TextureFormat format) : Format(format) {}
 
         TextureFormat Format;
 
@@ -18,14 +18,14 @@ namespace aio
 		TextureFilter SamplerFilter = TextureFilter::Linear;
     };
 
-    struct FramebufferAttachmentSpecification
+    struct FramebufferAttachmentConfiguration
     {
-        FramebufferAttachmentSpecification() = default;
-        FramebufferAttachmentSpecification(const std::initializer_list<FramebufferTextureSpecification>& textureSpecs)
-            : TextureSpecifications(textureSpecs) {
+        FramebufferAttachmentConfiguration() = default;
+        FramebufferAttachmentConfiguration(const std::initializer_list<FramebufferTextureConfiguration>& textureCFGs)
+            : TextureConfigurations(textureCFGs) {
         }
 
-        std::vector<FramebufferTextureSpecification> TextureSpecifications;
+        std::vector<FramebufferTextureConfiguration> TextureConfigurations;
     };
 
     struct FramebufferSpecification
@@ -33,7 +33,7 @@ namespace aio
         uint32_t width = 0;
         uint32_t height = 0;
 
-        FramebufferAttachmentSpecification Attachments;
+        FramebufferAttachmentConfiguration Attachments;
     };
 
     class Framebuffer

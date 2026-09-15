@@ -58,4 +58,21 @@ namespace aio
 		mProjection = glm::ortho(-mAspectRatio * mZoomLevel, mAspectRatio * mZoomLevel, -mZoomLevel, mZoomLevel);
 		return false;
 	}
+
+	void EditorCamera::SetViewportSize(float width, float height)
+	{
+		mAspectRatio = width / height;
+		RecalculateProjection();
+	}
+
+	void EditorCamera::RecalculateProjection()
+	{
+		float orthoLeft = -mZoomLevel * mAspectRatio;
+		float orthoRight = mZoomLevel * mAspectRatio;
+		float orthoBottom = -mZoomLevel;
+		float orthoTop = mZoomLevel;
+
+		mProjection = glm::ortho(orthoLeft, orthoRight,
+			orthoBottom, orthoTop, -1.0f, 1.0f);
+	}
 }

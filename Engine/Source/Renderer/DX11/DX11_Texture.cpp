@@ -65,7 +65,7 @@ namespace aio
 		}
 	}
 
-	DX11_Texture::DX11_Texture(const TextureSpecification& specification, const std::filesystem::path& filepath, std::string name)
+	DX11_Texture::DX11_Texture(const TextureConfiguration& specification, const std::filesystem::path& filepath, std::string name)
 	{
 		mSpecification = specification;
 		mID = sID;

@@ -52,7 +52,6 @@ namespace aio
 			}
 		}
 
-
 		{
 			auto view = mRegistry.view<NativeScriptComponent>();
 			for (auto entityHandle : view)

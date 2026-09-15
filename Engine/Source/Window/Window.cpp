@@ -11,7 +11,7 @@ namespace aio
     {
     }
 
-    Scope<Window> Window::Create(const WindowSpecifications& windowSpec)
+    Scope<Window> Window::Create(const WindowConfiguration& windowSpec)
     {
         CHECK_API(
             return CreateScope<SDLWindow>(windowSpec),
