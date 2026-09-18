@@ -115,6 +115,18 @@ void EditorLayer::OnUpdate()
                 }
             }
 
+            if (mContentBrowserPanel.LoadScene)
+            {
+                currentScene = CreateRef<Scene>();
+                mSceneHierarchyPanel.SetContext(currentScene);
+
+                SceneSerializer serializer(currentScene);
+                serializer.Deserialize(mContentBrowserPanel.FilePathForLoading);
+
+                mContentBrowserPanel.LoadScene = false;
+                mContentBrowserPanel.FilePathForLoading.clear();
+            }
+
             break;
         }
         case SceneView::Runtime:
@@ -129,8 +141,6 @@ void EditorLayer::OnUpdate()
 
 void EditorLayer::OnImGuiRender()
 {
-    //ImGui::ShowDemoWindow();
-
     ImGuiIO& io = ImGui::GetIO();
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     io.ConfigDockingTransparentPayload = true;
@@ -336,12 +346,18 @@ bool EditorLayer::OnKeyPressedEvent(KeyPressedEvent& e)
         }
         case KeyCode::DEL:
         {
-            mSceneHierarchyPanel.EntityDeleted = true;
+            if (mSceneHierarchyPanel.SelectedEntity)
+                mSceneHierarchyPanel.EntityDeleted = true;
             return true;
         }
         case KeyCode::F2:
         {
-            mSceneHierarchyPanel.RenamingEntity = true;
+            if (mSceneHierarchyPanel.SelectedEntity)
+                mSceneHierarchyPanel.RenamingEntity = true;
+
+            if (!mContentBrowserPanel.SelectedPath.empty())
+                mContentBrowserPanel.RenamingFiles = true;
+
             return true;
         }
     };

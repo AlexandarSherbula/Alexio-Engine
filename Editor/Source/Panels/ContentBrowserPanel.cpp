@@ -14,6 +14,8 @@
 namespace aio
 {
 	TextureConfiguration textureCFG;
+    static double delta = 0.0f;
+
 	ContentBrowserPanel::ContentBrowserPanel()
 	{
 		textureCFG.SamplerWrap = TextureWrap::Clamp;
@@ -22,13 +24,13 @@ namespace aio
 		mFolderIcon = Texture::Create(textureCFG, ASSETS_DIRECTORY / "images" / "open-folder-B&W.png");
 		mFileIcon = Texture::Create(textureCFG, ASSETS_DIRECTORY / "images" / "file.png");
 
-		mRenamingFiles = false;
+		RenamingFiles = false;
 
 		mTimeClicked = 0.0f;
 		mLastTimeClicked = 0.0f;
 	}
 
-    static double delta = 0.0f;
+    
 	void ContentBrowserPanel::OnImGuiRender()
 	{
         double now = ImGui::GetTime();
@@ -58,8 +60,7 @@ namespace aio
 
             ImGui::PushID(filenameString.c_str());
 
-            std::string fileExtension = path.extension().string();
-            bool isImage = fileExtension == ".png" || fileExtension == ".jpg" || fileExtension == ".jpeg";
+            bool isImage = path.extension() == ".png" || path.extension() == ".jpg" || path.extension() == ".jpeg";
 
             Ref<Texture> icon;
             if (isImage)
@@ -91,9 +92,9 @@ namespace aio
             if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered(ImGuiHoveredFlags_RootWindow) &&
                 !ImGui::IsAnyItemHovered())
             {
-                mSelectedPath.clear();
-                if (mRenamingFiles)
-                    mRenamingFiles = false;
+                SelectedPath.clear();
+                if (RenamingFiles)
+                    RenamingFiles = false;
                 delta = 0.0f;
             }
 
@@ -103,44 +104,45 @@ namespace aio
 
             if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
             {
-                if (mSelectedPath == path)
+                if (SelectedPath == path)
                 {
                     if (ImGui::IsMouseDoubleClicked(0))
                     {
                         if (entry.is_directory())
                             mCurrentDirectory /= path.filename();
-                        //else
-                        //    OpenFile(path);
-                        mRenamingFiles = false;
+                        else
+                            OpenFile(path);
+                        RenamingFiles = false;
                     }
                 }
                 else
                 {
-                    mSelectedPath = path;
-                    mRenamingFiles = false;
+                    SelectedPath = path;
+                    RenamingFiles = false;
                 }
 
                 mLastTimeClicked = now;
                 delta = 0.0f;
             }
 
-            if (mSelectedPath == path)
+            if (SelectedPath == path)
             {
                 delta = now - mLastTimeClicked;
 
                 ImDrawList* drawList = ImGui::GetWindowDrawList();
                 drawList->AddRectFilled(itemStart, ImVec2(itemEnd.x, itemEnd.y + 25.0f), IM_COL32(66, 150, 250, 127), 4.0f, 0);
 
-                if (mRenamingFiles)
+                if (RenamingFiles)
                 { 
                     ImGui::SetNextItemWidth(thumbnailSize);
 
+                    strcpy(mRenameBuffer, GetFileName(path).c_str());
                     if (ImGui::InputText("##Rename", mRenameBuffer, sizeof(mRenameBuffer),
                         ImGuiInputTextFlags_EnterReturnsTrue))
                     {
                         std::filesystem::path newPath = path.parent_path() / mRenameBuffer;
                         std::filesystem::rename(path, newPath);
-                        mRenamingFiles = false;
+                        RenamingFiles = false;
                     }
                 }
                 else
@@ -156,8 +158,7 @@ namespace aio
                     if (ImGui::Selectable(GetFileName(path).c_str(), false,
                         ImGuiSelectableFlags_AllowDoubleClick))
                     {
-                        mRenamingFiles = true;
-                        strcpy(mRenameBuffer, GetFileName(path).c_str());
+                        RenamingFiles = true;
                     }
 
                     ImGui::EndChild();
@@ -178,7 +179,7 @@ namespace aio
                 if (ImGui::Selectable(GetFileName(path).c_str(), false,
                     ImGuiSelectableFlags_AllowDoubleClick))
                 {
-                    mSelectedPath = path;
+                    SelectedPath = path;
                 }
 
                 ImGui::EndChild();
@@ -192,5 +193,14 @@ namespace aio
 
         ImGui::Columns(1);
         ImGui::End();
+    }
+
+    void ContentBrowserPanel::OpenFile(const std::filesystem::path& filePath)
+    {
+        if (filePath.extension() == ".yaml")
+        {
+            LoadScene = true;
+        }
+        FilePathForLoading = filePath;
     }
 }

@@ -12,14 +12,18 @@ namespace aio
 	public:
 		ContentBrowserPanel();
 		void OnImGuiRender();
+		void OpenFile(const std::filesystem::path& filePath);
+	public:
+		bool LoadScene = false;
+		std::filesystem::path FilePathForLoading;
+		std::filesystem::path SelectedPath;
+		bool RenamingFiles;
 	private:
 		std::filesystem::path mCurrentDirectory;
-		std::filesystem::path mSelectedPath;
 		Ref<Texture> mFolderIcon;
 		Ref<Texture> mFileIcon;
 		std::unordered_map<std::string, Ref<Texture>> mThumbnailCache;
 
-		bool mRenamingFiles;
 		double mCurrentTime;
 		double mTimeClicked;
 		double mLastTimeClicked;

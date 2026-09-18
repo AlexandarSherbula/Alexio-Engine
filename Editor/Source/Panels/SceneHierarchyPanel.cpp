@@ -81,21 +81,6 @@ namespace aio
             | ImGuiTreeNodeFlags_OpenOnArrow
             | ImGuiTreeNodeFlags_SpanAvailWidth;
 
-        if (RenamingEntity && SelectedEntity == entity)
-        {
-            strcpy(mRenameBuffer, tagComponent.Tag.c_str());
-            ImGui::PushID(entity);
-
-            if (ImGui::InputText("##RenameEntity", mRenameBuffer, sizeof(mRenameBuffer), ImGuiInputTextFlags_EnterReturnsTrue))
-            {
-                tagComponent.Tag = mRenameBuffer;
-                RenamingEntity = false;
-            }
-
-            ImGui::PopID();
-            return;
-        }
-
         bool opened = ImGui::TreeNodeEx(
             (void*)(uint64_t)(uint32_t)entity,
             flags,
@@ -103,13 +88,15 @@ namespace aio
         );
 
         if (ImGui::IsItemClicked())
-            SelectedEntity = entity;
-
-
-        // Double-click to rename
-        if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0))
         {
-            RenamingEntity = true;
+            if (SelectedEntity == entity)
+            {
+                RenamingEntity = true;
+            }
+            else
+            {
+                SelectedEntity = entity;
+            }
         }
 
         if (ImGui::BeginPopupContextItem())
@@ -127,11 +114,31 @@ namespace aio
             ImGui::TreePop();
         }
 
+        if (RenamingEntity && SelectedEntity == entity)
+        {
+            strcpy(mRenameBuffer, tagComponent.Tag.c_str());
+            ImGui::PushID(entity);
+
+            if (ImGui::InputText("##RenameEntity", mRenameBuffer, sizeof(mRenameBuffer), ImGuiInputTextFlags_EnterReturnsTrue))
+            {
+                tagComponent.Tag = mRenameBuffer;
+                RenamingEntity = false;
+            }
+
+            ImGui::PopID();
+            return;
+        }
+
         if (EntityDeleted)
         {
-            mContext->DestroyEntity(entity);
-            if (SelectedEntity == entity)
+            if (SelectedEntity)
+            {
+                mContext->DestroyEntity(SelectedEntity);
                 SelectedEntity = {};
+            }
+            else
+                mContext->DestroyEntity(entity);
+            EntityDeleted = false;
         }
 	}
 
