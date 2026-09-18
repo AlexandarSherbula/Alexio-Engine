@@ -28,6 +28,7 @@ namespace aio
 		mLastTimeClicked = 0.0f;
 	}
 
+    static double delta = 0.0f;
 	void ContentBrowserPanel::OnImGuiRender()
 	{
         double now = ImGui::GetTime();
@@ -57,7 +58,6 @@ namespace aio
 
             ImGui::PushID(filenameString.c_str());
 
-            // --- Thumbnail selection ---
             std::string fileExtension = path.extension().string();
             bool isImage = fileExtension == ".png" || fileExtension == ".jpg" || fileExtension == ".jpeg";
 
@@ -65,7 +65,9 @@ namespace aio
             if (isImage)
             {
                 if (mThumbnailCache.contains(path.string()))
+                {
                     icon = mThumbnailCache[path.string()];
+                }
                 else
                 {
                     icon = Texture::Create(textureCFG, path.string());
@@ -77,28 +79,33 @@ namespace aio
                 icon = entry.is_directory() ? mFolderIcon : mFileIcon;
             }
 
-            // --- Draw group (icon + text) ---
+
             ImGui::BeginGroup();
             ImVec2 itemStart = ImGui::GetCursorScreenPos();
 
             ImGui::Image(reinterpret_cast<ImTextureID>(icon->GetHandle()), { thumbnailSize, thumbnailSize });
 
-            ImVec2 itemEnd = { ImGui::GetItemRectMax().x, ImGui::GetItemRectMax().y };
+            ImVec2 itemEnd = { ImGui::GetItemRectMax().x, ImGui::GetItemRectMax().y};
             ImGui::EndGroup();
 
-            // --- Invisible button over whole area ---
+            if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered(ImGuiHoveredFlags_RootWindow) &&
+                !ImGui::IsAnyItemHovered())
+            {
+                mSelectedPath.clear();
+                if (mRenamingFiles)
+                    mRenamingFiles = false;
+                delta = 0.0f;
+            }
+
             ImGui::SetCursorScreenPos(itemStart);
             ImVec2 buttonSize = { itemEnd.x - itemStart.x, itemEnd.y - itemStart.y };
             ImGui::InvisibleButton("##select", buttonSize);
 
-            // --- Click handling ---
             if (ImGui::IsItemClicked(ImGuiMouseButton_Left))
             {
                 if (mSelectedPath == path)
                 {
-                    double delta = now - mLastTimeClicked;
-
-                    if (delta < 0.3) // fast double-click → open
+                    if (ImGui::IsMouseDoubleClicked(0))
                     {
                         if (entry.is_directory())
                             mCurrentDirectory /= path.filename();
@@ -106,58 +113,81 @@ namespace aio
                         //    OpenFile(path);
                         mRenamingFiles = false;
                     }
-                    else if (delta > 0.5) // slow double-click → rename
-                    {
-                        mRenamingFiles = true;
-                        strcpy(mRenameBuffer, filenameString.c_str());
-                    }
                 }
                 else
                 {
-                    // new selection
                     mSelectedPath = path;
                     mRenamingFiles = false;
                 }
 
                 mLastTimeClicked = now;
+                delta = 0.0f;
             }
 
             if (mSelectedPath == path)
             {
+                delta = now - mLastTimeClicked;
+
                 ImDrawList* drawList = ImGui::GetWindowDrawList();
-                drawList->AddRect(itemStart, itemEnd, IM_COL32(66, 150, 250, 255), 4.0f, 0, 2.0f);
-            }
+                drawList->AddRectFilled(itemStart, ImVec2(itemEnd.x, itemEnd.y + 25.0f), IM_COL32(66, 150, 250, 127), 4.0f, 0);
 
-            if (mRenamingFiles && mSelectedPath == path)
-            {
-                // Draw InputText exactly where the filename would be
-                ImGui::SetCursorPosY(ImGui::GetCursorPosY()); // keep same vertical position
-                ImGui::InputText("##Rename", mRenameBuffer, sizeof(mRenameBuffer),
-                    ImGuiInputTextFlags_EnterReturnsTrue);
+                if (mRenamingFiles)
+                { 
+                    ImGui::SetNextItemWidth(thumbnailSize);
 
-                if (ImGui::IsItemDeactivatedAfterEdit())
+                    if (ImGui::InputText("##Rename", mRenameBuffer, sizeof(mRenameBuffer),
+                        ImGuiInputTextFlags_EnterReturnsTrue))
+                    {
+                        std::filesystem::path newPath = path.parent_path() / mRenameBuffer;
+                        std::filesystem::rename(path, newPath);
+                        mRenamingFiles = false;
+                    }
+                }
+                else
                 {
-                    std::filesystem::path newPath = path.parent_path() / mRenameBuffer;
-                    std::filesystem::rename(path, newPath);
-                    mRenamingFiles = false;
+                    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0, 0, 0, 0));
+                    ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0, 0, 0, 0));
+
+                    ImGui::BeginChild("##TextRegion", ImVec2(thumbnailSize, 20), false, ImGuiWindowFlags_NoBackground);
+
+                    ImVec2 textSize = ImGui::CalcTextSize(GetFileName(path).c_str());
+                    ImGui::SetCursorPosX((thumbnailSize - textSize.x) * 0.5f);
+
+                    if (ImGui::Selectable(GetFileName(path).c_str(), false,
+                        ImGuiSelectableFlags_AllowDoubleClick))
+                    {
+                        mRenamingFiles = true;
+                        strcpy(mRenameBuffer, GetFileName(path).c_str());
+                    }
+
+                    ImGui::EndChild();
+
+                    ImGui::PopStyleColor(2);
                 }
             }
             else
             {
-                // Normal filename text
-                ImGui::TextWrapped(filenameString.c_str());
+                ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0, 0, 0, 0));
+                ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0, 0, 0, 0));
+
+                ImGui::BeginChild("##TextRegion", ImVec2(thumbnailSize, 20), false, ImGuiWindowFlags_NoBackground);
+
+                ImVec2 textSize = ImGui::CalcTextSize(GetFileName(path).c_str());
+                ImGui::SetCursorPosX((thumbnailSize - textSize.x) * 0.5f);
+
+                if (ImGui::Selectable(GetFileName(path).c_str(), false,
+                    ImGuiSelectableFlags_AllowDoubleClick))
+                {
+                    mSelectedPath = path;
+                }
+
+                ImGui::EndChild();
+
+                ImGui::PopStyleColor(2);
             }
 
             ImGui::NextColumn();
             ImGui::PopID();
-        }
-
-        // --- Deselect when clicking empty space ---
-        if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered(ImGuiHoveredFlags_RootWindow) &&
-            !ImGui::IsAnyItemHovered())
-        {
-            mSelectedPath.clear();
-            mRenamingFiles = false;
         }
 
         ImGui::Columns(1);

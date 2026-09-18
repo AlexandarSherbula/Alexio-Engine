@@ -132,6 +132,26 @@ namespace aio
 			stbi_uc* data = nullptr;
 			data = stbi_load(filepath.string().c_str(), &width, &height, &channels, 0);
 
+			size_t pixelCount = width * height;
+			std::vector<unsigned char> rgbaData(pixelCount * 4);
+
+			if (channels == 3)
+			{
+				size_t pixelCount = width * height;
+
+				for (size_t i = 0; i < pixelCount; i++)
+				{
+					rgbaData[i * 4 + 0] = data[i * 3 + 0]; // R
+					rgbaData[i * 4 + 1] = data[i * 3 + 1]; // G
+					rgbaData[i * 4 + 2] = data[i * 3 + 2]; // B
+					rgbaData[i * 4 + 3] = 255;             // A (opaque)
+				}
+			}
+			else if (channels == 4)
+			{
+				memcpy(rgbaData.data(), data, pixelCount * 4);
+			}
+
 			mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetAppWindow()->GetContext());
 
 			if (data)
@@ -143,8 +163,8 @@ namespace aio
 				textureDesc.Width = mSpecification.Width;
 				textureDesc.Height = mSpecification.Height;
 
-				textureSubData.pSysMem = data;
-				textureSubData.SysMemPitch = mSpecification.Width * channels;
+				textureSubData.pSysMem = rgbaData.data();
+				textureSubData.SysMemPitch = mSpecification.Width * 4;
 
 				HRESULT hr = mContext->GetDevice()->CreateSamplerState(&sampDesc, mSamplerState.GetAddressOf());
 				AIO_ASSERT(SUCCEEDED(hr), "Failed to create sampler state: " + ResultInfo(hr) + "\n");
