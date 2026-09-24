@@ -3,6 +3,8 @@
 #include "../Utils/Math.hpp"
 #include "SceneCamera.hpp"
 
+#include "Renderer/Texture.hpp"
+
 namespace aio
 {
 	struct TagComponent
@@ -40,13 +42,13 @@ namespace aio
 
 	struct SpriteComponent
 	{
+		Ref<Texture> Sprite = nullptr;
 		Vector4 Color{ 1.0f, 1.0f, 1.0f, 1.0f };
 
 		SpriteComponent() = default;
 		SpriteComponent(const SpriteComponent&) = default;
-		SpriteComponent(const Vector4& color)
-			: Color(color) {
-		}
+		SpriteComponent(const Vector4& color, const Ref<Texture>& sprite = nullptr)
+			: Color(color), Sprite(sprite) {}
 	};
 
 

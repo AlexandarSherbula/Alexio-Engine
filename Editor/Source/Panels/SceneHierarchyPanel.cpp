@@ -1,4 +1,5 @@
 #include "SceneHierarchyPanel.hpp"
+#include "Utils/FileUtils.hpp"
 
 #include <imgui.h>
 #include <imgui_internal.h>
@@ -322,6 +323,16 @@ namespace aio
             DrawComponent<SpriteComponent>("Sprite", entity, [](auto& component)
             {
                 ImGui::ColorEdit4("Color", glm::value_ptr(component.Color));
+
+                if (ImGui::Button("Load Texture"))
+                {
+                    const std::filesystem::path& textureFilePath = FileDialog::Open("png,jpg");
+                    if (!textureFilePath.empty())
+                    {
+                        TextureConfiguration cfg;
+                        component.Sprite = Texture::Create(cfg, textureFilePath);
+                    }
+                }
             });
         }
 

@@ -275,6 +275,61 @@ namespace aio
 		Stats.Circles++;
 	}
 
+	void Renderer::DrawSprite(const Ref<Texture>& texture, const Mat4x4& transform, const Vector4& color, uint32_t entityID)
+	{
+		if (QuadRenderer::QuadCount >= QuadRenderer::MaxQuadsPerBatch)
+			QuadRenderer::SubmitBatch();
+
+		uint32_t texIndex = QuadRenderer::TextureSlotIndex;
+		for (int i = 1; i < QuadRenderer::TextureSlotIndex; i++)
+		{
+			if (QuadRenderer::TextureIDs[i] == texture->GetID())
+			{
+				texIndex = i;
+				break;
+			}
+		}
+
+		QuadRenderer::CurrentVertexPtr->position = transform * Vector4(localPosition[0], 1.0f);
+		QuadRenderer::CurrentVertexPtr->color = color;
+		QuadRenderer::CurrentVertexPtr->texCoord = { 0.0f, 0.0f };
+		QuadRenderer::CurrentVertexPtr->textureIndex = texIndex;
+		QuadRenderer::CurrentVertexPtr->entityID = entityID;
+		QuadRenderer::CurrentVertexPtr++;
+
+		QuadRenderer::CurrentVertexPtr->position = transform * Vector4(localPosition[1], 1.0f);
+		QuadRenderer::CurrentVertexPtr->color = color;
+		QuadRenderer::CurrentVertexPtr->texCoord = { 1.0f, 0.0f };
+		QuadRenderer::CurrentVertexPtr->textureIndex = texIndex;
+		QuadRenderer::CurrentVertexPtr->entityID = entityID;
+		QuadRenderer::CurrentVertexPtr++;
+
+		QuadRenderer::CurrentVertexPtr->position = transform * Vector4(localPosition[2], 1.0f);
+		QuadRenderer::CurrentVertexPtr->color = color;
+		QuadRenderer::CurrentVertexPtr->texCoord = { 1.0f, 1.0f };
+		QuadRenderer::CurrentVertexPtr->textureIndex = texIndex;
+		QuadRenderer::CurrentVertexPtr->entityID = entityID;
+		QuadRenderer::CurrentVertexPtr++;
+
+		QuadRenderer::CurrentVertexPtr->position = transform * Vector4(localPosition[3], 1.0f);
+		QuadRenderer::CurrentVertexPtr->color = color;
+		QuadRenderer::CurrentVertexPtr->texCoord = { 0.0f, 1.0f };
+		QuadRenderer::CurrentVertexPtr->textureIndex = texIndex;
+		QuadRenderer::CurrentVertexPtr->entityID = entityID;
+		QuadRenderer::CurrentVertexPtr++;
+
+		QuadRenderer::IndexCount += 6;
+		QuadRenderer::QuadCount++;
+		Stats.Quads++;
+
+		texture->Bind(texIndex);
+		if (texIndex == QuadRenderer::TextureSlotIndex)
+		{
+			QuadRenderer::TextureIDs[QuadRenderer::TextureSlotIndex] = texture->GetID();
+			QuadRenderer::TextureSlotIndex++;
+		}
+	}
+
 	void Renderer::DrawSprite(const Ref<Texture>& texture, const Vector2& position, const Vector2& size, const Vector4& color)
 	{
 		DrawSprite(texture, Vector3(position.x, position.y, 0.0f), size, color);
@@ -401,8 +456,6 @@ namespace aio
 			QuadRenderer::TextureSlotIndex++;
 		}
 	}
-
-
 
 	void Renderer::DrawRotatedQuad(const Vector2& position, const Vector2& size, const Vector4& color, float angle)
 	{

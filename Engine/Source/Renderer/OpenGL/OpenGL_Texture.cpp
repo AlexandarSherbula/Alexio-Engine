@@ -72,6 +72,7 @@ namespace aio
 			int32_t width, height, channels;
 			stbi_uc* data = nullptr;
 			data = stbi_load(filepath.string().c_str(), &width, &height, &channels, 0);
+			stbi_set_flip_vertically_on_load(true);
 
 			if (data)
 			{

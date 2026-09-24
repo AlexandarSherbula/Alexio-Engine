@@ -83,8 +83,6 @@ namespace aio
 	void Scene::OnUpdateEditor(EditorCamera& camera)
 	{
 		camera.OnUpdate();
-
-		
 	}
 	
 	void Scene::DrawEntities()
@@ -92,11 +90,15 @@ namespace aio
 		auto group = mRegistry.group<TransformComponent>(entt::get<SpriteComponent>);
 		for (auto entityHandle : group)
 		{
-			auto& transform = group.get<TransformComponent>(entityHandle);
-			auto& sprite = group.get<SpriteComponent>(entityHandle);
+			auto& transformComponent = group.get<TransformComponent>(entityHandle);
+			auto& spriteComponent = group.get<SpriteComponent>(entityHandle);
 
-			const glm::mat4& matrix = transform.GetTransform();
-			Renderer::DrawQuad(matrix, sprite.Color, (uint32_t)entityHandle);
+			const glm::mat4& matrix = transformComponent.GetTransform();
+
+			if (spriteComponent.Sprite)
+				Renderer::DrawSprite(spriteComponent.Sprite, matrix, spriteComponent.Color, (uint32_t)entityHandle);
+			else
+				Renderer::DrawQuad(matrix, spriteComponent.Color, (uint32_t)entityHandle);
 		}
 
 		Renderer::Flush();
