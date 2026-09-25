@@ -12,7 +12,7 @@ namespace aio
 	class OpenGL_Texture : public Texture
 	{
 	public:
-		OpenGL_Texture(const TextureConfiguration& specification, const std::filesystem::path& filepath, std::string name = "");
+		OpenGL_Texture(const std::filesystem::path& filepath, const TextureConfiguration& specification = {}, std::string name = "");
 
 		~OpenGL_Texture();
 

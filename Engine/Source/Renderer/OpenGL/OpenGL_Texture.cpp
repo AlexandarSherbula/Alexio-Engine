@@ -53,19 +53,19 @@ namespace aio
 		}
 	}
 
-	OpenGL_Texture::OpenGL_Texture(const TextureConfiguration& specification, const std::filesystem::path& filepath, std::string name)
+	OpenGL_Texture::OpenGL_Texture(const std::filesystem::path& filepath, const TextureConfiguration& cfg, std::string name)
 	{
-		mSpecification = specification;
+		mCFG = cfg;
 
 		if (filepath == "")
 		{
 			mUploadTextureFormat = GL_RGBA;
 
 			glCreateTextures(GL_TEXTURE_2D, 1, &mID);
-			glTextureStorage2D(mID, 1, ConvertToGLFormat(mSpecification.Format), mSpecification.Width, mSpecification.Height);
+			glTextureStorage2D(mID, 1, ConvertToGLFormat(mCFG.Format), mCFG.Width, mCFG.Height);
 
 			uint32_t whiteTexture = 0xffffffff;
-			glTextureSubImage2D(mID, 0, 0, 0, mSpecification.Width, mSpecification.Height, mUploadTextureFormat, GL_UNSIGNED_BYTE, &whiteTexture);
+			glTextureSubImage2D(mID, 0, 0, 0, mCFG.Width, mCFG.Height, mUploadTextureFormat, GL_UNSIGNED_BYTE, &whiteTexture);
 		}
 		else
 		{
@@ -77,36 +77,36 @@ namespace aio
 			if (data)
 			{
 				mName = name;
-				mSpecification.Width = width;
-				mSpecification.Height = height;
+				mCFG.Width = width;
+				mCFG.Height = height;
 
 				if (channels == 4)
 				{
-					mSpecification.Format = TextureFormat::RGBA;
+					mCFG.Format = TextureFormat::RGBA;
 					mUploadTextureFormat = GL_RGBA;
 				}
 				else if (channels == 3)
 				{
-					mSpecification.Format = TextureFormat::RGB;
+					mCFG.Format = TextureFormat::RGB;
 					mUploadTextureFormat = GL_RGB;
 				}
 
-				AIO_ASSERT(ConvertToGLFormat(mSpecification.Format) & mUploadTextureFormat, "Format not supported!");
+				AIO_ASSERT(ConvertToGLFormat(mCFG.Format) & mUploadTextureFormat, "Format not supported!");
 
 				glCreateTextures(GL_TEXTURE_2D, 1, &mID);
-				glTextureStorage2D(mID, 1, ConvertToGLFormat(mSpecification.Format), mSpecification.Width, mSpecification.Height);
+				glTextureStorage2D(mID, 1, ConvertToGLFormat(mCFG.Format), mCFG.Width, mCFG.Height);
 
-				glTextureSubImage2D(mID, 0, 0, 0, mSpecification.Width, mSpecification.Height, mUploadTextureFormat, GL_UNSIGNED_BYTE, data);
+				glTextureSubImage2D(mID, 0, 0, 0, mCFG.Width, mCFG.Height, mUploadTextureFormat, GL_UNSIGNED_BYTE, data);
 
 				stbi_image_free(data);
 			}
 		}
 
-		glTextureParameteri(mID, GL_TEXTURE_MIN_FILTER, ConvertToGLFilter(mSpecification.SamplerFilter));
-		glTextureParameteri(mID, GL_TEXTURE_MAG_FILTER, ConvertToGLFilter(mSpecification.SamplerFilter));
+		glTextureParameteri(mID, GL_TEXTURE_MIN_FILTER, ConvertToGLFilter(mCFG.SamplerFilter));
+		glTextureParameteri(mID, GL_TEXTURE_MAG_FILTER, ConvertToGLFilter(mCFG.SamplerFilter));
 
-		glTextureParameteri(mID, GL_TEXTURE_WRAP_S, ConvertToGLWrap(mSpecification.SamplerWrap));
-		glTextureParameteri(mID, GL_TEXTURE_WRAP_T, ConvertToGLWrap(mSpecification.SamplerWrap));
+		glTextureParameteri(mID, GL_TEXTURE_WRAP_S, ConvertToGLWrap(mCFG.SamplerWrap));
+		glTextureParameteri(mID, GL_TEXTURE_WRAP_T, ConvertToGLWrap(mCFG.SamplerWrap));
 	}
 
 	OpenGL_Texture::~OpenGL_Texture()
@@ -127,8 +127,8 @@ namespace aio
 	void OpenGL_Texture::SetData(const void* data, uint32_t size)
 	{
 		uint32_t bpp = mUploadTextureFormat == GL_RGBA ? 4 : 3;
-		AIO_ASSERT(size == mSpecification.Width * mSpecification.Height * bpp, "Data must be entire texture!");
-		glTextureSubImage2D(mID, 0, 0, 0, mSpecification.Width, mSpecification.Height, mUploadTextureFormat, GL_UNSIGNED_BYTE, data);
+		AIO_ASSERT(size == mCFG.Width * mCFG.Height * bpp, "Data must be entire texture!");
+		glTextureSubImage2D(mID, 0, 0, 0, mCFG.Width, mCFG.Height, mUploadTextureFormat, GL_UNSIGNED_BYTE, data);
 	}
 }
 

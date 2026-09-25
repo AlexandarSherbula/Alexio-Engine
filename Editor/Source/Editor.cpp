@@ -95,10 +95,6 @@ void EditorLayer::OnUpdate()
                 float localX = mouseX - viewportX;
                 float localY = mouseY - viewportY;
 
-                // Flip Y because OpenGL framebuffer origin is bottom-left
-                if (Renderer::CheckAPI() == GraphicsAPI::OpenGL)
-                    localY = mViewportSpec.size.y - localY;
-
                 if (localX >= 0 && localY >= 0 &&
                     localX < mViewportSpec.size.x &&
                     localY < mViewportSpec.size.y)

@@ -65,16 +65,16 @@ namespace aio
 		}
 	}
 
-	DX11_Texture::DX11_Texture(const TextureConfiguration& specification, const std::filesystem::path& filepath, std::string name)
+	DX11_Texture::DX11_Texture(const std::filesystem::path& filepath, const TextureConfiguration& cfg, std::string name)
 	{
-		mSpecification = specification;
+		mCFG = cfg;
 		mID = sID;
 
 		D3D11_TEXTURE2D_DESC textureDesc;
 		ZeroMemory(&textureDesc, sizeof(textureDesc));
 		textureDesc.MipLevels = 1;
 		textureDesc.ArraySize = 1;
-		textureDesc.Format = ConvertToDXGIFormat(mSpecification.Format);
+		textureDesc.Format = ConvertToDXGIFormat(mCFG.Format);
 		textureDesc.SampleDesc.Count = 1;
 		textureDesc.SampleDesc.Quality = 0;
 		textureDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -85,10 +85,10 @@ namespace aio
 		D3D11_SAMPLER_DESC sampDesc;
 		ZeroMemory(&sampDesc, sizeof(sampDesc));
 
-		sampDesc.Filter = ConvertToDXFilter(mSpecification.SamplerFilter);
-		sampDesc.AddressU = ConvertToDXWrap(mSpecification.SamplerWrap);
-		sampDesc.AddressV = ConvertToDXWrap(mSpecification.SamplerWrap);
-		sampDesc.AddressW = ConvertToDXWrap(mSpecification.SamplerWrap);
+		sampDesc.Filter = ConvertToDXFilter(mCFG.SamplerFilter);
+		sampDesc.AddressU = ConvertToDXWrap(mCFG.SamplerWrap);
+		sampDesc.AddressV = ConvertToDXWrap(mCFG.SamplerWrap);
+		sampDesc.AddressW = ConvertToDXWrap(mCFG.SamplerWrap);
 		sampDesc.MipLODBias = 0.0f;
 		sampDesc.MaxAnisotropy = 1;
 		sampDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
@@ -106,8 +106,8 @@ namespace aio
 		{
 			mContext = std::dynamic_pointer_cast<DX11_Context>(Application::Get().GetAppWindow()->GetContext());
 
-			textureDesc.Width = mSpecification.Width;
-			textureDesc.Height = mSpecification.Height;
+			textureDesc.Width = mCFG.Width;
+			textureDesc.Height = mCFG.Height;
 
 			ID3D11Texture2D* textureObject;
 			ZeroMemory(&textureObject, sizeof(textureObject));
@@ -115,7 +115,7 @@ namespace aio
 			uint32_t whiteTexture = 0xffffffff;
 
 			textureSubData.pSysMem = &whiteTexture;
-			textureSubData.SysMemPitch = mSpecification.Width * 4;
+			textureSubData.SysMemPitch = mCFG.Width * 4;
 
 			HRESULT hr = mContext->GetDevice()->CreateSamplerState(&sampDesc, mSamplerState.GetAddressOf());
 			AIO_ASSERT(SUCCEEDED(hr), "Failed to create sampler state: " + ResultInfo(hr) + "\n");
@@ -158,14 +158,14 @@ namespace aio
 			if (data)
 			{
 				mName = name;
-				mSpecification.Width = width;
-				mSpecification.Height = height;
+				mCFG.Width = width;
+				mCFG.Height = height;
 
-				textureDesc.Width = mSpecification.Width;
-				textureDesc.Height = mSpecification.Height;
+				textureDesc.Width = mCFG.Width;
+				textureDesc.Height = mCFG.Height;
 
 				textureSubData.pSysMem = rgbaData.data();
-				textureSubData.SysMemPitch = mSpecification.Width * 4;
+				textureSubData.SysMemPitch = mCFG.Width * 4;
 
 				HRESULT hr = mContext->GetDevice()->CreateSamplerState(&sampDesc, mSamplerState.GetAddressOf());
 				AIO_ASSERT(SUCCEEDED(hr), "Failed to create sampler state: " + ResultInfo(hr) + "\n");

@@ -82,6 +82,21 @@ namespace aio
             | ImGuiTreeNodeFlags_OpenOnArrow
             | ImGuiTreeNodeFlags_SpanAvailWidth;
 
+        if (RenamingEntity && SelectedEntity == entity)
+        {
+            strcpy(mRenameBuffer, tagComponent.Tag.c_str());
+            ImGui::PushID(entity);
+
+            if (ImGui::InputText("##RenameEntity", mRenameBuffer, sizeof(mRenameBuffer), ImGuiInputTextFlags_EnterReturnsTrue))
+            {
+                tagComponent.Tag = mRenameBuffer;
+                RenamingEntity = false;
+            }
+
+            ImGui::PopID();
+            return;
+        }
+
         bool opened = ImGui::TreeNodeEx(
             (void*)(uint64_t)(uint32_t)entity,
             flags,
@@ -111,23 +126,8 @@ namespace aio
         if (opened)
         {
             ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
-            ImGui::TreeNodeEx((void*)9816582, flags, tagComponent.Tag.c_str());
+            ImGui::TreeNodeEx((void*)9816582, flags, "Under construction");
             ImGui::TreePop();
-        }
-
-        if (RenamingEntity && SelectedEntity == entity)
-        {
-            strcpy(mRenameBuffer, tagComponent.Tag.c_str());
-            ImGui::PushID(entity);
-
-            if (ImGui::InputText("##RenameEntity", mRenameBuffer, sizeof(mRenameBuffer), ImGuiInputTextFlags_EnterReturnsTrue))
-            {
-                tagComponent.Tag = mRenameBuffer;
-                RenamingEntity = false;
-            }
-
-            ImGui::PopID();
-            return;
         }
 
         if (EntityDeleted)
@@ -329,8 +329,7 @@ namespace aio
                     const std::filesystem::path& textureFilePath = FileDialog::Open("png,jpg");
                     if (!textureFilePath.empty())
                     {
-                        TextureConfiguration cfg;
-                        component.Sprite = Texture::Create(cfg, textureFilePath);
+                        component.Sprite = Texture::Create(textureFilePath);
                     }
                 }
             });

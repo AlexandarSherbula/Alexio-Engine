@@ -13,16 +13,14 @@
 
 namespace aio
 {
-	TextureConfiguration textureCFG;
     static double delta = 0.0f;
 
 	ContentBrowserPanel::ContentBrowserPanel()
 	{
-		textureCFG.SamplerWrap = TextureWrap::Clamp;
 		mCurrentDirectory = ASSETS_DIRECTORY;
 
-		mFolderIcon = Texture::Create(textureCFG, ASSETS_DIRECTORY / "images" / "open-folder-B&W.png");
-		mFileIcon = Texture::Create(textureCFG, ASSETS_DIRECTORY / "images" / "file.png");
+		mFolderIcon = Texture::Create(ASSETS_DIRECTORY / "images" / "open-folder-B&W.png");
+		mFileIcon = Texture::Create(ASSETS_DIRECTORY / "images" / "file.png");
 
 		RenamingFiles = false;
 
@@ -71,7 +69,7 @@ namespace aio
                 }
                 else
                 {
-                    icon = Texture::Create(textureCFG, path.string());
+                    icon = Texture::Create(path.string());
                     mThumbnailCache[path.string()] = icon;
                 }
             }

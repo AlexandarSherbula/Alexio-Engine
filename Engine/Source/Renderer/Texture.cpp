@@ -15,7 +15,7 @@ namespace aio
 {
 	std::unordered_map<std::string, Ref<Texture>> Texture::sTextures;
 
-	Ref<Texture> Texture::Create(const TextureConfiguration& specification, const std::filesystem::path& filepath, std::string name)
+	Ref<Texture> Texture::Create(const std::filesystem::path& filepath, const TextureConfiguration& cfg, std::string name)
 	{
 		if (filepath != "")
 		{
@@ -32,14 +32,14 @@ namespace aio
 		}
 
 		CHECK_API(
-			return CreateRef<OpenGL_Texture>(specification, filepath, name),
-			return CreateRef<DX11_Texture>(specification, filepath, name)
+			return CreateRef<OpenGL_Texture>(filepath, cfg, name),
+			return CreateRef<DX11_Texture>(filepath, cfg, name)
 		);
 
 		return nullptr;
 	}
 
-	Ref<Texture> Texture::CreateAsset(const TextureConfiguration& specification, const std::string& imageFile, std::string name)
+	Ref<Texture> Texture::CreateAsset(const std::string& imageFile, const TextureConfiguration& cfg, std::string name)
 	{
 		std::filesystem::path textureFilePath = imageFile;
 
@@ -54,7 +54,7 @@ namespace aio
 
 		}
 		
-		auto texture = Texture::Create(specification, textureFilePath, name);
+		auto texture = Texture::Create(textureFilePath, cfg, name);
 		Add(texture, name);
 		return texture;
 	}

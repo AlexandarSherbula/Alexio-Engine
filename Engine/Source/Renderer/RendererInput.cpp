@@ -158,6 +158,7 @@ namespace aio
 
             indexOffset += 4;
         }
+
         vertexInput = VertexInput::Create();
         vertexBuffer = VertexBuffer::Create(maxVertexCount * sizeof(QuadVertex));
         indexBuffer = IndexBuffer::Create(indices, maxIndexCount);
@@ -178,9 +179,7 @@ namespace aio
 
         shader = Shader::Create(ASSETS_DIRECTORY / "shaders" / "Quad.slang", vertexInput);
 
-        TextureConfiguration textureCFG;
-
-        WhiteTexture = Texture::Create(textureCFG);
+        WhiteTexture = Texture::Create();
         TextureIDs[TextureSlotIndex] = WhiteTexture->GetID();
         TextureSlotIndex++;
     }
